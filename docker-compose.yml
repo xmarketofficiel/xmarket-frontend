@@ -1,0 +1,87 @@
+# XMarket Frontend Docker Compose Configuration
+# For easy development and backend developer collaboration
+# Use: docker compose up --build (note: compose without hyphen)
+
+services:
+  # Frontend Service - Production Build
+  xmarket-frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: xmarket-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - PORT=3000
+    networks:
+      - xmarket-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Development Frontend (with hot reload and watch mode)
+  xmarket-frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: xmarket-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - PORT=3000
+      - WATCHPACK_POLLING=true  # Enable polling for file changes in containers
+      - CHOKIDAR_USEPOLLING=true  # Alternative file watcher
+    volumes:
+      # Mount source code for hot reload and watch mode
+      - .:/app
+      # Preserve container node_modules and build cache for performance
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - xmarket-network
+    restart: unless-stopped
+    profiles:
+      - dev
+    # Enable watch mode with docker compose watch (Docker Compose v2.22+)
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app/app
+        - action: sync
+          path: ./components
+          target: /app/components
+        - action: sync
+          path: ./contexts
+          target: /app/contexts
+        - action: sync
+          path: ./hooks
+          target: /app/hooks
+        - action: sync
+          path: ./lib
+          target: /app/lib
+        - action: sync
+          path: ./utils
+          target: /app/utils
+        - action: sync
+          path: ./types.ts
+          target: /app/types.ts
+        - action: sync
+          path: ./tailwind.config.ts
+          target: /app/tailwind.config.ts
+        - action: rebuild
+          path: ./package.json
+          target: /app/package.json
+
+networks:
+  xmarket-network:
+    driver: bridge
+    name: xmarket-network
