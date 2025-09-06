@@ -20,8 +20,6 @@ const nextConfig = {
   // Set output file tracing root to silence workspace warnings
   outputFileTracingRoot: path.join(__dirname),
   
-  // Remove deprecated swcMinify - SWC is enabled by default in Next.js 15+
-  
   // Experimental features - minimal configuration for stability
   experimental: {
     // Ensure client components work properly
@@ -33,8 +31,38 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
+  // Production optimizations
+  productionBrowserSourceMaps: false,
+  
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+  
   // Simplified webpack configuration for Next.js 15+
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Only apply fallbacks for client-side builds
     if (!isServer) {
       config.resolve.fallback = {
@@ -45,10 +73,30 @@ const nextConfig = {
       };
     }
     
+    // Production optimizations
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+          },
+        },
+      };
+    }
+    
     return config;
   },
   
+  // Image optimization
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'https',
@@ -64,31 +112,48 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.xmarket.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',
       },
+      // Production API domain - update this to your backend domain
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3001',
+        protocol: 'https',
+        hostname: 'your-backend-api.vercel.app',
+        port: '',
         pathname: '/**',
       },
+      // Development only
+      ...(process.env.NODE_ENV === 'development' ? [
+        {
+          protocol: 'http',
+          hostname: 'localhost',
+          port: '3001',
+          pathname: '/**',
+        },
+      ] : []),
     ],
     dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Ensure proper module resolution
   transpilePackages: [],
   
-  // PoweredByHeader
+  // Remove powered by header
   poweredByHeader: false,
+  
+  // Compression
+  compress: true,
+  
+  // Generate static pages where possible
+  output: 'standalone',
+  
+  // Performance optimizations
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 };
 
 module.exports = withBundleAnalyzer(nextConfig);
