@@ -43,6 +43,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Development artifacts that shouldn't be committed
+*.log
+*.tmp
+*.temp
+debug*
+*debug*
+create-*.js
+generate-*.js
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
