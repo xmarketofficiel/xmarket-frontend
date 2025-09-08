@@ -107,20 +107,23 @@ export default function SignupPage() {
     setIsLoading(true);
     setMessage('');
 
-    // Validate Gmail requirement
-    if (!formData.email.endsWith('@gmail.com')) {
-      setMessage('Please use a valid Gmail address (@gmail.com)');
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setMessage('Please enter a valid email address');
       setIsLoading(false);
       return;
     }
 
     try {
+      // Let backend handle all validation (university domains + approved join requests)
       const response = await api.auth.sendOtp(formData.email);
       setOtpSent(true);
       setFormData(prev => ({ ...prev, step: 'otp' }));
       setMessage('OTP sent to your email. Please check your inbox.');
       startResendTimer();
     } catch (error: any) {
+      // Backend will return appropriate error message for unauthorized emails
       setMessage(error?.message || 'Failed to send OTP. Please try again.');
     } finally {
       setIsLoading(false);
@@ -513,13 +516,13 @@ export default function SignupPage() {
                           onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                           onFocus={() => setFocusedField('email')}
                           onBlur={() => setFocusedField('')}
-                          placeholder="Enter your Gmail address"
+                          placeholder="Enter your email address"
                           className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none"
                           required
                         />
                       </div>
                     </motion.div>
-                    <p className="text-xs text-gray-500 mt-2">Only Gmail addresses are supported</p>
+                    <p className="text-xs text-gray-500 mt-2">Use university email (@um6p.ma or @emines.um6p.ma) or get approval through join request</p>
                   </div>
 
                   <motion.button
