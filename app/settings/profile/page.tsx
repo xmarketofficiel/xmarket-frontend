@@ -27,7 +27,6 @@ export default function EditProfilePage() {
   const [privacySettings, setPrivacySettings] = useState({
     showSoldItems: user?.privacy?.showSoldItems ?? user?.showSoldItems ?? true,
     showPurchases: user?.privacy?.showPurchases ?? user?.showPurchases ?? true,
-    showPhone: user?.privacy?.showPhone ?? user?.showPhone ?? false,
   });
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -344,26 +343,6 @@ export default function EditProfilePage() {
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       privacySettings.showPurchases ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                <div>
-                  <h3 className="font-medium text-gray-900">Show Phone Number</h3>
-                  <p className="text-sm text-gray-500">Your phone number is visible to other users</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPrivacySettings(prev => ({ ...prev, showPhone: !prev.showPhone }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    privacySettings.showPhone ? 'bg-[#009F9C]' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      privacySettings.showPhone ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>

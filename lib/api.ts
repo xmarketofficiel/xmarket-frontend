@@ -97,7 +97,15 @@ class ApiClient {
           if (response.status === 401) {
             // Authentication errors are expected, handle silently
             apiError.name = 'AuthenticationError';
-            if (this.onAuthError) {
+            
+            // Only trigger auth error handler for actual authentication failures,
+            // not for email authorization during signup
+            const isEmailAuthorizationError = errorData.message?.includes('not authorized to register');
+            const isSignupRelated = endpoint.includes('/auth/send-otp') || 
+                                  endpoint.includes('/auth/verify-otp') || 
+                                  endpoint.includes('/auth/complete-registration');
+            
+            if (!isEmailAuthorizationError && !isSignupRelated && this.onAuthError) {
               this.onAuthError();
             }
           } else if (response.status === 403) {
