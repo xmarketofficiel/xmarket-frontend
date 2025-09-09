@@ -1,7 +1,7 @@
 export interface UserPrivacySettings {
   showSoldItems: boolean;
   showPurchases: boolean;
-  showPhone: boolean;
+  showPhone?: boolean;
 }
 
 export interface User {
@@ -29,7 +29,6 @@ export interface User {
   // Direct privacy fields from backend
   showSoldItems?: boolean;
   showPurchases?: boolean;
-  showPhone?: boolean;
 }
 
 export interface Item {
