@@ -247,17 +247,19 @@ export default function ProfilePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {userItems.slice(0, 4).map((item) => (
-                <ItemCard key={item.id} item={item} />
-              ))}
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {userItems.slice(0, 4).map((item) => (
+                  <ItemCard key={item.id} item={item} />
+                ))}
+              </div>
+              <button 
+                onClick={() => window.location.href = '/profile/my-items'}
+                className="w-full py-2 bg-[#006666] text-white rounded-lg font-medium hover:bg-[#005555] transition-colors"
+              >
+                My Items ({userItems.length})
+              </button>
             </div>
-          )}
-
-          {userItems.length > 4 && (
-            <button className="w-full mt-3 py-2 text-[#006666] font-medium hover:text-[#005555] transition-colors">
-              View all listings ({userItems.length})
-            </button>
           )}
         </section>
 

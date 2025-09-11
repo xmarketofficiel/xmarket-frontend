@@ -46,9 +46,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const checkCurrentUser = async () => {
     try {
-      const response = await api.auth.getCurrentUser();
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
+      const response = await Promise.race([
+        api.auth.getCurrentUser(),
+        timeoutPromise
+      ]);
       setUser(response.data);
     } catch (error: any) {
+      console.log('Auth check failed:', error?.message || error);
       // Check if it's a 401 (token expired) and we're not already on a public page
       if (error?.response?.status === 401 && !window.location.pathname.includes('/landing') && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
         handleAuthError();

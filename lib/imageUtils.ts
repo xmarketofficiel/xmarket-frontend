@@ -19,6 +19,11 @@ export const isValidUrl = (url: string): boolean => {
 export const getItemImageUrl = (item: Item): string => {
   const fallbackImage = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=";
 
+  // Safety check - return fallback if item is null/undefined
+  if (!item) {
+    return fallbackImage;
+  }
+
   // Check for photos array (new structure with Cloudinary URLs)
   if (item.photos && Array.isArray(item.photos) && item.photos.length > 0) {
     const photo = item.photos[0];

@@ -385,7 +385,7 @@ export const itemsApi = {
     }
   },
 
-  reportItem: async (itemId: string, reason: string): Promise<ApiResponse<void>> => {
+  reportItem: async (itemId: string, reason: string, description?: string): Promise<ApiResponse<void>> => {
     try {
       // Input validation and sanitization
       const sanitizedItemId = itemId?.toString()?.trim();
@@ -397,14 +397,24 @@ export const itemsApi = {
         throw new Error('Report reason is required');
       }
 
-      if (reason.trim().length > 1000) {
-        throw new Error('Report reason must be less than 1000 characters');
+      if (reason.trim().length > 500) {
+        throw new Error('Report reason must be less than 500 characters');
       }
 
-      // Use the proper report endpoint
-      const response = await apiClient.post(`/items/${sanitizedItemId}/report`, { 
+      if (description && description.trim().length > 1000) {
+        throw new Error('Report description must be less than 1000 characters');
+      }
+
+      // Send reason and description as separate fields
+      const requestBody: { reason: string; description?: string } = { 
         reason: reason.trim() 
-      });
+      };
+      
+      if (description && description.trim()) {
+        requestBody.description = description.trim();
+      }
+
+      const response = await apiClient.post(`/items/${sanitizedItemId}/report`, requestBody);
 
       return {
         data: undefined,

@@ -7,6 +7,7 @@ import { api } from '../lib/apiEndpoints';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import ImageUpload from './ImageUpload';
+import ConfirmedPurchaseInfoModal from './ConfirmedPurchaseInfoModal';
 
 interface EditItemFormProps {
   itemId: string;
@@ -33,6 +34,14 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
   const [item, setItem] = useState<any>(null);
   const [originalData, setOriginalData] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  
+  // Warning modal state
+  const [showPurchaseWarning, setShowPurchaseWarning] = useState(false);
+  const [warningData, setWarningData] = useState<{
+    field: 'price' | 'title' | 'quantity';
+    newValue: number | string;
+    confirmedBuyers: number;
+  } | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -228,7 +237,42 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
       if (Object.keys(updateData).length > 0 || formData.photos.length > 0) {
         // Update item data if there are changes
         if (Object.keys(updateData).length > 0) {
-          await api.items.updateItem(itemId, updateData);
+          const response = await api.items.updateItem(itemId, updateData);
+          
+          // Check for warning information in the response
+          if (response.data && typeof response.data === 'object' && 'hasConfirmedPurchases' in response.data) {
+            const result = response.data as any;
+            
+            if (result.hasConfirmedPurchases && result.warning) {
+              // Show warning modal instead of completing the update
+              let field: 'price' | 'title' | 'quantity';
+              let newValue: number | string;
+              
+              // Determine which field changed based on the update data
+              if ('price' in updateData) {
+                field = 'price';
+                newValue = updateData.price;
+              } else if ('title' in updateData) {
+                field = 'title';
+                newValue = updateData.title;
+              } else if ('quantity' in updateData) {
+                field = 'quantity';
+                newValue = updateData.quantity;
+              } else {
+                // Default to price if we can't determine
+                field = 'price';
+                newValue = parseFloat(formData.price);
+              }
+              
+              setWarningData({
+                field,
+                newValue,
+                confirmedBuyers: result.warning.confirmedBuyers
+              });
+              setShowPurchaseWarning(true);
+              return; // Don't proceed with success yet
+            }
+          }
         }
 
         // Upload new photos if any
@@ -245,6 +289,9 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
       console.error('Error updating item:', error);
       if (error.response?.status === 403) {
         addToast('You can only edit your own items', 'error');
+      } else if (error.response?.status === 400 && error.response?.data?.message) {
+        // For validation errors (like pending purchases), show the message
+        addToast(error.response.data.message, 'error');
       } else if (error.response?.data?.message) {
         addToast(error.response.data.message, 'error');
       } else {
@@ -547,6 +594,34 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
         {/* Bottom Spacing */}
         <div className="h-8"></div>
       </form>
+
+      {/* Confirmed Purchase Info Modal */}
+      {showPurchaseWarning && warningData && (
+        <ConfirmedPurchaseInfoModal
+          isOpen={showPurchaseWarning}
+          onClose={() => {
+            setShowPurchaseWarning(false);
+            setWarningData(null);
+          }}
+          onProceed={() => {
+            setShowPurchaseWarning(false);
+            setWarningData(null);
+            // You could implement a "force update" API endpoint here if needed
+            // For now, show informational message
+            addToast('Consider notifying your buyers about this change.', 'info');
+            router.push('/profile');
+          }}
+          itemTitle={item?.title || ''}
+          confirmedBuyersCount={warningData.confirmedBuyers}
+          changeType={warningData.field}
+          currentValue={
+            warningData.field === 'price' ? parseFloat(item?.price || '0') :
+            warningData.field === 'quantity' ? parseInt(item?.quantity || '1') :
+            item?.title || ''
+          }
+          newValue={warningData.newValue}
+        />
+      )}
     </div>
   );
 }
