@@ -30,8 +30,10 @@ export interface CreateItemData {
   title: string;
   description: string;
   price: number;
+  quantity?: number;
   category: string;
   condition: "New" | "Like New" | "Good" | "Fair";
+  anonymous?: boolean;
   // Note: photos uploaded separately via /items/:id/images
 }
 
@@ -697,6 +699,14 @@ export const usersApi = {
 
   updateProfile: (data: Partial<User>): Promise<ApiResponse<User>> =>
     apiClient.patch("/users/profile", data), // Backend uses PATCH
+
+  // Change Password
+  changePassword: (data: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Promise<ApiResponse<{ message: string }>> =>
+    apiClient.patch("/users/change-password", data),
 
   // Avatar Upload (Backend endpoint: POST /users/upload-avatar)
   uploadAvatar: (file: File): Promise<ApiResponse<User>> => {

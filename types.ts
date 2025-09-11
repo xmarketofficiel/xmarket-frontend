@@ -36,6 +36,7 @@ export interface Item {
   title: string;
   description: string;
   price: string | number;
+  quantity?: number;
   category: string | Category;
   photos?: string[];
   images?: any[];

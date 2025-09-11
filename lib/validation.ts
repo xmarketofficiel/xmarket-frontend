@@ -14,6 +14,21 @@ export const addItemSchema = z.object({
     .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Price must be a positive number'
     })
+    .refine(val => Number(val) <= 100000, {
+      message: 'Price cannot exceed 100,000 DH'
+    })
+    .transform(val => Number(val)),
+  quantity: z.string()
+    .min(1, 'Quantity is required')
+    .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
+      message: 'Quantity must be a positive number'
+    })
+    .refine(val => Number(val) <= 1000, {
+      message: 'Quantity cannot exceed 1000'
+    })
+    .refine(val => Number.isInteger(Number(val)), {
+      message: 'Quantity must be a whole number'
+    })
     .transform(val => Number(val)),
   category: z.string()
     .min(1, 'Category is required'),
@@ -39,6 +54,7 @@ export type AddItemFormData = {
   title: string;
   description: string;
   price: string; // Raw string input
+  quantity: string; // Raw string input
   category: string;
   condition: "New" | "Like New" | "Good" | "Fair";
   photos: File[];

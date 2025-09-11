@@ -174,7 +174,11 @@ export default function ProfilePage() {
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-1">
               <h2 className="text-xl font-bold text-gray-900">{user.fullName || 'Anonymous User'}</h2>
-              <button className="p-1 hover:bg-gray-100 rounded">
+              <button 
+                onClick={() => (window.location.href = "/settings/profile")}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                title="Edit Profile"
+              >
                 <Edit3 size={16} className="text-gray-500" />
               </button>
             </div>

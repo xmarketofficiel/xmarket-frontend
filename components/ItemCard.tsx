@@ -105,48 +105,80 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
 
           {/* Action Buttons */}
           <div className="absolute top-2 right-2 flex items-center gap-1">
-            {/* Favorite Button - Hidden for user's own items */}
-            {!isOwnItem && (
-              <button
-                onClick={handleFavoriteClick}
-                className={`p-1.5 rounded-full transition-colors ${
-                  isItemFavorite 
-                    ? 'bg-red-500 text-white' 
-                    : 'bg-black/70 text-white hover:bg-red-500'
-                }`}
-                aria-label={isItemFavorite ? "Remove from favorites" : "Add to favorites"}
-              >
-                <Heart 
-                  size={16} 
-                  fill={isItemFavorite ? 'currentColor' : 'none'} 
-                />
-              </button>
-            )}
-
-            {/* More Actions Menu - Hidden for user's own items */}
-            {!isOwnItem && (
+            {/* For user's own items - Show edit button */}
+            {isOwnItem ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={handleMoreClick}
-                  className="p-1.5 rounded-full bg-black/70 text-white hover:bg-gray-600 transition-colors"
-                  aria-label="More options"
+                  className="p-1.5 rounded-full bg-black/70 text-white hover:bg-blue-600 transition-colors"
+                  aria-label="Edit item"
                 >
                   <MoreVertical size={16} />
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu for own items */}
                 {showDropdown && (
                   <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
                     <button
-                      onClick={handleReportClick}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowDropdown(false);
+                        window.location.href = `/item/${item.id}/edit`;
+                      }}
                       className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     >
-                      <Flag size={14} className="text-red-500" />
-                      Report Item
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Edit Item
                     </button>
                   </div>
                 )}
               </div>
+            ) : (
+              <>
+                {/* Favorite Button - For other users' items */}
+                <button
+                  onClick={handleFavoriteClick}
+                  className={`p-1.5 rounded-full transition-colors ${
+                    isItemFavorite 
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-black/70 text-white hover:bg-red-500'
+                  }`}
+                  aria-label={isItemFavorite ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <Heart 
+                    size={16} 
+                    fill={isItemFavorite ? 'currentColor' : 'none'} 
+                  />
+                </button>
+
+                {/* More Actions Menu - For other users' items */}
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={handleMoreClick}
+                    className="p-1.5 rounded-full bg-black/70 text-white hover:bg-gray-600 transition-colors"
+                    aria-label="More options"
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showDropdown && (
+                    <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                      <button
+                        onClick={handleReportClick}
+                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Flag size={14} className="text-red-500" />
+                        Report Item
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
 
