@@ -1,6 +1,11 @@
+'use client';
+
+import { useState } from 'react';
 import PresignedImageUpload from '../../components/PresignedImageUpload';
 
 export default function PresignedUploadPage() {
+  const [images, setImages] = useState<any[]>([]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
@@ -25,8 +30,8 @@ export default function PresignedUploadPage() {
           </div>
 
           <PresignedImageUpload
-            images={[]}
-            onImagesChange={() => {}}
+            images={images}
+            onImagesChange={(newImages) => setImages(newImages)}
             onUploadComplete={(results) => {
               console.log('Upload completed:', results);
             }}
