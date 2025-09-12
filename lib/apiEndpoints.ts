@@ -226,6 +226,111 @@ export const itemsApi = {
     return apiClient.uploadFile(`/items/${itemId}/images`, formData);
   },
 
+  // Optimized Image Upload (Backend endpoint: POST /uploads/upload-optimized)
+  uploadOptimizedImage: (
+    image: File
+  ): Promise<ApiResponse<{
+    cloudinaryUrl: string;
+    spacesUrls: {
+      thumbnail: string;
+      small: string;
+      medium: string;
+      large: string;
+    };
+    metadata: {
+      originalSize: number;
+      optimizedSizes: {
+        thumbnail: number;
+        small: number;
+        medium: number;
+        large: number;
+      };
+      spaceSaved: number;
+      spaceSavedPercentage: number;
+    };
+  }>> => {
+    const formData = new FormData();
+    formData.append("file", image);
+    return apiClient.uploadFile(`/uploads/upload-optimized`, formData);
+  },
+
+  // Generate Presigned URL for Direct Upload (Backend endpoint: POST /uploads/generate-presigned-url)
+  generatePresignedUrl: (
+    filename: string,
+    contentType: string,
+    category: 'avatar' | 'item' | 'service',
+    itemId?: number
+  ): Promise<ApiResponse<{
+    presignedUrl: string;
+    publicUrl: string;
+    key: string;
+    expiresIn: number;
+    uploadInstructions: {
+      method: string;
+      headers: { [key: string]: string };
+    };
+    organization: {
+      folder: string;
+      structure: string;
+    };
+  }>> => 
+    apiClient.post(`/uploads/generate-presigned-url`, {
+      filename,
+      contentType,
+      category,
+      itemId
+    }),
+
+  // Generate Batch Presigned URLs (Backend endpoint: POST /uploads/generate-batch-presigned-urls)
+  generateBatchPresignedUrls: (
+    filenames: string[],
+    contentType: string,
+    itemId: number
+  ): Promise<ApiResponse<{
+    count: number;
+    urls: Array<{
+      presignedUrl: string;
+      publicUrl: string;
+      key: string;
+    }>;
+    expiresIn: number;
+    uploadInstructions: {
+      method: string;
+      note: string;
+    };
+    organization: {
+      folder: string;
+      structure: string;
+    };
+  }>> =>
+    apiClient.post(`/uploads/generate-batch-presigned-urls`, {
+      filenames,
+      contentType,
+      itemId
+    }),
+
+  // Direct Upload to Presigned URL
+  uploadToPresignedUrl: async (
+    presignedUrl: string,
+    file: File,
+    contentType: string
+  ): Promise<Response> => {
+    return fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: file
+    });
+  },
+
+  // Get Best Image URL for Size (Backend endpoint: GET /uploads/best-image-url-size)
+  getBestImageUrl: (
+    imageId: string,
+    preferredSize: 'thumbnail' | 'small' | 'medium' | 'large'
+  ): Promise<ApiResponse<{ url: string; size: string }>> =>
+    apiClient.get(`/uploads/best-image-url-size`, { imageId, preferredSize }),
+
   // Delete Image (Backend endpoint: DELETE /images/:imageId)
   deleteItemImage: (
     imageId: string
