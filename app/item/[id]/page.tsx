@@ -2,7 +2,7 @@
 
 import { useParams, notFound } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import ItemDetail from '../../../components/ItemDetail';
+import { OptimizedItemDetail, LoadingSpinner } from './components';
 import { api } from '../../../lib/apiEndpoints';
 import { Item } from '../../../types';
 
@@ -36,11 +36,12 @@ export default function ItemDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-[#006666] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading item details...</p>
-        </div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <LoadingSpinner 
+          size="lg" 
+          text="Loading item details..." 
+          className="p-8"
+        />
       </div>
     );
   }
@@ -49,5 +50,5 @@ export default function ItemDetailPage() {
     notFound();
   }
 
-  return <ItemDetail item={item} />;
+  return <OptimizedItemDetail item={item} />;
 }
