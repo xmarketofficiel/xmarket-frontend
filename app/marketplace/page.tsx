@@ -86,7 +86,7 @@ export default function MarketplacePage() {
     } catch (error) {
       updateState({ pendingSalesCount: 0 });
     }
-  }, [user, updateState]);
+  }, [user]); // Only depend on user, not updateState
 
   /**
    * Load categories
@@ -100,7 +100,7 @@ export default function MarketplacePage() {
       console.error('Failed to load categories:', error);
       setCategories(Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all'));
     }
-  }, []);
+  }, []); // Remove all dependencies to prevent loops
 
   /**
    * Build search parameters for API call
@@ -145,7 +145,15 @@ export default function MarketplacePage() {
     }
 
     return params;
-  }, [state]);
+  }, [
+    state.currentPage,
+    state.itemsPerPage,
+    state.searchQuery,
+    state.selectedCategory,
+    state.sortBy,
+    state.priceRange,
+    state.conditionFilter
+  ]); // Specific dependencies instead of entire state
 
   /**
    * Load items with current filters
@@ -189,7 +197,7 @@ export default function MarketplacePage() {
     } finally {
       updateState({ loading: false });
     }
-  }, [buildSearchParams, updateState, state.items]);
+  }, [buildSearchParams]); // Only depend on buildSearchParams, not updateState or state.items
 
   /**
    * Handle search query change
@@ -280,7 +288,14 @@ export default function MarketplacePage() {
     if (savedViewMode && ['grid', 'list'].includes(savedViewMode)) {
       updateState({ viewMode: savedViewMode });
     }
-  }, [loadCategories, loadPendingSalesCount, updateState]);
+  }, []); // Empty dependency array - only run on mount
+
+  // Load initial items once categories are loaded
+  useEffect(() => {
+    if (categories.length > 0) {
+      loadItems(1, true);
+    }
+  }, [categories]); // Load items when categories are available
 
   // Load items when filters change
   useEffect(() => {
@@ -294,9 +309,8 @@ export default function MarketplacePage() {
     state.selectedCategory, 
     state.sortBy, 
     state.priceRange, 
-    state.conditionFilter,
-    loadItems
-  ]);
+    state.conditionFilter
+  ]); // Removed loadItems from dependencies
 
   // Pull to refresh
   usePullToRefresh({

@@ -7,7 +7,7 @@ export { default as SellerCard } from './SellerCard';
 export { default as ItemActions } from './ItemActions';
 export { default as ShareModal } from './ShareModal';
 export { default as LoadingSpinner } from './LoadingSpinner';
-export { default as OptimizedItemDetail } from './OptimizedItemDetail';
+export { default as OptimizedItemDetail } from './ItemDetail';
 
 // Re-export types and constants for convenience
 export * from '../types';
