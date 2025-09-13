@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '../types';
 import { api } from '../lib/apiEndpoints';
@@ -23,11 +23,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   // Handle authentication errors (token expiration)
-  const handleAuthError = () => {
+  const handleAuthError = useCallback(() => {
     setUser(null);
     // No need to remove localStorage tokens since we're using HTTP-only cookies
     router.push('/login'); // Redirect to login, not landing
-  };
+  }, [router]);
 
   // Check for existing session on mount
   useEffect(() => {
@@ -57,7 +57,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ]);
       setUser(response.data);
     } catch (error: any) {
-      console.log('Auth check failed:', error?.message || error);
       // Check if it's a 401 (token expired) and we're not already on a public page
       if (error?.response?.status === 401 && !window.location.pathname.includes('/landing') && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
         handleAuthError();
@@ -71,7 +70,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await api.auth.login({ email, password });
       setUser(response.data.user);
@@ -83,13 +82,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // No need to remove localStorage tokens since we're using HTTP-only cookies
       throw error; // Let the component handle the error
     }
-  };
+  }, [router]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await api.auth.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      // Logout errors are non-critical, continue with client-side cleanup
     } finally {
       // Clear user state
       setUser(null);
@@ -97,13 +96,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Redirect to login page
       router.push('/login');
     }
-  };
+  }, [router]);
 
-  const updateUser = (updates: Partial<User>) => {
+  const updateUser = useCallback((updates: Partial<User>) => {
     setUser((prevUser: User | null) => prevUser ? { ...prevUser, ...updates } : null);
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const response = await api.auth.getCurrentUser();
       setUser(response.data);
@@ -111,12 +110,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (error?.response?.status === 401) {
         handleAuthError();
       } else {
+        // For other errors, just clear the user state
         setUser(null);
       }
     }
-  };
-
-  return (
+  }, [handleAuthError]);  return (
     <UserContext.Provider value={{ 
       user, 
       loading, 

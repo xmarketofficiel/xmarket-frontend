@@ -8,7 +8,7 @@ import path from 'path';
 
 test.describe('Add Item Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/add');
+    await page.goto('/add-item');
     await page.waitForLoadState('networkidle');
   });
 

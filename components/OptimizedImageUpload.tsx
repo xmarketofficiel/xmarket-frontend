@@ -229,7 +229,6 @@ export default function OptimizedImageUpload({
       }
 
     } catch (error: any) {
-      console.error('Upload error:', error);
       setUploadStatuses(prev => new Map(prev).set(index, { 
         status: 'error', 
         error: error.message 

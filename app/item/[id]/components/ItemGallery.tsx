@@ -135,8 +135,7 @@ export default function ItemGallery({
           sizes={ITEM_DETAIL_CONFIG.IMAGE_SIZES}
           quality={ITEM_DETAIL_CONFIG.IMAGE_QUALITY}
           onError={(e) => {
-            console.warn(`Failed to load image: ${currentImage}`);
-            // Optionally set a fallback image
+            // Silently handle image load failures
           }}
         />
       </motion.div>

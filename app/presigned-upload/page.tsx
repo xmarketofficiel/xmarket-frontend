@@ -5,6 +5,7 @@ import PresignedImageUpload from '../../components/PresignedImageUpload';
 
 export default function PresignedUploadPage() {
   const [images, setImages] = useState<any[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -33,7 +34,10 @@ export default function PresignedUploadPage() {
             images={images}
             onImagesChange={(newImages) => setImages(newImages)}
             onUploadComplete={(results) => {
-              console.log('Upload completed:', results);
+              if (results) {
+                // Upload completed successfully
+                setUploadStatus('Upload completed successfully!');
+              }
             }}
             maxImages={6}
             maxFileSize={5}

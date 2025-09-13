@@ -102,8 +102,6 @@ export default function ItemDetail({ item }: ItemDetailProps) {
       // Open WhatsApp automatically after expressing interest
       openWhatsApp();
     } catch (error: any) {
-      console.log('Express interest error:', error); // Debug log
-      
       // Check for duplicate interest error
       if (error.name === 'DuplicateInterestError' || 
           error.message?.includes('already shown interest') ||

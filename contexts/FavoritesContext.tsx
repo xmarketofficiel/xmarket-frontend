@@ -39,7 +39,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       try {
         setFavorites(JSON.parse(savedFavorites));
       } catch (error) {
-        console.error('Error loading favorites from localStorage:', error);
+        // Reset to empty array if parsing fails
         setFavorites([]);
       }
     }
@@ -54,7 +54,6 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const favoriteIds = response.data.items.map(item => String(item.id));
       setFavorites(favoriteIds);
     } catch (error) {
-      console.error('Failed to load favorites from backend:', error);
       // Fallback to localStorage
       loadFavoritesFromLocalStorage();
     } finally {
@@ -80,8 +79,6 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           addToast('Added to favorites!', 'success');
         }
       } catch (error: any) {
-        console.error('Failed to add favorite via API:', error);
-        
         // Handle specific error cases
         if (error?.message?.includes('Cannot favorite your own item')) {
           addToast('You cannot favorite your own items', 'error');
@@ -117,8 +114,6 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           addToast('Removed from favorites', 'info');
         }
       } catch (error: any) {
-        console.error('Failed to remove favorite via API:', error);
-        
         // Handle specific error cases
         if (error?.message?.includes('Item not found')) {
           // Item no longer exists, remove from local favorites anyway

@@ -42,11 +42,7 @@ export default function Navbar() {
         }, 0);
         setUnreadCount(totalUnread);
       } catch (error: any) {
-        // Only log errors if they're not authentication related and user is actually authenticated
-        if (error?.status !== 401 && user) {
-          console.error('Failed to fetch navbar data:', error);
-        }
-        // Always reset counts on error to avoid showing stale data
+        // Reset counts on error to avoid showing stale data
         setUnreadCount(0);
       }
     };

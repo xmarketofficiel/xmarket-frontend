@@ -142,7 +142,6 @@ export default function PresignedImageUpload({
       return uploadResult;
 
     } catch (error: any) {
-      console.error('Presigned upload error:', error);
       setUploadStatuses(prev => new Map(prev).set(index, { 
         status: 'error', 
         error: error.message 
@@ -231,7 +230,6 @@ export default function PresignedImageUpload({
       return uploadResults;
 
     } catch (error: any) {
-      console.error('Batch upload error:', error);
       addToast(`Batch upload failed: ${error.message}`, 'error');
       return [];
     }

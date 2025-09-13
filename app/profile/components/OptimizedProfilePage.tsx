@@ -108,9 +108,9 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
     addToast("Messaging feature coming soon!", "info");
   };
 
-  const handleQuickAction = (actionId: string) => {
-    console.log("Quick action:", actionId);
-    // Actions are handled by the component's navigation
+  const handleQuickAction = async (actionId: string) => {
+    // TODO: Implement quick actions
+    addToast("Quick actions coming soon!", "info");
   };
 
   const handleItemClick = (item: ProfileItem) => {
@@ -135,7 +135,8 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
           await unsaveItem(item.id);
           break;
         default:
-          console.log("Unknown action:", action);
+          // Unknown action - no operation
+          break;
       }
     } catch (error) {
       console.error("Action failed:", error);

@@ -108,7 +108,7 @@ export const PROFILE_CONSTANTS = {
       label: 'Add New Item',
       description: 'List something for sale',
       icon: 'Plus',
-      href: '/add',
+      href: '/add-item',
       color: 'from-[#009F9C] to-[#007A77]',
       hoverColor: 'hover:from-[#007A77] hover:to-[#006B68]'
     },
@@ -145,7 +145,7 @@ export const PROFILE_CONSTANTS = {
       title: 'No items listed yet',
       description: 'Start selling by adding your first item',
       actionText: 'Add Your First Item',
-      actionHref: '/add',
+      actionHref: '/add-item',
       icon: 'Package'
     },
     MY_INTERESTS: {

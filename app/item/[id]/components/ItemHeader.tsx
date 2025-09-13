@@ -108,7 +108,7 @@ export default function ItemHeader({
           <motion.button
             onClick={() => {
               // Handle more options for own items (edit, delete, etc.)
-              console.log('More options for own item');
+              // TODO: Implement edit/delete functionality
             }}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="More options"

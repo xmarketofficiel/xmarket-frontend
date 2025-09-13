@@ -24,7 +24,6 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
 
   // Safety check - return null if item is invalid
   if (!item || !item.id) {
-    console.warn('UserItemCard: Invalid item passed:', item);
     return null;
   }
 

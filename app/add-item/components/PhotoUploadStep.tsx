@@ -127,7 +127,6 @@ export default function PhotoUploadStep({
             {photos.map((photo, index) => {
               // Safety check: ensure photo is a valid File object
               if (!photo || !(photo instanceof File)) {
-                console.warn(`Invalid photo at index ${index}:`, photo);
                 return null;
               }
               

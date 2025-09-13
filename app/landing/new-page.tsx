@@ -244,7 +244,7 @@ export default function LandingPage() {
         }
       } catch (error) {
         // Network error or server down, allow landing page to show
-        console.log('Auth check failed:', error);
+        // Silently handle auth check failure
       }
     };
 
