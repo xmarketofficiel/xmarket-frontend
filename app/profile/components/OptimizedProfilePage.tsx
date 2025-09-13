@@ -9,6 +9,7 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileStats from "./ProfileStats";
 import ProfileTabs from "./ProfileTabs";
 import ProfileContent from "./ProfileContent";
+import { ExtendedUser } from "./types";
 import ProfileQuickActions from "./ProfileQuickActions";
 import { useProfile } from "./useProfile";
 import { PROFILE_CONSTANTS } from "./constants";
@@ -151,7 +152,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
         <div className="space-y-8">
           {/* Profile Header */}
           <ProfileHeader
-            user={profileData?.user || currentUser}
+            user={profileData?.user || currentUser as ExtendedUser}
             isOwner={isOwner}
             onEditProfile={handleEditProfile}
             onMessageUser={handleMessageUser}

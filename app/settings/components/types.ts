@@ -1,5 +1,8 @@
 import { User } from '../../../types';
-import { SETTINGS_CONSTANTS, SettingsSection, NotificationType, PrivacyLevel, Theme, Language, Currency } from './constants';
+import { SETTINGS_CONSTANTS, SettingsSection, NotificationType, PrivacyLevel, Theme, Language, Currency, QuickAction } from './constants';
+
+// Re-export the types from constants
+export type { SettingsSection, NotificationType, PrivacyLevel, Theme, Language, Currency, QuickAction };
 
 // Extended user settings
 export interface UserSettings extends User {

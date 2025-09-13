@@ -6,6 +6,7 @@ import { useToast } from "../../../contexts/ToastContext";
 import { api } from "../../../lib/apiEndpoints";
 import { PROFILE_CONSTANTS } from "./constants";
 import type {
+  ExtendedUser,
   ProfileData,
   ProfileTab,
   ProfileItem,
@@ -90,23 +91,31 @@ export const useProfile = (userId?: string): UseProfileReturn => {
         const statsData = userResponse.data.stats || {};
 
         const newProfileData: ProfileData = {
-          user: userData,
+          user: {
+            ...userData,
+            averageRating: typeof userData.averageRating === 'string' 
+              ? parseFloat(userData.averageRating) 
+              : userData.averageRating || 0,
+          } as ExtendedUser,
           stats: {
-            activeListingsCount: statsData.activeListingsCount || 0,
-            soldItemsCount: statsData.soldItemsCount || statsData.totalSold || 0,
-            purchaseHistoryCount: statsData.purchaseHistoryCount || statsData.totalBought || 0,
-            savedItemsCount: statsData.savedItemsCount || 0,
-            pendingSalesCount: statsData.pendingSalesCount || 0,
-            viewedItemsCount: statsData.viewedItemsCount || 0,
-            notificationsCount: statsData.notificationsCount || 0,
-            totalEarnings: statsData.totalEarnings || statsData.totalRevenue || 0,
+            activeListingsCount: (statsData as any).activeListingsCount || 0,
+            soldItemsCount:
+              (statsData as any).soldItemsCount || statsData.totalSold || 0,
+            purchaseHistoryCount:
+              (statsData as any).purchaseHistoryCount || statsData.totalBought || 0,
+            savedItemsCount: (statsData as any).savedItemsCount || 0,
+            pendingSalesCount: (statsData as any).pendingSalesCount || 0,
+            viewedItemsCount: (statsData as any).viewedItemsCount || 0,
+            notificationsCount: (statsData as any).notificationsCount || 0,
+            totalEarnings:
+              (statsData as any).totalEarnings || statsData.totalRevenue || 0,
             totalSpent: statsData.totalSpent || 0,
-            averageRating: statsData.averageRating || 0,
-            responseTime: statsData.responseTime || 0,
-            successfulTransactions: statsData.successfulTransactions || 0,
-            profileViews: statsData.profileViews || 0,
-            totalViews: statsData.totalViews || 0,
-            conversionRate: statsData.conversionRate || 0,
+            averageRating: (statsData as any).averageRating || 0,
+            responseTime: (statsData as any).responseTime || 0,
+            successfulTransactions: (statsData as any).successfulTransactions || 0,
+            profileViews: (statsData as any).profileViews || 0,
+            totalViews: (statsData as any).totalViews || 0,
+            conversionRate: (statsData as any).conversionRate || 0,
           },
           recentActivity: [],
           notifications: [],
@@ -132,7 +141,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       setLoading((prev) => ({ ...prev, items: true }));
 
       try {
-        let response;
+        let response: any;
         const params = {
           page,
           limit: PROFILE_CONSTANTS.PAGINATION.ITEMS_PER_PAGE,
@@ -140,7 +149,10 @@ export const useProfile = (userId?: string): UseProfileReturn => {
 
         switch (tab) {
           case "my-items":
-            response = await api.users.getUserItems(String(targetUserId), params);
+            response = await api.users.getUserItems(
+              String(targetUserId),
+              params
+            );
             break;
           case "my-interests":
             // Use getFavorites instead of getSavedItems
@@ -151,15 +163,24 @@ export const useProfile = (userId?: string): UseProfileReturn => {
             break;
           case "purchase-history":
             // Mock response for purchase history (not implemented yet)
-            response = { data: { items: [], total: 0, hasMore: false }, status: 200 };
+            response = {
+              data: { items: [], total: 0, hasMore: false },
+              status: 200,
+            };
             break;
           case "sold-items":
-            // Mock response for sold items (not implemented yet) 
-            response = { data: { items: [], total: 0, hasMore: false }, status: 200 };
+            // Mock response for sold items (not implemented yet)
+            response = {
+              data: { items: [], total: 0, hasMore: false },
+              status: 200,
+            };
             break;
           case "viewed-items":
             // Mock response for viewed items (not implemented yet)
-            response = { data: { items: [], total: 0, hasMore: false }, status: 200 };
+            response = {
+              data: { items: [], total: 0, hasMore: false },
+              status: 200,
+            };
             break;
           case "notifications":
             response = await api.notifications.getNotifications(params);
@@ -176,7 +197,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
               page === 1
                 ? response.data.items || response.data.notifications || []
                 : [
-                    ...(prev.items[tab] || []),
+                    ...(prev.items[tab as keyof typeof prev.items] || []),
                     ...(response.data.items ||
                       response.data.notifications ||
                       []),
@@ -233,7 +254,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       trackAnalytics("profile_tab_changed", { tab });
 
       // Load items for new tab if not already loaded
-      if (profileData && !profileData.items[tab]) {
+      if (profileData && !profileData.items[tab as keyof typeof profileData.items]) {
         loadTabItems(tab);
       }
     },
@@ -243,9 +264,9 @@ export const useProfile = (userId?: string): UseProfileReturn => {
   // Load more items for current tab
   const loadMoreItems = useCallback(
     async (tab: ProfileTab) => {
-      if (!profileData?.pagination[tab]) return;
+      if (!profileData?.pagination[tab as keyof typeof profileData.pagination]) return;
 
-      const pagination = profileData.pagination[tab];
+      const pagination = profileData.pagination[tab as keyof typeof profileData.pagination];
       if (!pagination?.hasMore) return;
 
       await loadTabItems(tab, pagination.currentPage + 1);
@@ -310,11 +331,11 @@ export const useProfile = (userId?: string): UseProfileReturn => {
           if (!prev) return prev;
 
           const updatedItems = { ...prev.items };
-          Object.keys(updatedItems).forEach((tab) => {
-            if (updatedItems[tab as ProfileTab]) {
-              updatedItems[tab as ProfileTab] = updatedItems[
-                tab as ProfileTab
-              ]!.filter((item) => item.id !== itemId);
+          Object.keys(updatedItems).forEach((tabKey) => {
+            const tab = tabKey as ProfileTab;
+            const tabItems = updatedItems[tab as keyof typeof updatedItems];
+            if (tabItems) {
+              (updatedItems as any)[tab] = tabItems.filter((item: any) => item.id !== itemId);
             }
           });
 
@@ -438,7 +459,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
 
   // Load items for active tab when it changes
   useEffect(() => {
-    if (profileData && activeTab && !profileData.items[activeTab]) {
+    if (profileData && activeTab && !profileData.items[activeTab as keyof typeof profileData.items]) {
       loadTabItems(activeTab);
     }
   }, [profileData, activeTab, loadTabItems]);

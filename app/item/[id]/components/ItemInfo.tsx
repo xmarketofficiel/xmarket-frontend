@@ -6,7 +6,7 @@ import { CONDITION_CONFIG } from '../constants';
 
 interface ItemInfoProps {
   item: {
-    id: string;
+    id: string | number;
     title: string;
     description: string;
     price: number | string;

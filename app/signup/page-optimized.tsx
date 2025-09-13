@@ -266,9 +266,8 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await api.auth.completeSignup({
+      const response = await api.auth.completeRegistration({
         email: state.formData.email,
-        otp: state.formData.otp,
         fullName,
         whatsappNumber,
         password
@@ -324,11 +323,10 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await api.auth.requestAccess({
+      const response = await api.joinRequests.create({
         fullName,
         email,
-        whatsappNumber,
-        reason
+        whatsappNumber
       });
 
       updateState({

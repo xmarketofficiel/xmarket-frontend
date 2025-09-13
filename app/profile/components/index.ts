@@ -17,7 +17,7 @@ export type {
   ProfileItem,
   ProfileActivity,
   ProfileNotification,
-  ProfileStats,
+  ProfileStats as ProfileStatsType,
   ProfileData,
   ProfileTab,
   ProfileHeaderProps,

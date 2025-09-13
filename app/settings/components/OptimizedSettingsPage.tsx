@@ -3,11 +3,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useUser } from '../../contexts/UserContext';
-import { useToast } from '../../contexts/ToastContext';
-import SettingsOverview from './components/SettingsOverview';
-import { SETTINGS_CONSTANTS } from './components/constants';
-import type { SettingsSection, UserSettings } from './components/types';
+import { useUser } from '../../../contexts/UserContext';
+import { useToast } from '../../../contexts/ToastContext';
+import SettingsOverview from './SettingsOverview';
+import { SETTINGS_CONSTANTS } from './constants';
+import type { SettingsSection, UserSettings } from './types';
 
 const OptimizedSettingsPage: React.FC = () => {
   const router = useRouter();

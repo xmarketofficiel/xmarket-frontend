@@ -124,22 +124,29 @@ export default function PhotoUploadStep({
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-2 gap-4"
           >
-            {photos.map((photo, index) => (
-              <motion.div
-                key={`${photo.name}-${index}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden"
-              >
-                <Image
-                  src={URL.createObjectURL(photo)}
-                  alt={`Preview ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
+            {photos.map((photo, index) => {
+              // Safety check: ensure photo is a valid File object
+              if (!photo || !(photo instanceof File)) {
+                console.warn(`Invalid photo at index ${index}:`, photo);
+                return null;
+              }
+              
+              return (
+                <motion.div
+                  key={`${photo.name}-${index}`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden"
+                >
+                  <Image
+                    src={URL.createObjectURL(photo)}
+                    alt={`Preview ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
                 
                 {/* Primary Badge */}
                 {index === 0 && (
@@ -164,11 +171,10 @@ export default function PhotoUploadStep({
                   {index + 1}
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </motion.div>
-        )}
-
-        {/* Help Text */}
+        )}        {/* Help Text */}
         <div className="text-sm space-y-2">
           <p className="text-gray-600">
             📸 <strong>Photo Tips:</strong>

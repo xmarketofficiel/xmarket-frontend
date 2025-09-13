@@ -158,7 +158,9 @@ export const PROFILE_CONSTANTS = {
     PENDING_SALES: {
       title: 'No pending sales',
       description: 'Sales will appear here when buyers show interest',
-      icon: 'Clock'
+      icon: 'Clock',
+      actionText: undefined,
+      actionHref: undefined
     },
     PURCHASE_HISTORY: {
       title: 'No purchases yet',
@@ -170,7 +172,9 @@ export const PROFILE_CONSTANTS = {
     SOLD_ITEMS: {
       title: 'No items sold yet',
       description: 'Keep your listings active to make sales',
-      icon: 'CheckCircle'
+      icon: 'CheckCircle',
+      actionText: undefined,
+      actionHref: undefined
     },
     VIEWED_ITEMS: {
       title: 'No recently viewed items',
@@ -182,7 +186,9 @@ export const PROFILE_CONSTANTS = {
     NOTIFICATIONS: {
       title: 'No notifications',
       description: 'You\'re all caught up!',
-      icon: 'Bell'
+      icon: 'Bell',
+      actionText: undefined,
+      actionHref: undefined
     }
   },
 

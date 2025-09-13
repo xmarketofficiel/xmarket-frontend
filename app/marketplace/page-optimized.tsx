@@ -94,7 +94,7 @@ export default function MarketplacePage() {
   const loadCategories = useCallback(async () => {
     try {
       const response = await api.categories.getCategories();
-      const categoryList = response.data?.categories || [];
+      const categoryList = response.data || [];
       setCategories(categoryList.map((cat: any) => cat.name || cat));
     } catch (error) {
       console.error('Failed to load categories:', error);
@@ -301,8 +301,7 @@ export default function MarketplacePage() {
   // Pull to refresh
   usePullToRefresh({
     onRefresh: handleRefresh,
-    threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD,
-    enabled: true
+    threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD
   });
 
   // Memoized computed values

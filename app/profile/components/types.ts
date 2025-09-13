@@ -1,6 +1,9 @@
 import { User } from '../../../types';
 import { PROFILE_CONSTANTS, ProfileTab, ActivityType, NotificationType } from './constants';
 
+// Re-export the types from constants
+export type { ProfileTab, ActivityType, NotificationType };
+
 // User profile with extended stats
 export interface ExtendedUser extends User {
   activeListingsCount?: number;
@@ -19,6 +22,10 @@ export interface ExtendedUser extends User {
   verificationStatus?: 'verified' | 'pending' | 'unverified';
   preferredCategories?: string[];
   activityScore?: number;
+  // Additional UI properties
+  coverImage?: string;
+  location?: string;
+  bio?: string;
   privacy?: {
     showSoldItems: boolean;
     showPurchases: boolean;

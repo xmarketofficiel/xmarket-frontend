@@ -237,7 +237,7 @@ export default function OptimizedAddItemForm({
                   data={state.data}
                   onChange={actions.updateField}
                   errors={state.validation.errors}
-                  categories={categories}
+                  categories={categories || []}
                   isSubmitting={state.isSubmitting}
                   onSubmit={handleSubmit}
                   onBack={actions.previousStep}

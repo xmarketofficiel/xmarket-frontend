@@ -118,7 +118,7 @@ export function useAddItemForm({
           rule.required &&
           (!value || (Array.isArray(value) && value.length === 0))
         ) {
-          return VALIDATION_MESSAGES[field]?.required || `${field} is required`;
+          return (VALIDATION_MESSAGES[field] as any)?.required || `${field} is required`;
         }
 
         if (
@@ -127,7 +127,7 @@ export function useAddItemForm({
           value.length < rule.minLength
         ) {
           return (
-            VALIDATION_MESSAGES[field]?.minLength || `${field} is too short`
+            (VALIDATION_MESSAGES[field] as any)?.minLength || `${field} is too short`
           );
         }
 
@@ -137,21 +137,21 @@ export function useAddItemForm({
           value.length > rule.maxLength
         ) {
           return (
-            VALIDATION_MESSAGES[field]?.maxLength || `${field} is too long`
+            (VALIDATION_MESSAGES[field] as any)?.maxLength || `${field} is too long`
           );
         }
 
         if (rule.min && typeof value === "string") {
           const numValue = parseFloat(value);
           if (!isNaN(numValue) && numValue < rule.min) {
-            return VALIDATION_MESSAGES[field]?.min || `${field} is too small`;
+            return (VALIDATION_MESSAGES[field] as any)?.min || `${field} is too small`;
           }
         }
 
         if (rule.max && typeof value === "string") {
           const numValue = parseFloat(value);
           if (!isNaN(numValue) && numValue > rule.max) {
-            return VALIDATION_MESSAGES[field]?.max || `${field} is too large`;
+            return (VALIDATION_MESSAGES[field] as any)?.max || `${field} is too large`;
           }
         }
 

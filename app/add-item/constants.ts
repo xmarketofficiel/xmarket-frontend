@@ -23,7 +23,7 @@ export const ADD_ITEM_CONFIG = {
   
   // Form defaults
   DEFAULT_QUANTITY: '1',
-  DEFAULT_CONDITION: 'Good',
+  DEFAULT_CONDITION: 'Good' as const,
   
   // Debounce settings
   VALIDATION_DEBOUNCE_MS: 300,
@@ -147,12 +147,17 @@ export const VALIDATION_MESSAGES = {
   category: {
     required: 'Please select a category'
   },
+  condition: {
+    required: 'Please select the item condition'
+  },
   photos: {
     required: 'At least one photo is required',
     maxCount: `You can upload up to ${ADD_ITEM_CONFIG.MAX_IMAGES} photos`,
     maxSize: `Each photo must be smaller than ${ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB`,
     invalidFormat: `Supported formats: ${ADD_ITEM_CONFIG.SUPPORTED_FORMATS.join(', ')}`
-  }
+  },
+  showIdentity: {},
+  allowMessages: {}
 };
 
 // Success messages

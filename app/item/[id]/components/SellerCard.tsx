@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, MessageCircle, User, Star, Clock } from 'lucide-react';
 
 interface SellerInfo {
-  id?: string;
+  id?: string | number;
   name?: string;
   fullName?: string;
   program?: string;

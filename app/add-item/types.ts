@@ -2,6 +2,9 @@
 
 import { ReactNode } from 'react';
 
+// Valid condition types that match the backend
+export type ItemCondition = "New" | "Like New" | "Good" | "Fair";
+
 // Core form data types
 export interface AddItemFormData {
   title: string;
@@ -9,7 +12,7 @@ export interface AddItemFormData {
   price: string;
   quantity: string;
   category: string;
-  condition: string;
+  condition: ItemCondition;
   photos: File[];
   showIdentity: boolean;
   allowMessages?: boolean;
@@ -21,7 +24,7 @@ export interface AddItemApiData {
   price: number;
   quantity: number;
   category: string;
-  condition: string;
+  condition: ItemCondition;
   anonymous: boolean;
 }
 
@@ -151,7 +154,7 @@ export interface ToggleProps extends FormFieldProps {
 export interface CategoryOption {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
   description?: string;
   subcategories?: string[];
 }
