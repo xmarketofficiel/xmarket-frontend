@@ -1,6 +1,5 @@
 'use client';
 
-import { getSafeImageUrl } from '../../../utils/imageUtils';
 import { useState, useRef } from 'react';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -20,8 +19,7 @@ export default function EditProfilePage() {
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     whatsappNumber: user?.whatsappNumber || '',
-    profilePicture: (user?.profileImageUrl && user?.profileImageUrl !== 'undefined') ? user?.profileImageUrl : 
-                   (user?.profilePicture && user?.profilePicture !== 'undefined') ? user?.profilePicture : '',
+    profilePicture: user?.profileImageUrl || user?.profilePicture || '',
   });
 
   const [privacySettings, setPrivacySettings] = useState({
@@ -47,89 +45,33 @@ export default function EditProfilePage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    console.log('Starting image upload:', file.name, file.size, file.type);
-
-    // Enhanced validation
+    // Validation
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       addToast('Please select a valid image file (JPG, PNG, or WebP)', 'error');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
       addToast('Image size must be less than 5MB', 'error');
-      return;
-    }
-
-    if (file.size < 1024) { // 1KB minimum
-      addToast('Image file seems too small. Please select a valid image.', 'error');
-      return;
-    }
-
-    // Check if file is actually an image by trying to create an image object
-    const img = new Image();
-    const imageLoadPromise = new Promise((resolve, reject) => {
-      img.onload = () => {
-        if (img.width < 50 || img.height < 50) {
-          reject(new Error('Image dimensions too small (minimum 50x50 pixels)'));
-        } else {
-          resolve(true);
-        }
-      };
-      img.onerror = () => reject(new Error('Invalid image file'));
-      img.src = URL.createObjectURL(file);
-    });
-
-    try {
-      await imageLoadPromise;
-      URL.revokeObjectURL(img.src); // Clean up
-    } catch (validationError: any) {
-      addToast(validationError.message || 'Invalid image file', 'error');
       return;
     }
 
     setImageUploading(true);
     
     try {
-      console.log('Calling uploadAvatar API...');
-      // Use the uploadAvatar API which handles image upload correctly
       const response = await api.users.uploadAvatar(file);
-      console.log('Upload response:', response);
       
       if (response.data) {
-        console.log('Upload successful, refreshing user...');
-        // Refresh user context to get updated profile image
         await refreshUser();
-        
-        // Update local form state with the new image URL
         const newImageUrl = response.data.profileImageUrl;
-        console.log('New image URL:', newImageUrl);
-        if (newImageUrl && newImageUrl !== 'undefined') {
+        if (newImageUrl) {
           setFormData(prev => ({ ...prev, profilePicture: newImageUrl }));
         }
-        
         addToast('Profile image updated successfully', 'success');
-      } else {
-        console.error('No response data received');
-        addToast('Image uploaded but no response data received', 'error');
       }
     } catch (error: any) {
-      console.error('Image upload error:', error);
-      
-      // Provide specific error messages based on the error
-      if (error.message?.includes('corrupted')) {
-        addToast('The image file appears to be corrupted. Please try a different image.', 'error');
-      } else if (error.message?.includes('format')) {
-        addToast('Unsupported image format. Please use JPG, PNG, or WebP.', 'error');
-      } else if (error.message?.includes('too large') || error.message?.includes('size')) {
-        addToast('Image file is too large. Please use an image under 5MB.', 'error');
-      } else if (error.message?.includes('too small')) {
-        addToast('Image is too small. Please use an image at least 100x100 pixels.', 'error');
-      } else if (error.message?.includes('Empty file') || error.message?.includes('No file provided')) {
-        addToast('Invalid file. Please select a valid image file.', 'error');
-      } else {
-        addToast(error.message || 'Failed to upload image. Please try again', 'error');
-      }
+      addToast(error.message || 'Failed to upload image. Please try again', 'error');
     } finally {
       setImageUploading(false);
     }
@@ -140,7 +82,6 @@ export default function EditProfilePage() {
     setLoading(true);
 
     try {
-      // Don't send profilePicture in updateProfile - it's handled separately by uploadAvatar
       const updateData = {
         fullName: formData.fullName,
         whatsappNumber: formData.whatsappNumber,
@@ -149,19 +90,15 @@ export default function EditProfilePage() {
       
       const response = await api.users.updateProfile(updateData);
       
-      // Check if update was successful
       if (response.data) {
         await refreshUser();
         addToast('Profile updated successfully', 'success');
         router.push('/profile');
-      } else {
-        addToast('Profile update completed but response was empty', 'info');
       }
     } catch (error: any) {
-      // Handle different types of errors
-      if (error.name === 'ValidationError' || error.status === 400) {
+      if (error.status === 400) {
         addToast(error.message || 'Please check your input and try again', 'error');
-      } else if (error.name === 'AuthenticationError' || error.status === 401) {
+      } else if (error.status === 401) {
         addToast('Session expired. Please log in again', 'error');
       } else {
         addToast('Failed to update profile. Please try again', 'error');
@@ -256,23 +193,21 @@ export default function EditProfilePage() {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#009F9C]/20">
-                  {formData.profilePicture && formData.profilePicture.trim() && formData.profilePicture !== 'undefined' ? (
+                  {formData.profilePicture ? (
                     <img 
                       src={formData.profilePicture.startsWith('http') ? formData.profilePicture : `http://localhost:3001${formData.profilePicture}`}
                       alt="Profile" 
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.log('Image failed to load:', formData.profilePicture);
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
                       }}
                     />
-                  ) : null}
-                  <div className={`w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center ${(formData.profilePicture && formData.profilePicture.trim() && formData.profilePicture !== 'undefined') ? 'hidden' : ''}`}>
-                    <User className="w-10 h-10 text-white" />
-                  </div>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center">
+                      <User className="w-10 h-10 text-white" />
+                    </div>
+                  )}
                 </div>
                 {imageUploading && (
                   <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">

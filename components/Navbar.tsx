@@ -11,7 +11,7 @@ import { api } from '../lib/apiEndpoints';
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/favorites', icon: Heart, label: 'Favorites' },
-  { href: '/add', icon: Plus, label: 'Add Item' },
+  { href: '/add-item', icon: Plus, label: 'Add Item' },
   { href: '/messages', icon: MessageCircle, label: 'Messages' },
   { href: '/profile', icon: User, label: 'Profile' },
 ];
@@ -59,7 +59,7 @@ export default function Navbar() {
   }, [user, loading]);
 
   // Hide navbar on certain pages - MOVED AFTER ALL HOOKS
-  if (hideNavbar || pathname.startsWith('/item/') || pathname === '/add') {
+  if (hideNavbar || pathname.startsWith('/item/') || pathname === '/add-item') {
     return null;
   }
 

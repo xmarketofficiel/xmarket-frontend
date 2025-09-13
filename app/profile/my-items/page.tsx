@@ -97,7 +97,7 @@ export default function MyItemsPage() {
             </div>
             
             <button
-              onClick={() => window.location.href = '/add'}
+              onClick={() => window.location.href = '/add-item'}
               className="bg-[#006666] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#005555] transition-colors flex items-center space-x-2"
             >
               <Plus size={16} />
@@ -146,7 +146,7 @@ export default function MyItemsPage() {
             </p>
             {filter === 'all' && (
               <button
-                onClick={() => window.location.href = '/add'}
+                onClick={() => window.location.href = '/add-item'}
                 className="bg-[#006666] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#005555] transition-colors"
               >
                 Add Your First Item
