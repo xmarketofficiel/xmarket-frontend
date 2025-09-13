@@ -48,6 +48,11 @@ export default function ItemDetailsStep({
     onSubmit();
   };
 
+  // Debug: Log errors for troubleshooting
+  console.log('Current errors:', errors);
+  console.log('Error count:', Object.keys(errors).length);
+  console.log('Form data:', data);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -201,7 +206,7 @@ export default function ItemDetailsStep({
         </motion.div>
 
         {/* Form Validation Summary */}
-        {Object.keys(errors).length > 0 && (
+        {Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,9 +217,11 @@ export default function ItemDetailsStep({
               <div>
                 <h4 className="font-medium text-red-900 mb-2">Please fix the following errors:</h4>
                 <ul className="text-sm text-red-700 space-y-1">
-                  {Object.entries(errors).map(([field, error]) => (
-                    <li key={field}>• {error}</li>
-                  ))}
+                  {Object.entries(errors)
+                    .filter(([field, error]) => error) // Only show non-empty errors
+                    .map(([field, error]) => (
+                      <li key={field}>• {error}</li>
+                    ))}
                 </ul>
               </div>
             </div>
@@ -224,14 +231,14 @@ export default function ItemDetailsStep({
         {/* Submit Button */}
         <motion.button
           type="submit"
-          disabled={isSubmitting || Object.keys(errors).length > 0}
+          disabled={isSubmitting || Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0}
           className={`w-full py-4 px-6 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2 ${
-            isSubmitting || Object.keys(errors).length > 0
+            isSubmitting || Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0
               ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
               : 'bg-[#006666] text-white hover:bg-[#005555] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
           }`}
-          whileHover={!isSubmitting && Object.keys(errors).length === 0 ? { scale: 1.02 } : {}}
-          whileTap={!isSubmitting && Object.keys(errors).length === 0 ? { scale: 0.98 } : {}}
+          whileHover={!isSubmitting && Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length === 0 ? { scale: 1.02 } : {}}
+          whileTap={!isSubmitting && Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length === 0 ? { scale: 0.98 } : {}}
         >
           {isSubmitting ? (
             <>

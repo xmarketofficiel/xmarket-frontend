@@ -197,16 +197,22 @@ export function useAddItemForm({
     (step: number): boolean => {
       if (step === ADD_ITEM_CONFIG.STEP_PHOTOS) {
         const photoError = validateField("photos", state.data.photos);
-        setState((prev) => ({
-          ...prev,
-          validation: {
-            ...prev.validation,
-            errors: {
-              ...prev.validation.errors,
-              photos: photoError || undefined,
+        setState((prev) => {
+          const newErrors = { ...prev.validation.errors };
+          if (photoError) {
+            newErrors.photos = photoError;
+          } else {
+            delete newErrors.photos; // Remove photos error if no error
+          }
+          
+          return {
+            ...prev,
+            validation: {
+              ...prev.validation,
+              errors: newErrors,
             },
-          },
-        }));
+          };
+        });
         return !photoError;
       }
 
@@ -225,16 +231,21 @@ export function useAddItemForm({
       setState((prev) => {
         const newData = { ...prev.data, [field]: value };
         const error = validateField(field, value);
+        
+        // Filter out empty/undefined errors
+        const newErrors = { ...prev.validation.errors };
+        if (error) {
+          newErrors[field] = error;
+        } else {
+          delete newErrors[field]; // Remove the field if no error
+        }
 
         return {
           ...prev,
           data: newData,
           validation: {
             ...prev.validation,
-            errors: {
-              ...prev.validation.errors,
-              [field]: error || undefined,
-            },
+            errors: newErrors,
             touched: {
               ...prev.validation.touched,
               [field]: true,
@@ -259,7 +270,11 @@ export function useAddItemForm({
         Object.keys(updates).forEach((key) => {
           const field = key as keyof AddItemFormData;
           const error = validateField(field, updates[field]);
-          newErrors[field] = error || undefined;
+          if (error) {
+            newErrors[field] = error;
+          } else {
+            delete newErrors[field]; // Remove field if no error
+          }
           newTouched[field] = true;
         });
 
@@ -306,8 +321,11 @@ export function useAddItemForm({
   // Draft management
   const saveDraft = useCallback(() => {
     try {
+      // Exclude photos from draft since File objects can't be serialized
+      const { photos, ...draftableData } = state.data;
+      
       const draft = {
-        formData: state.data,
+        formData: draftableData,
         step: state.currentStep,
         timestamp: Date.now(),
         version: "1.0",
@@ -324,9 +342,17 @@ export function useAddItemForm({
       const draftStr = localStorage.getItem(STORAGE_KEYS.DRAFT_FORM);
       if (draftStr) {
         const draft = JSON.parse(draftStr);
+        
+        // Exclude photos from draft restoration since File objects can't be serialized
+        const { photos, ...restoreData } = draft.formData || {};
+        
         setState((prev) => ({
           ...prev,
-          data: { ...prev.data, ...draft.formData },
+          data: { 
+            ...prev.data, 
+            ...restoreData,
+            photos: [] // Always start with empty photos array
+          },
           currentStep: draft.step || ADD_ITEM_CONFIG.STEP_PHOTOS,
         }));
         return true;
