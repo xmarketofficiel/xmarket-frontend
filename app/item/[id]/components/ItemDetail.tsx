@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "../../../../contexts/UserContext";
@@ -49,18 +50,24 @@ export default function OptimizedItemDetail({
       String(user.id) === String(item.seller?.id));
 
   // Process photos from multiple possible formats
-  const photos =
-    item.photos ||
-    item.images
-      ?.map((img) => {
-        const url = img.imageUrl;
-        if (url && !url.includes("undefined") && url.startsWith("/")) {
-          return `http://localhost:3001${url}`;
-        }
-        return url;
-      })
-      .filter(Boolean) ||
-    [];
+  const photos = React.useMemo(() => {
+    const processedPhotos = (
+      item.photos ||
+      item.images
+        ?.map((img) => {
+          const url = img.imageUrl;
+          if (url && !url.includes("undefined") && url.startsWith("/")) {
+            return `http://localhost:3001${url}`;
+          }
+          return url;
+        })
+        .filter((url) => url && url.trim() !== '' && !url.includes('undefined')) ||
+      []
+    );
+    
+    // Remove duplicates and ensure unique array
+    return Array.from(new Set(processedPhotos.filter(Boolean)));
+  }, [item.photos, item.images]);
 
   // Analytics tracking
   useEffect(() => {

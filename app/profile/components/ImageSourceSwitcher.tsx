@@ -19,10 +19,12 @@ export function ImageSourceSwitcher({ userId }: { userId: number }) {
       setError(null);
       console.log('🔍 Fetching image sources for user:', userId);
       
-      const response = await api.users.getProfileImageSources(userId.toString());
-      console.log('✅ Image sources response:', response);
+      // TODO: Implement getProfileImageSources API method
+      // const response = await api.users.getProfileImageSources(userId.toString());
+      // console.log('✅ Image sources response:', response);
       
-      setSources(response.data);
+      // setSources(response.data);
+      console.log('⚠️ getProfileImageSources API not implemented yet');
     } catch (error: any) {
       console.error('❌ Failed to fetch image sources:', error);
       
@@ -49,15 +51,17 @@ export function ImageSourceSwitcher({ userId }: { userId: number }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.users.switchProfileImageSource(
-        userId.toString(), 
-        { source, variant }
-      );
+      // TODO: Implement switchProfileImageSource API method
+      // const response = await api.users.switchProfileImageSource(
+      //   userId.toString(), 
+      //   { source, variant }
+      // );
       
-      console.log('✅ Switched to:', response.data);
+      // console.log('✅ Switched to:', response.data);
       
-      // Refresh the page to see the change
-      window.location.reload();
+      // // Refresh the page to see the change
+      // window.location.reload();
+      console.log('⚠️ switchProfileImageSource API not implemented yet');
     } catch (error: any) {
       console.error('Failed to switch source:', error);
       setError(error.message || 'Failed to switch image source');

@@ -142,8 +142,17 @@ export function useAddItemForm({
         }
 
         if (rule.min && typeof value === "string") {
+          // For numeric fields, empty string should be treated as invalid
+          if (value.trim() === '') {
+            return (VALIDATION_MESSAGES[field] as any)?.required || `${field} is required`;
+          }
+          
           const numValue = parseFloat(value);
-          if (!isNaN(numValue) && numValue < rule.min) {
+          if (isNaN(numValue)) {
+            return (VALIDATION_MESSAGES[field] as any)?.invalid || `Please enter a valid ${field}`;
+          }
+          
+          if (numValue < rule.min) {
             return (VALIDATION_MESSAGES[field] as any)?.min || `${field} is too small`;
           }
         }

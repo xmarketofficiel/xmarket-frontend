@@ -118,12 +118,32 @@ export default function OptimizedAddItemForm({
       return;
     }
 
+    // Validate form before submission
+    if (!actions.validateForm()) {
+      addToast(ERROR_MESSAGES.VALIDATION_FAILED, 'error');
+      return;
+    }
+
     try {
+      // Validate numeric fields before conversion
+      const priceValue = parseFloat(state.data.price);
+      const quantityValue = parseInt(state.data.quantity);
+      
+      if (isNaN(priceValue) || priceValue <= 0) {
+        addToast('Please enter a valid price', 'error');
+        return;
+      }
+      
+      if (isNaN(quantityValue) || quantityValue <= 0) {
+        addToast('Please enter a valid quantity', 'error');
+        return;
+      }
+
       const itemData = {
         title: state.data.title,
         description: state.data.description,
-        price: Number(state.data.price),
-        quantity: Number(state.data.quantity),
+        price: priceValue,
+        quantity: quantityValue,
         category: state.data.category,
         condition: state.data.condition,
         anonymous: !state.data.showIdentity,

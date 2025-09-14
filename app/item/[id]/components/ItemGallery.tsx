@@ -122,7 +122,7 @@ export default function ItemGallery({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: ITEM_DETAIL_CONFIG.ANIMATION_DURATION }}
-        className="w-full h-full cursor-pointer"
+        className="relative w-full h-full cursor-pointer"
         onClick={handleImageClick}
       >
         <Image
@@ -155,6 +155,7 @@ export default function ItemGallery({
       {hasMultipleImages && (
         <AnimatePresence>
           <motion.button
+            key="prev-arrow"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -169,6 +170,7 @@ export default function ItemGallery({
           </motion.button>
           
           <motion.button
+            key="next-arrow"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
