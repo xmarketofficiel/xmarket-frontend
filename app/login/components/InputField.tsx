@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 
 interface InputFieldProps {
   type: 'email' | 'password';
@@ -40,13 +41,26 @@ export function InputField({
         {label}
       </label>
       <motion.div
-        className={`relative overflow-hidden rounded-xl transition-all duration-300 ${
+        className={`relative overflow-hidden rounded-xl transition-all ${
           focused ? 'ring-2 ring-[#009F9C] ring-opacity-50' : ''
         }`}
+        style={{ 
+          transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+          transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+        }}
         whileHover={{ scale: 1.01 }}
+        transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
       >
-        <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl p-4 focus-within:border-[#009F9C] focus-within:bg-white transition-all duration-300">
-          <Icon className="w-5 h-5 text-gray-400 mr-3" />
+        <div className="design-card flex items-center bg-gray-50 border border-gray-200 rounded-xl p-4 focus-within:border-[#009F9C] focus-within:bg-white transition-all" 
+             style={{ 
+               transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+             }}>
+          <Icon className="w-5 h-5 text-gray-400 mr-3 transition-colors" 
+                style={{ 
+                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }} />
           <input
             type={inputType}
             id={type}
@@ -62,7 +76,11 @@ export function InputField({
             <button
               type="button"
               onClick={onTogglePassword}
-              className="ml-3 text-gray-400 hover:text-[#009F9C] transition-colors p-1"
+              className="ml-3 text-gray-400 hover:text-[#009F9C] transition-colors p-1 rounded-md focus:ring-2 focus:ring-[#009F9C]/20 focus:outline-none"
+              style={{ 
+                transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+                transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+              }}
             >
               {showPassword ? (
                 <EyeOff className="w-5 h-5" />

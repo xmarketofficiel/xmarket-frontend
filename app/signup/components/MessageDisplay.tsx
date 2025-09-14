@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import type { MessageDisplayProps } from '../types';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 
 /**
  * Message Display Component
@@ -17,9 +18,12 @@ export function MessageDisplay({ message, type }: MessageDisplayProps) {
       initial={{ opacity: 0, y: -10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
+      transition={{ 
+        duration: ANIMATION_SYSTEM.duration.normal / 1000,
+        ease: 'easeOut'
+      }}
       className={`
-        p-4 rounded-xl border flex items-center space-x-3
+        design-card p-4 rounded-xl border flex items-center space-x-3
         ${isSuccess 
           ? 'bg-green-50/80 border-green-200 text-green-700' 
           : 'bg-red-50/80 border-red-200 text-red-700'

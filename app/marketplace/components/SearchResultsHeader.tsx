@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import type { SearchResultsHeaderProps } from '../types';
 
 /**
@@ -18,8 +19,11 @@ export function SearchResultsHeader({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-      className="px-4 py-3 bg-blue-50 border-b border-blue-100"
+      transition={{ 
+        duration: ANIMATION_SYSTEM.duration.normal / 1000,
+        ease: 'easeOut'
+      }}
+      className="design-card px-4 py-3 bg-blue-50/80 backdrop-blur-sm border-b border-blue-100"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -43,6 +47,10 @@ export function SearchResultsHeader({
             className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            transition={{
+              duration: ANIMATION_SYSTEM.duration.fast / 1000,
+              ease: 'easeOut'
+            }}
           >
             Clear
           </motion.button>
@@ -54,7 +62,11 @@ export function SearchResultsHeader({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          transition={{ delay: 0.2 }}
+          transition={{ 
+            delay: 0.2,
+            duration: ANIMATION_SYSTEM.duration.normal / 1000,
+            ease: 'easeOut'
+          }}
           className="mt-2 pt-2 border-t border-blue-200"
         >
           <p className="text-xs text-blue-600">

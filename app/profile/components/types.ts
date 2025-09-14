@@ -40,7 +40,15 @@ export interface ProfileItem {
   title: string;
   description: string;
   price: number;
-  images: string[];
+  images: Array<{
+    id: number;
+    itemId: number;
+    imageUrl?: string;
+    cloudinaryUrl?: string;
+    spacesUrl?: string;
+    imageOrder: number;
+    [key: string]: any;
+  }>;
   category: string;
   condition: string;
   status: 'active' | 'sold' | 'pending' | 'draft' | 'expired';

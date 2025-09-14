@@ -7,6 +7,7 @@ import { useUI } from '../contexts/UIContext';
 import { useUser } from '../contexts/UserContext';
 import { useEffect, useState } from 'react';
 import { api } from '../lib/apiEndpoints';
+import { ANIMATION_SYSTEM } from '../lib/design-system';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
@@ -60,7 +61,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50">
+    <nav className="design-card fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-[--color-border] px-4 py-2 z-50 shadow-lg">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -71,22 +72,45 @@ export default function Navbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-all duration-300 transform ${
+              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-all transform ${
                 isActive 
                   ? 'bg-[#006666] text-white scale-105 shadow-lg' 
                   : 'text-gray-600 hover:text-[#006666] hover:scale-105 hover:bg-gray-50'
               }`}
+              style={{
+                transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+                transitionTimingFunction: ANIMATION_SYSTEM.easing.easeInOut
+              }}
               aria-label={item.label}
             >
               <div className="relative">
-                <Icon size={20} />
+                <Icon 
+                  size={20} 
+                  className="transition-all"
+                  style={{
+                    transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                  }}
+                />
                 {isMessages && unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#FF6B35] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse transition-all duration-300 scale-110">
+                  <span 
+                    className="absolute -top-2 -right-2 bg-[#FF6B35] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-pulse shadow-md"
+                    style={{
+                      transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+                      transitionTimingFunction: ANIMATION_SYSTEM.easing.bounce
+                    }}
+                  >
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
               </div>
-              <span className={`text-xs font-medium ${isActive ? 'font-bold' : ''}`}>
+              <span 
+                className={`text-xs font-medium transition-all ${isActive ? 'font-bold' : ''}`}
+                style={{
+                  transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }}
+              >
                 {item.label}
               </span>
             </Link>
@@ -97,13 +121,32 @@ export default function Navbar() {
         {!user && (
           <Link
             href="/login"
-            className="flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-all duration-300 transform text-blue-600 hover:text-blue-800 hover:scale-105 hover:bg-blue-50"
+            className="flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-all transform text-blue-600 hover:text-blue-800 hover:scale-105 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            style={{
+              transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeInOut
+            }}
             aria-label="Login"
           >
             <div className="relative">
-              <User size={16} />
+              <User 
+                size={16}
+                className="transition-all"
+                style={{
+                  transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }}
+              />
             </div>
-            <span className="text-xs font-medium">Login</span>
+            <span 
+              className="text-xs font-medium transition-all"
+              style={{
+                transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+              }}
+            >
+              Login
+            </span>
           </Link>
         )}
       </div>

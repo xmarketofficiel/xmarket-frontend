@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { api } from '../../lib/apiEndpoints';
 import { useUser } from '../../contexts/UserContext';
 import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
+import { ANIMATION_SYSTEM } from '../../lib/design-system';
 
 // Components
 import { AnimatedBackground } from './components/AnimatedBackground';
@@ -148,7 +149,10 @@ export default function LoginPage() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: LOGIN_CONFIG.ANIMATION_DURATION }}
+              transition={{ 
+                duration: ANIMATION_SYSTEM.duration.slow / 1000,
+                ease: 'easeOut'
+              }}
               className="max-w-md w-full"
             >
               <LoginCard onSubmit={handleLogin} state={state} handlers={{
@@ -183,7 +187,11 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
   const { updateState, handleFieldFocus, handleFieldBlur, handleTogglePassword } = handlers;
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 relative">
+    <div className="bg-white/95 backdrop-blur-sm design-card rounded-3xl border border-white/50 shadow-xl p-8 relative hover:shadow-2xl transition-shadow"
+         style={{ 
+           transitionDuration: ANIMATION_SYSTEM.duration.slow + 'ms',
+           transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+         }}>
       <LoginHeader />
       
       <motion.form
@@ -191,7 +199,10 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
         className="space-y-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ 
+          duration: ANIMATION_SYSTEM.duration.slow / 1000, 
+          delay: 0.2 
+        }}
       >
         {/* Email Input */}
         <InputField

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { SEARCH_SUGGESTIONS } from '../constants';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import type { SearchBarProps } from '../types';
 
 /**
@@ -69,16 +70,26 @@ export function SearchBar({
     <div className="relative w-full max-w-md mx-auto">
       {/* Search Input */}
       <div className={`
-        relative flex items-center bg-white border-2 rounded-xl transition-all duration-300
+        design-card relative flex items-center bg-white border-2 rounded-xl transition-all
         ${isFocused 
           ? 'border-[#009F9C] shadow-lg shadow-[#009F9C]/20' 
-          : 'border-gray-200 hover:border-gray-300'
+          : 'border-[--color-border] hover:border-gray-300'
         }
-      `}>
+      `}
+      style={{
+        transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+      }}
+      >
         <Search className={`
-          w-5 h-5 ml-3 transition-colors duration-300
+          w-5 h-5 ml-3 transition-colors
           ${isFocused ? 'text-[#009F9C]' : 'text-gray-400'}
-        `} />
+        `}
+        style={{
+          transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+          transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+        }}
+        />
         
         <input
           ref={inputRef}
@@ -106,6 +117,10 @@ export function SearchBar({
             className="mr-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            transition={{
+              duration: ANIMATION_SYSTEM.duration.fast / 1000,
+              ease: 'easeOut'
+            }}
             aria-label="Clear search"
           >
             <X className="w-4 h-4 text-gray-400" />
@@ -121,8 +136,11 @@ export function SearchBar({
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto"
+            transition={{ 
+              duration: ANIMATION_SYSTEM.duration.normal / 1000,
+              ease: 'easeOut'
+            }}
+            className="design-card absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border border-[--color-border] rounded-xl shadow-lg z-50 max-h-80 overflow-y-auto"
           >
             {/* Suggestions Header */}
             <div className="px-4 py-3 border-b border-gray-100">
@@ -144,19 +162,31 @@ export function SearchBar({
                 <motion.button
                   key={`${suggestion.type}-${suggestion.text}`}
                   onClick={() => handleSuggestionClick(suggestion.text)}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3"
-                  whileHover={{ backgroundColor: '#f9fafb' }}
+                  className="w-full px-4 py-3 text-left hover:bg-[#006666]/5 transition-all active:scale-[0.99] flex items-center space-x-3"
+                  whileHover={{ 
+                    backgroundColor: 'rgb(0, 102, 102, 0.05)',
+                    scale: 1.01
+                  }}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ 
+                    delay: index * 0.05,
+                    duration: ANIMATION_SYSTEM.duration.fast / 1000,
+                    ease: 'easeOut'
+                  }}
                 >
                   <div className={`
-                    w-6 h-6 rounded-full flex items-center justify-center text-xs
+                    w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all
                     ${suggestion.type === 'trending' 
                       ? 'bg-orange-100 text-orange-600' 
                       : 'bg-blue-100 text-blue-600'
                     }
-                  `}>
+                  `}
+                  style={{
+                    transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                  }}
+                  >
                     {suggestion.type === 'trending' ? (
                       <TrendingUp className="w-3 h-3" />
                     ) : (

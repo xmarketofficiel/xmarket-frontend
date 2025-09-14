@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import type { InputFieldProps } from '../types';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 
 /**
  * Reusable Input Field Component
@@ -29,7 +30,10 @@ export function InputField({
       className="relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ 
+        duration: ANIMATION_SYSTEM.duration.normal / 1000,
+        ease: 'easeOut'
+      }}
     >
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {label}
@@ -39,7 +43,11 @@ export function InputField({
       <div className="relative">
         {/* Icon */}
         {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-colors"
+               style={{ 
+                 transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+                 transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+               }}>
             {icon}
           </div>
         )}
@@ -54,7 +62,7 @@ export function InputField({
           placeholder={placeholder}
           maxLength={maxLength}
           className={`
-            w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 
+            design-card w-full px-4 py-3 rounded-xl border-2 transition-all
             bg-white/50 backdrop-blur-sm placeholder-gray-400
             ${icon ? 'pl-12' : 'pl-4'}
             ${isPassword ? 'pr-12' : 'pr-4'}
@@ -64,6 +72,10 @@ export function InputField({
             }
             focus:outline-none focus:border-[#009F9C] focus:shadow-lg focus:shadow-[#009F9C]/20 focus:bg-white/80
           `}
+          style={{ 
+            transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+            transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+          }}
           required={required}
         />
         
@@ -72,7 +84,11 @@ export function InputField({
           <button
             type="button"
             onClick={onTogglePassword}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#009F9C]/20 rounded-md p-1 transition-all"
+            style={{ 
+              transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+            }}
           >
             {showPassword ? (
               <EyeOff className="w-5 h-5" />

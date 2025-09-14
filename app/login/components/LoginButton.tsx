@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 
 interface LoginButtonProps {
   isLoading: boolean;
@@ -15,11 +16,22 @@ export function LoginButton({ isLoading, onClick }: LoginButtonProps) {
       type="submit"
       disabled={isLoading}
       onClick={onClick}
-      className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-[#009F9C] to-[#40E0D0] p-4 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group hover:shadow-xl transition-all duration-300"
+      className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-[#009F9C] to-[#40E0D0] p-4 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group hover:shadow-xl design-card"
+      style={{
+        transition: `all ${ANIMATION_SYSTEM.duration.normal}ms ${ANIMATION_SYSTEM.easing.easeOut}`
+      }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      transition={{ 
+        duration: ANIMATION_SYSTEM.duration.fast / 1000,
+        ease: 'easeOut'
+      }}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-[#007B78] to-[#009F9C] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#007B78] to-[#009F9C] opacity-0 group-hover:opacity-100 transition-opacity" 
+           style={{ 
+             transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+             transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+           }} />
       <div className="relative flex items-center justify-center">
         {isLoading ? (
           <LoadingState />
@@ -50,7 +62,11 @@ function DefaultState() {
   return (
     <>
       Sign In
-      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" 
+                  style={{ 
+                    transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                  }} />
     </>
   );
 }

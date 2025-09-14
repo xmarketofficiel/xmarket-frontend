@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import type { SubmitButtonProps } from '../types';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 
 /**
  * Submit Button Component
@@ -17,7 +18,7 @@ export function SubmitButton({
   const isPrimary = variant === 'primary';
   
   const baseClasses = `
-    w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 
+    design-card w-full py-3 px-6 rounded-xl font-semibold transition-all
     focus:outline-none focus:ring-2 focus:ring-offset-2 
     disabled:opacity-50 disabled:cursor-not-allowed
     flex items-center justify-center space-x-2
@@ -40,11 +41,18 @@ export function SubmitButton({
       type="submit"
       disabled={disabled || isLoading}
       className={`${baseClasses} ${variantClasses}`}
+      style={{
+        transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+      }}
       whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
       whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ 
+        duration: ANIMATION_SYSTEM.duration.normal / 1000,
+        ease: 'easeOut'
+      }}
     >
       {isLoading ? (
         <>

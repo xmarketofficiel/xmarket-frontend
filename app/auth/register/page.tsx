@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { ANIMATION_SYSTEM } from "../../../lib/design-system";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -141,15 +142,19 @@ export default function RegisterPage() {
         </div>
 
         {/* Registration Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="design-card bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-shadow"
+             style={{ 
+               transitionDuration: ANIMATION_SYSTEM.duration.slow + 'ms',
+               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+             }}>
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="design-card mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-800 text-sm">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="design-card mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-green-800 text-sm">{success}</p>
             </div>
           )}
@@ -166,7 +171,11 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] focus:border-transparent transition-all"
+                  style={{ 
+                    transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                  }}
                   placeholder={userType === 'student' ? 'your.name@student.um6p.ma' : 'your.name@um6p.ma'}
                 />
                 <p className="mt-1 text-xs text-gray-500">
@@ -177,7 +186,11 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#006666] text-white py-3 px-4 rounded-lg hover:bg-[#005555] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="design-card w-full bg-[#006666] text-white py-3 px-4 rounded-lg hover:bg-[#005555] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                style={{ 
+                  transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }}
               >
                 {loading ? 'Sending OTP...' : 'Send Verification Code'}
               </button>

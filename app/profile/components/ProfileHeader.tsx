@@ -14,6 +14,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { getSafeImageUrl } from '../../../utils/imageUtils';
+import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import { PROFILE_CONSTANTS } from './constants';
 import type { ProfileHeaderProps } from './types';
 
@@ -51,11 +52,23 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <motion.div 
+        className="design-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100/50 hover:shadow-xl transition-all"
+        style={{
+          transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+          transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: ANIMATION_SYSTEM.duration.normal / 1000, 
+          ease: ANIMATION_SYSTEM.framerEasing.easeOut 
+        }}
+      >
         <div className="h-32 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
         <div className="px-6 pb-6">
           <div className="flex items-start gap-6 -mt-12">
-            <div className="w-24 h-24 bg-gray-300 rounded-full animate-pulse border-4 border-white" />
+            <div className="w-24 h-24 bg-gray-300 rounded-full animate-pulse border-4 border-white shadow-lg" />
             <div className="flex-1 mt-12 space-y-3">
               <div className="h-6 bg-gray-300 rounded w-48 animate-pulse" />
               <div className="h-4 bg-gray-300 rounded w-32 animate-pulse" />
@@ -63,7 +76,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -71,19 +84,39 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: PROFILE_CONSTANTS.ANIMATION_DELAYS.HEADER }}
-      className="relative"
+      transition={{ 
+        delay: PROFILE_CONSTANTS.ANIMATION_DELAYS.HEADER,
+        duration: ANIMATION_SYSTEM.duration.normal / 1000, 
+        ease: ANIMATION_SYSTEM.framerEasing.easeOut 
+      }}
+      className="design-card relative bg-white rounded-2xl shadow-lg border border-gray-100/50 hover:shadow-xl transition-all p-6"
+      style={{
+        transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+      }}
     >
       {/* Modern Profile Layout */}
       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
         {/* Profile Picture */}
-        <div className="relative z-10 flex-shrink-0 mx-auto sm:mx-0">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white">
+        <motion.div 
+          className="relative z-10 flex-shrink-0 mx-auto sm:mx-0"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
+        >
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white hover:shadow-2xl transition-all"
+               style={{
+                 transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+                 transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+               }}>
             {hasProfileImage ? (
               <img
                 src={getSafeImageUrl(profileImageUrl)}
                 alt={user.fullName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-all"
+                style={{
+                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
@@ -91,8 +124,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   if (fallback) fallback.style.display = 'flex';
                 }}
               />
-            ) : null}
-            <div className={`w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center ${hasProfileImage ? 'hidden' : ''}`}>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center">
+                <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
+              </div>
+            )}
+            
+            {/* Fallback for broken images */}
+            <div 
+              className={`w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center ${hasProfileImage ? 'hidden' : ''}`}
+              style={{ display: hasProfileImage ? 'none' : 'flex' }}
+            >
               <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
             </div>
           </div>
@@ -110,7 +152,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <div className="w-2 h-2 bg-white rounded-full" />
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* User Info */}
         <div className="flex-1 min-w-0 text-center sm:text-left">
@@ -207,7 +249,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </div>
           </div>
         </div>
-      </div>
 
       {/* Marketplace Activity Summary */}
       <div className="mt-8 pt-6 border-t border-gray-100">
@@ -242,6 +283,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           )}
         </div>
       </div>
+    </div>
     </motion.div>
   );
 };

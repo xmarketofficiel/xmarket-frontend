@@ -8,6 +8,7 @@ import { Item } from "../types";
 import { useFavorites } from "../contexts/FavoritesContext";
 import { useUser } from "../contexts/UserContext";
 import { getItemImageUrl, PLACEHOLDER_IMAGE } from "../lib/imageUtils";
+import { ANIMATION_SYSTEM } from "../lib/design-system";
 import ReportModal from "./ReportModal";
 
 interface ItemCardProps {
@@ -78,14 +79,22 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
   return (
     <>
       <Link href={`/item/${item.id}`} className="block group">
-        <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-gray-200 transform hover:scale-[1.02]">
+        <div 
+          className="design-card bg-white rounded-xl shadow-sm hover:shadow-lg border border-gray-100 hover:border-gray-200 overflow-hidden hover:scale-[1.02]"
+          style={{
+            transition: `all ${ANIMATION_SYSTEM.duration.normal}ms ${ANIMATION_SYSTEM.easing.easeOut}`
+          }}
+        >
         {/* Image Container */}
         <div className="relative aspect-square bg-gray-100">
           <Image
             src={getItemImageUrl(item)}
             alt={item.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-200"
+            className="object-cover group-hover:scale-105"
+            style={{
+              transition: `transform ${ANIMATION_SYSTEM.duration.normal}ms ${ANIMATION_SYSTEM.easing.easeInOut}`
+            }}
             loading={priority ? "eager" : "lazy"}
             priority={priority}
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -96,7 +105,7 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
           />
 
           {/* Price Overlay */}
-          <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-md text-sm font-semibold">
+          <div className="absolute top-3 left-3 bg-black/80 text-white px-3 py-1.5 rounded-lg text-sm font-semibold backdrop-blur-sm">
             {typeof item.price === 'string' 
               ? `${parseFloat(item.price)} DH`
               : `${item.price} DH`
@@ -104,13 +113,16 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
           </div>
 
           {/* Action Buttons */}
-          <div className="absolute top-2 right-2 flex items-center gap-1">
+          <div className="absolute top-3 right-3 flex items-center gap-2">
             {/* For user's own items - Show edit button */}
             {isOwnItem ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={handleMoreClick}
-                  className="p-1.5 rounded-full bg-black/70 text-white hover:bg-blue-600 transition-colors"
+                  className="p-2 rounded-full bg-black/80 text-white hover:bg-blue-600 transition-all backdrop-blur-sm"
+                  style={{
+                    transition: `all ${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeInOut}`
+                  }}
                   aria-label="Edit item"
                 >
                   <MoreVertical size={16} />
@@ -118,7 +130,12 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
 
                 {/* Dropdown Menu for own items */}
                 {showDropdown && (
-                  <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                  <div 
+                    className="absolute right-0 top-full mt-2 w-36 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20"
+                    style={{
+                      animation: `${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeOut} both`
+                    }}
+                  >
                     <button
                       onClick={(e) => {
                         e.preventDefault();
@@ -126,7 +143,7 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
                         setShowDropdown(false);
                         window.location.href = `/item/${item.id}/edit`;
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                     >
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -142,11 +159,14 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
                 {/* Favorite Button - For other users' items */}
                 <button
                   onClick={handleFavoriteClick}
-                  className={`p-1.5 rounded-full transition-colors ${
+                  className={`p-2 rounded-full backdrop-blur-sm transition-all ${
                     isItemFavorite 
-                      ? 'bg-red-500 text-white' 
-                      : 'bg-black/70 text-white hover:bg-red-500'
+                      ? 'bg-red-500 text-white scale-110' 
+                      : 'bg-black/80 text-white hover:bg-red-500'
                   }`}
+                  style={{
+                    transition: `all ${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeInOut}`
+                  }}
                   aria-label={isItemFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
                   <Heart 
@@ -159,7 +179,10 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={handleMoreClick}
-                    className="p-1.5 rounded-full bg-black/70 text-white hover:bg-gray-600 transition-colors"
+                    className="p-2 rounded-full bg-black/80 text-white hover:bg-gray-600 transition-all backdrop-blur-sm"
+                    style={{
+                      transition: `all ${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeInOut}`
+                    }}
                     aria-label="More options"
                   >
                     <MoreVertical size={16} />
@@ -167,10 +190,15 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
 
                   {/* Dropdown Menu */}
                   {showDropdown && (
-                    <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                    <div 
+                      className="absolute right-0 top-full mt-2 w-36 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20"
+                      style={{
+                        animation: `${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeOut} both`
+                      }}
+                    >
                       <button
                         onClick={handleReportClick}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                       >
                         <Flag size={14} className="text-red-500" />
                         Report Item
@@ -184,9 +212,9 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
 
           {/* Sold Badge */}
           {item.isSold && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <div className="bg-red-500 text-white px-3 py-1 rounded-full flex items-center space-x-1">
-                <CheckCircle size={16} />
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+              <div className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2 shadow-lg">
+                <CheckCircle size={18} />
                 <span className="text-sm font-semibold">SOLD</span>
               </div>
             </div>
@@ -194,17 +222,17 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
         </div>
 
         {/* Item Details */}
-        <div className="p-3">
-          <h3 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2">
+        <div className="p-4 space-y-3">
+          <h3 className="font-medium text-gray-900 text-sm leading-snug line-clamp-2">
             {item.title}
           </h3>
           
           {/* Category Badge */}
-          <div className="mb-2">
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          <div>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
               {typeof item.category === 'object' ? (
                 <>
-                  <span className="mr-1">{item.category.icon}</span>
+                  <span className="mr-1.5">{item.category.icon}</span>
                   {item.category.name}
                 </>
               ) : (
@@ -213,12 +241,12 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
             </span>
           </div>
           
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span className="bg-gray-100 px-2 py-1 rounded">
+          <div className="flex items-center justify-between">
+            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
               {item.condition}
             </span>
             
-            <div className="flex items-center space-x-1 text-xs text-gray-600">
+            <div className="flex items-center space-x-1.5 text-xs">
               {!item.anonymous && item.seller?.fullName && (
                 <button
                   onClick={(e) => {
@@ -229,18 +257,21 @@ export default function ItemCard({ item, onToggleFavorite, priority = false }: I
                       window.location.href = `/user/${sellerId}`;
                     }
                   }}
-                  className="truncate hover:text-[#006666] transition-colors"
+                  className="text-gray-600 hover:text-[#009F9C] font-medium transition-colors truncate"
+                  style={{
+                    transition: `color ${ANIMATION_SYSTEM.duration.fast}ms ${ANIMATION_SYSTEM.easing.easeInOut}`
+                  }}
                 >
                   {item.seller.fullName.split(" ")[0]}
                 </button>
               )}
               {item.anonymous && (
-                <span className="text-gray-500 italic font-semibold bg-gray-100 px-2 py-1 rounded">
-                  🕶️ Anonymous Seller
+                <span className="text-gray-500 italic font-medium bg-gray-100 px-2 py-1 rounded-full text-xs">
+                  🕶️ Anonymous
                 </span>
               )}
               {!item.anonymous && (item.seller?.isVerified || item.seller?.verified) && (
-                <CheckCircle size={12} className="text-[#006666]" />
+                <CheckCircle size={14} className="text-[#009F9C]" />
               )}
             </div>
           </div>
