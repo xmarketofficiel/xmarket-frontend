@@ -58,38 +58,43 @@ const OptimizedSettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: SETTINGS_CONSTANTS.ANIMATION_DELAYS.HEADER }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-              <p className="text-gray-600 mt-1">Manage your account and app preferences</p>
+    <div className="h-full flex flex-col">
+      {/* Fixed Header */}
+      <div className="bg-white border-b border-gray-200 flex-shrink-0 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: SETTINGS_CONSTANTS.ANIMATION_DELAYS.HEADER }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+                <p className="text-gray-600 mt-1">Manage your account and app preferences</p>
+              </div>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => router.back()}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                ← Back
+              </motion.button>
             </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => router.back()}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              ← Back
-            </motion.button>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
+      </div>
 
-        {/* Main Content */}
-        <SettingsOverview
-          user={user as UserSettings}
-          onQuickAction={handleQuickAction}
-          onSectionClick={handleSectionClick}
-        />
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <SettingsOverview
+            user={user as UserSettings}
+            onQuickAction={handleQuickAction}
+            onSectionClick={handleSectionClick}
+          />
+        </div>
       </div>
     </div>
   );

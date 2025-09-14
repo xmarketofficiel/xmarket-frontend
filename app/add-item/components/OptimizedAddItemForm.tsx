@@ -195,18 +195,20 @@ export default function OptimizedAddItemForm({
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`min-h-screen bg-gray-50 ${className}`}
+      className={`h-full flex flex-col bg-gray-50 ${className}`}
     >
       {/* Header */}
-      <FormHeader
-        title="Add Item"
-        onBack={handleBack}
-        step={state.currentStep}
-        totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
-      />
+      <div className="flex-shrink-0">
+        <FormHeader
+          title="Add Item"
+          onBack={handleBack}
+          step={state.currentStep}
+          totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
+        />
+      </div>
 
       {/* Content */}
-      <div className="p-4 pb-20">
+      <div className="flex-1 overflow-y-auto p-4 pb-20">
         {/* Step Indicator */}
         <StepIndicator
           currentStep={state.currentStep}

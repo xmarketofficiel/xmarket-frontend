@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Grid, List, SlidersHorizontal, Filter } from 'lucide-react';
 import type { ViewControlsProps } from '../types';
 
@@ -15,12 +14,7 @@ export function ViewControls({
   loading = false 
 }: ViewControlsProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex items-center justify-between py-4 px-4 bg-white border-b border-gray-100"
-    >
+    <div className="flex items-center justify-between py-3 px-4 bg-white border-b border-gray-200">
       {/* Results count */}
       <div className="flex items-center space-x-3">
         <div className="text-sm text-gray-600">
@@ -32,7 +26,9 @@ export function ViewControls({
           ) : (
             <span>
               <span className="font-semibold text-gray-900">{itemCount.toLocaleString()}</span>{' '}
-              {itemCount === 1 ? 'item' : 'items'}
+              <span className="hidden sm:inline">
+                {itemCount === 1 ? 'item' : 'items'}
+              </span>
             </span>
           )}
         </div>
@@ -40,53 +36,47 @@ export function ViewControls({
 
       {/* Controls */}
       <div className="flex items-center space-x-2">
-        {/* View Mode Toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
-          <motion.button
+        {/* View Mode Toggle - Hide on mobile since we use different layouts */}
+        <div className="hidden md:flex items-center bg-gray-100 rounded-xl p-1">
+          <button
             onClick={() => onViewModeChange('grid')}
             className={`
-              p-2 rounded-md transition-all duration-200
+              p-2 rounded-lg transition-all duration-200
               ${viewMode === 'grid' 
                 ? 'bg-white text-[#009F9C] shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
               }
             `}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             aria-label="Grid view"
           >
             <Grid className="w-4 h-4" />
-          </motion.button>
+          </button>
           
-          <motion.button
+          <button
             onClick={() => onViewModeChange('list')}
             className={`
-              p-2 rounded-md transition-all duration-200
+              p-2 rounded-lg transition-all duration-200
               ${viewMode === 'list' 
                 ? 'bg-white text-[#009F9C] shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
               }
             `}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             aria-label="List view"
           >
             <List className="w-4 h-4" />
-          </motion.button>
+          </button>
         </div>
 
         {/* Filter Toggle */}
-        <motion.button
+        <button
           onClick={onToggleFilters}
           className={`
-            flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200
+            flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 font-medium
             ${showFilters 
-              ? 'bg-[#009F9C] text-white shadow-lg shadow-[#009F9C]/25' 
+              ? 'bg-[#009F9C] text-white shadow-lg' 
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }
           `}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           aria-label={showFilters ? 'Hide filters' : 'Show filters'}
         >
           {showFilters ? (
@@ -94,11 +84,11 @@ export function ViewControls({
           ) : (
             <SlidersHorizontal className="w-4 h-4" />
           )}
-          <span className="text-sm font-medium hidden sm:block">
+          <span className="text-sm hidden sm:block">
             {showFilters ? 'Hide Filters' : 'Filters'}
           </span>
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

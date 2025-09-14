@@ -162,7 +162,7 @@ export function AdvancedFilterPanel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 300 }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 overflow-hidden"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[99] overflow-hidden"
           >
             <div className="flex flex-col h-full">
               {/* Header */}

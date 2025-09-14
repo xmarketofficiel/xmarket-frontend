@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, TrendingUp, Clock, Filter } from 'lucide-react';
 
 interface SearchSuggestion {
@@ -35,7 +34,7 @@ const MOCK_SUGGESTIONS: SearchSuggestion[] = [
 
 /**
  * Enhanced Search Bar with autocomplete and suggestions
- * Features real-time search, trending items, and recent searches
+ * Clean design without animations for better performance
  */
 export function EnhancedSearchBar({
   searchQuery,
@@ -57,12 +56,10 @@ export function EnhancedSearchBar({
   // Filter suggestions based on search query
   useEffect(() => {
     if (searchQuery.trim() === '') {
-      // Show trending and recent when no query
       setFilteredSuggestions(
         MOCK_SUGGESTIONS.filter(s => s.type === 'trending' || s.type === 'recent').slice(0, 6)
       );
     } else {
-      // Filter based on query
       const filtered = MOCK_SUGGESTIONS.filter(suggestion =>
         suggestion.text.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 6);
@@ -126,7 +123,6 @@ export function EnhancedSearchBar({
 
   const handleBlur = () => {
     setIsFocused(false);
-    // Delay hiding suggestions to allow clicks
     setTimeout(() => setShowSuggestions(false), 150);
   };
 
@@ -144,16 +140,9 @@ export function EnhancedSearchBar({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Search Input */}
-      <motion.div
-        animate={{
-          scale: isFocused ? 1.02 : 1,
-          boxShadow: isFocused 
-            ? "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
-            : "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05)"
-        }}
-        transition={{ duration: 0.2 }}
-        className="relative bg-white rounded-2xl border border-gray-200 overflow-hidden"
-      >
+      <div className={`relative bg-white rounded-xl border-2 transition-all duration-200 ${
+        isFocused ? 'border-[#009F9C] shadow-lg' : 'border-gray-200 shadow-md'
+      }`}>
         <div className="flex items-center">
           {/* Search Icon */}
           <div className="pl-4 pr-2">
@@ -170,159 +159,134 @@ export function EnhancedSearchBar({
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            className="flex-1 px-2 py-4 text-gray-900 placeholder-gray-500 bg-transparent focus:outline-none text-lg"
+            className="flex-1 px-2 py-3 md:py-4 text-gray-900 placeholder-gray-500 bg-transparent focus:outline-none text-base"
           />
 
           {/* Clear Button */}
           {searchQuery && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
+            <button
               onClick={handleClear}
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X className="w-5 h-5" />
-            </motion.button>
+            </button>
           )}
 
-          {/* Filter Toggle */}
+          {/* Filter Toggle Button */}
           {onToggleFilters && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={onToggleFilters}
-              className={`mx-2 p-3 rounded-xl transition-all duration-200 ${
+              className={`mr-3 p-2 md:p-3 rounded-xl transition-all duration-200 ${
                 showFilters
                   ? 'bg-[#009F9C] text-white shadow-lg'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
+              aria-label={showFilters ? 'Hide filters' : 'Show filters'}
             >
-              <Filter className="w-5 h-5" />
-            </motion.button>
+              <Filter className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
           )}
-
-          {/* Search Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSearch}
-            className="mx-2 bg-gradient-to-r from-[#009F9C] to-[#007B78] text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            Search
-          </motion.button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Search Suggestions Dropdown */}
-      <AnimatePresence>
-        {showSuggestions && filteredSuggestions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
-          >
-            {/* Suggestions Header */}
-            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-              <p className="text-sm font-semibold text-gray-700">
-                {searchQuery ? 'Search suggestions' : 'Trending & Recent'}
-              </p>
-            </div>
+      {showSuggestions && filteredSuggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
+          {/* Suggestions Header */}
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <p className="text-sm font-semibold text-gray-700">
+              {searchQuery ? 'Search suggestions' : 'Trending & Recent'}
+            </p>
+          </div>
 
-            {/* Suggestions List */}
-            <div className="max-h-80 overflow-y-auto">
-              {filteredSuggestions.map((suggestion, index) => (
-                <motion.button
-                  key={suggestion.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.05 }}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
-                    selectedIndex === index ? 'bg-[#009F9C]/5 border-r-2 border-[#009F9C]' : ''
-                  }`}
-                >
-                  <div className="flex items-center flex-1">
-                    {/* Icon */}
-                    <div className="mr-3 flex items-center justify-center w-8 h-8">
-                      {suggestion.icon ? (
-                        <span className="text-lg">{suggestion.icon}</span>
-                      ) : (
-                        getSuggestionIcon(suggestion)
-                      )}
-                    </div>
-
-                    {/* Text */}
-                    <div className="flex-1">
-                      <p className="text-gray-900 font-medium">
-                        {suggestion.text}
-                      </p>
-                      {suggestion.type === 'trending' && (
-                        <p className="text-xs text-orange-600 font-medium">
-                          Trending
-                        </p>
-                      )}
-                      {suggestion.type === 'recent' && (
-                        <p className="text-xs text-gray-500">
-                          Recent search
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Count */}
-                    {suggestion.count && (
-                      <div className="ml-2 px-2 py-1 bg-gray-100 rounded-full">
-                        <span className="text-xs font-medium text-gray-600">
-                          {suggestion.count}
-                        </span>
-                      </div>
+          {/* Suggestions List */}
+          <div className="max-h-80 overflow-y-auto">
+            {filteredSuggestions.map((suggestion, index) => (
+              <button
+                key={suggestion.id}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
+                  selectedIndex === index ? 'bg-[#009F9C]/5 border-r-2 border-[#009F9C]' : ''
+                }`}
+              >
+                <div className="flex items-center flex-1">
+                  {/* Icon */}
+                  <div className="mr-3 flex items-center justify-center w-8 h-8">
+                    {suggestion.icon ? (
+                      <span className="text-lg">{suggestion.icon}</span>
+                    ) : (
+                      getSuggestionIcon(suggestion)
                     )}
                   </div>
 
-                  {/* Arrow */}
-                  <div className="ml-2 text-gray-400">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                  {/* Text */}
+                  <div className="flex-1">
+                    <p className="text-gray-900 font-medium">
+                      {suggestion.text}
+                    </p>
+                    {suggestion.type === 'trending' && (
+                      <p className="text-xs text-orange-600 font-medium">
+                        Trending
+                      </p>
+                    )}
+                    {suggestion.type === 'recent' && (
+                      <p className="text-xs text-gray-500">
+                        Recent search
+                      </p>
+                    )}
                   </div>
-                </motion.button>
+
+                  {/* Count */}
+                  {suggestion.count && (
+                    <div className="ml-2 px-2 py-1 bg-gray-100 rounded-full">
+                      <span className="text-xs font-medium text-gray-600">
+                        {suggestion.count}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Arrow */}
+                <div className="ml-2 text-gray-400">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs text-gray-500">Quick:</span>
+              {['Electronics', 'Books', 'Fashion'].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleSuggestionClick({ 
+                    id: category, 
+                    text: category, 
+                    type: 'category' 
+                  })}
+                  className="text-xs bg-white px-2 py-1 rounded-full border border-gray-200 hover:border-[#009F9C] hover:text-[#009F9C] transition-colors"
+                >
+                  {category}
+                </button>
               ))}
             </div>
-
-            {/* Quick Actions */}
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-              <div className="flex space-x-2">
-                <span className="text-xs text-gray-500">Quick:</span>
-                {['Electronics', 'Books', 'Fashion'].map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleSuggestionClick({ 
-                      id: category, 
-                      text: category, 
-                      type: 'category' 
-                    })}
-                    className="text-xs bg-white px-2 py-1 rounded-full border border-gray-200 hover:border-[#009F9C] hover:text-[#009F9C] transition-colors"
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

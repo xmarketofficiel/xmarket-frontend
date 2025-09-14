@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { CheckCircle, MessageCircle, User, Star, Clock } from 'lucide-react';
 
 interface SellerInfo {
@@ -54,11 +53,8 @@ export default function SellerCard({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 }}
-      className={`bg-gray-50 rounded-xl p-4 ${className}`}
+    <div 
+      className={`bg-gray-50 rounded-xl p-4 transition-all duration-200 ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
@@ -68,27 +64,23 @@ export default function SellerCard({
         </h3>
         
         {!isOwnItem && !isAnonymous && onViewProfile && (
-          <motion.button
+          <button
             onClick={handleViewProfile}
-            className="text-sm text-[#006666] hover:text-[#005555] font-medium transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="text-sm text-[#006666] hover:text-[#005555] font-medium transition-colors duration-200"
           >
             View Profile
-          </motion.button>
+          </button>
         )}
       </div>
 
       {/* Seller Info */}
       <div className="flex items-center space-x-3">
         {/* Avatar */}
-        <motion.div 
-          className="w-12 h-12 bg-[#006666] rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.2 }}
+        <div 
+          className="w-12 h-12 bg-[#006666] rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md transition-transform duration-200 hover:scale-105"
         >
           {getSellerInitial()}
-        </motion.div>
+        </div>
         
         {/* Details */}
         <div className="flex-1">
@@ -98,24 +90,17 @@ export default function SellerCard({
             </span>
             
             {!isAnonymous && isVerified && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.8, type: 'spring', stiffness: 500 }}
-              >
+              <div>
                 <CheckCircle size={16} className="text-[#006666]" />
-              </motion.div>
+              </div>
             )}
             
             {isAnonymous && (
-              <motion.span 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 }}
+              <span 
                 className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full"
               >
                 🕶️ Private
-              </motion.span>
+              </span>
             )}
           </div>
           
@@ -150,25 +135,20 @@ export default function SellerCard({
         
         {/* Message Button */}
         {!isOwnItem && (
-          <motion.button
+          <button
             onClick={onMessageClick}
-            className="bg-[#006666] hover:bg-[#005555] text-white p-2 rounded-full transition-colors shadow-md"
+            className="bg-[#006666] hover:bg-[#005555] text-white p-2 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             aria-label="Send message to seller"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
             <MessageCircle size={18} />
-          </motion.button>
+          </button>
         )}
       </div>
 
       {/* Anonymous Seller Info */}
       {isAnonymous && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
-          className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100"
+        <div
+          className="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-100"
         >
           <div className="flex items-start space-x-2">
             <div className="text-blue-500 mt-0.5">ℹ️</div>
@@ -177,16 +157,13 @@ export default function SellerCard({
               <p className="text-xs">This seller has chosen to remain anonymous. You can still contact them through our secure messaging system.</p>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Own Item Notice */}
       {isOwnItem && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
-          className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100"
+        <div
+          className="mt-3 p-3 bg-green-50 rounded-xl border border-green-100"
         >
           <div className="flex items-center space-x-2 text-green-700">
             <CheckCircle size={16} />
@@ -195,8 +172,8 @@ export default function SellerCard({
           <p className="text-xs text-green-600 mt-1">
             You can edit or manage this item from your profile
           </p>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }

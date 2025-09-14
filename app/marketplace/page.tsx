@@ -358,114 +358,130 @@ export default function MarketplacePage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <MarketplaceHeader
-        user={user}
-        pendingSalesCount={state.pendingSalesCount}
-        onNotificationClick={handleNotificationClick}
-      />
-
-      {/* Enhanced Search Bar */}
-      <div className="bg-gray-50 px-4 py-6">
-        <EnhancedSearchBar
-          searchQuery={state.searchQuery}
-          onSearchChange={handleSearchChange}
-          onSearch={(query) => {
-            handleSearchChange(query);
-            loadItems(1, true);
-          }}
-          showFilters={showAdvancedFilters}
-          onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          placeholder="Search items, categories, or sellers..."
+    <div className="h-full flex flex-col">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0">
+        <MarketplaceHeader
+          user={user}
+          pendingSalesCount={state.pendingSalesCount}
+          onNotificationClick={handleNotificationClick}
         />
-      </div>
 
-      {/* Category Filter */}
-      <div className="bg-white border-b border-gray-100">
-        <CategoryFilter
-          categories={categories}
-          selectedCategory={state.selectedCategory}
-          onChange={handleCategoryChange}
-          loading={!categories.length}
-        />
-      </div>
-
-      {/* View Controls */}
-      <ViewControls
-        viewMode={state.viewMode}
-        onViewModeChange={handleViewModeChange}
-        showFilters={state.showFilters}
-        onToggleFilters={() => updateState({ showFilters: !state.showFilters })}
-        itemCount={state.totalItems}
-        loading={state.loading}
-      />
-
-      {/* Filter Panel */}
-      <FilterPanel
-        isOpen={state.showFilters}
-        onClose={() => updateState({ showFilters: false })}
-        sortBy={state.sortBy}
-        onSortChange={handleSortChange}
-        priceRange={state.priceRange}
-        onPriceRangeChange={handlePriceRangeChange}
-        conditionFilter={state.conditionFilter}
-        onConditionChange={handleConditionChange}
-        onClearFilters={handleClearFilters}
-      />
-
-      {/* Search Results Header */}
-      <SearchResultsHeader
-        searchQuery={state.searchQuery}
-        totalResults={state.totalItems}
-        onClearSearch={() => handleSearchChange('')}
-        loading={state.loading}
-      />
-
-      {/* Content Area */}
-      <div className="px-4 pt-4 pb-20">
-        {/* Error State */}
-        {state.error && (
-          <EmptyState
-            type="error"
-            onAction={() => loadItems(1, true)}
-          />
-        )}
-
-        {/* Loading State */}
-        {state.loading && state.items.length === 0 && (
-          <EmptyState type="loading" />
-        )}
-
-        {/* Empty State */}
-        {isEmpty && !state.error && (
-          <EmptyState
-            type={isSearching ? "noItems" : "noSearch"}
+        {/* Enhanced Search Bar */}
+        <div className="bg-gray-50 px-4 py-4">
+          <EnhancedSearchBar
             searchQuery={state.searchQuery}
-            selectedCategory={state.selectedCategory}
-            onAction={handleClearFilters}
+            onSearchChange={handleSearchChange}
+            onSearch={(query) => {
+              handleSearchChange(query);
+              loadItems(1, true);
+            }}
+            showFilters={showAdvancedFilters}
+            onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            placeholder="Search items, categories, or sellers..."
           />
-        )}
+        </div>
 
-        {/* Items Grid */}
-        {state.items.length > 0 && (
-          <>
-            <Feed
-              items={state.items}
-              loading={state.loading}
-              onLoadMore={handleLoadMore}
-              hasMore={state.hasMore}
+        {/* Category Filter */}
+        <div className="bg-white border-b border-gray-100">
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={state.selectedCategory}
+            onChange={handleCategoryChange}
+            loading={!categories.length}
+          />
+        </div>
+
+        {/* Results Counter */}
+        <div className="bg-white border-b border-gray-100 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              {state.loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-[#009F9C] rounded-full animate-spin" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <span>
+                  <span className="font-semibold text-gray-900">{state.totalItems.toLocaleString()}</span>{' '}
+                  <span>
+                    {state.totalItems === 1 ? 'item' : 'items'}
+                  </span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Filter Panel */}
+        <FilterPanel
+          isOpen={state.showFilters}
+          onClose={() => updateState({ showFilters: false })}
+          sortBy={state.sortBy}
+          onSortChange={handleSortChange}
+          priceRange={state.priceRange}
+          onPriceRangeChange={handlePriceRangeChange}
+          conditionFilter={state.conditionFilter}
+          onConditionChange={handleConditionChange}
+          onClearFilters={handleClearFilters}
+        />
+
+        {/* Search Results Header */}
+        <SearchResultsHeader
+          searchQuery={state.searchQuery}
+          totalResults={state.totalItems}
+          onClearSearch={() => handleSearchChange('')}
+          loading={state.loading}
+        />
+
+        {/* Content Area */}
+        <div className="px-4 pt-4 pb-6">
+          {/* Error State */}
+          {state.error && (
+            <EmptyState
+              type="error"
+              onAction={() => loadItems(1, true)}
             />
-            
-            <LoadMoreButton
-              hasMore={state.hasMore}
-              loading={state.loading}
-              onClick={handleLoadMore}
-              itemsShown={state.items.length}
-              totalItems={state.totalItems}
+          )}
+
+          {/* Loading State */}
+          {state.loading && state.items.length === 0 && (
+            <EmptyState type="loading" />
+          )}
+
+          {/* Empty State */}
+          {isEmpty && !state.error && (
+            <EmptyState
+              type={isSearching ? "noItems" : "noSearch"}
+              searchQuery={state.searchQuery}
+              selectedCategory={state.selectedCategory}
+              onAction={handleClearFilters}
             />
-          </>
-        )}
+          )}
+
+          {/* Items Grid */}
+          {state.items.length > 0 && (
+            <>
+              <Feed
+                items={state.items}
+                loading={state.loading}
+                onLoadMore={handleLoadMore}
+                hasMore={state.hasMore}
+              />
+              
+              <LoadMoreButton
+                hasMore={state.hasMore}
+                loading={state.loading}
+                onClick={handleLoadMore}
+                itemsShown={state.items.length}
+                totalItems={state.totalItems}
+              />
+            </>
+          )}
+        </div>
       </div>
 
       {/* Advanced Filter Panel */}

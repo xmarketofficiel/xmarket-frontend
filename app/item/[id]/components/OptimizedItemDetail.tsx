@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { useUser } from "../../../../contexts/UserContext";
 import { useFavorites } from "../../../../contexts/FavoritesContext";
 import { useToast } from "../../../../contexts/ToastContext";
@@ -202,18 +201,14 @@ export default function OptimizedItemDetail({
   // Loading state
   if (state.loading.item) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <LoadingSpinner size="lg" text={STATUS_MESSAGES.loading.item} />
       </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-white"
-    >
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <ItemHeader
         onBack={handleBack}
@@ -238,10 +233,12 @@ export default function OptimizedItemDetail({
       {/* Content Container */}
       <div className="pb-32">
         {/* Item Information */}
-        <ItemInfo item={item} />
+        <div className="bg-white">
+          <ItemInfo item={item} />
+        </div>
 
         {/* Seller Card */}
-        <div className="px-6 mb-6">
+        <div className="px-4 md:px-6 mt-4">
           <SellerCard
             seller={item.seller}
             isAnonymous={item.anonymous}
@@ -278,7 +275,7 @@ export default function OptimizedItemDetail({
         itemId={String(item.id)}
         itemTitle={item.title}
       />
-    </motion.div>
+    </div>
   );
 }
 

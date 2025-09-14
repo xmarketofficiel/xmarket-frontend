@@ -375,54 +375,55 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   // Main profile view
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+    <div className="h-full flex flex-col">
+      {/* Fixed Header */}
+      <div className="bg-white border-b border-gray-200 flex-shrink-0 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
         </div>
       </div>
 
-      {/* Profile Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Profile Info Card - Simple Design */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-4">
-            {/* Profile Image with Camera Icon */}
-            <div className="relative">
-              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
-                {profileData?.user?.profileImageUrl || currentUser?.profileImageUrl ? (
-                  <img
-                    src={profileData?.user?.profileImageUrl || currentUser?.profileImageUrl}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <User className="w-10 h-10 text-gray-400" />
-                  </div>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-4 py-6">
+          {/* Profile Info Card - Simple Design */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <div className="flex items-center gap-4">
+              {/* Profile Image with Camera Icon */}
+              <div className="relative">
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
+                  {profileData?.user?.profileImageUrl || currentUser?.profileImageUrl ? (
+                    <img
+                      src={profileData?.user?.profileImageUrl || currentUser?.profileImageUrl}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <User className="w-10 h-10 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                {isOwner && (
+                  <button
+                    onClick={handlePhotoUpload}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#009F9C] hover:bg-[#007A77] text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
+                    title="Upload photo"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
                 )}
               </div>
-              {isOwner && (
-                <button
-                  onClick={handlePhotoUpload}
-                  className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#009F9C] hover:bg-[#007A77] text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
-                  title="Upload photo"
-                >
-                  <Camera className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {profileData?.user?.fullName || currentUser?.fullName}
-              </h2>
-              <p className="text-sm text-gray-500">
-                {profileData?.user?.email || currentUser?.email}
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {profileData?.user?.fullName || currentUser?.fullName}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {profileData?.user?.email || currentUser?.email}
               </p>
             </div>
             {isOwner && (
@@ -579,6 +580,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
               </button>
             );
           })}
+        </div>
         </div>
       </div>
     </div>

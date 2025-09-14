@@ -78,9 +78,9 @@ export default function MyItemsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+    <div className="h-full flex flex-col">
+      {/* Fixed Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200 flex-shrink-0 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -107,63 +107,66 @@ export default function MyItemsPage() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <div className="flex space-x-1 p-1">
-            {(['all', 'active', 'sold', 'inactive'] as const).map((filterType) => (
-              <button
-                key={filterType}
-                onClick={() => setFilter(filterType)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  filter === filterType
-                    ? 'bg-[#006666] text-white'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                {filterType.charAt(0).toUpperCase() + filterType.slice(1)} ({getFilterCount(filterType)})
-              </button>
-            ))}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Filter Tabs */}
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="flex space-x-1 p-1">
+              {(['all', 'active', 'sold', 'inactive'] as const).map((filterType) => (
+                <button
+                  key={filterType}
+                  onClick={() => setFilter(filterType)}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    filter === filterType
+                      ? 'bg-[#006666] text-white'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  {filterType.charAt(0).toUpperCase() + filterType.slice(1)} ({getFilterCount(filterType)})
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Items Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#006666]"></div>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <Package size={48} className="text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filter === 'all' ? 'No items yet' : `No ${filter} items`}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {filter === 'all' 
-                ? "You haven't posted any items yet. Start selling by adding your first item!"
-                : `You don't have any ${filter} items at the moment.`
-              }
-            </p>
-            {filter === 'all' && (
-              <button
-                onClick={() => window.location.href = '/add-item'}
-                className="bg-[#006666] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#005555] transition-colors"
-              >
-                Add Your First Item
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {filteredItems.map((item) => (
-              <UserItemCard
-                key={item.id}
-                item={item}
-                onItemDeleted={handleItemDeleted}
-              />
-            ))}
-          </div>
-        )}
+          {/* Items Grid */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#006666]"></div>
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+              <Package size={48} className="text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {filter === 'all' ? 'No items yet' : `No ${filter} items`}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {filter === 'all' 
+                  ? "You haven't posted any items yet. Start selling by adding your first item!"
+                  : `You don't have any ${filter} items at the moment.`
+                }
+              </p>
+              {filter === 'all' && (
+                <button
+                  onClick={() => window.location.href = '/add-item'}
+                  className="bg-[#006666] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#005555] transition-colors"
+                >
+                  Add Your First Item
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-6">
+              {filteredItems.map((item) => (
+                <UserItemCard
+                  key={item.id}
+                  item={item}
+                  onItemDeleted={handleItemDeleted}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

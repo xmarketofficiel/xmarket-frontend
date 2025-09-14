@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Calendar, Eye, MapPin, Package, Star, Tag } from 'lucide-react';
 import { CONDITION_CONFIG } from '../constants';
 
@@ -51,36 +50,24 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
   const conditionConfig = getConditionConfig();
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+    <div 
       className={`p-6 space-y-6 ${className}`}
     >
       {/* Price and Title */}
       <div className="space-y-3">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
+        <div 
           className="text-3xl font-bold text-[#006666]"
         >
           {formatPrice(item.price)} DH
-        </motion.div>
+        </div>
         
-        <motion.h1 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
+        <h1 
           className="text-xl font-bold text-gray-900 leading-tight"
         >
           {item.title}
-        </motion.h1>
+        </h1>
         
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
+        <div 
           className="flex items-center space-x-4 text-sm text-gray-600"
         >
           <div className="flex items-center space-x-1">
@@ -93,16 +80,13 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
               <span>{item.location}</span>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       {/* Condition Badge */}
       {conditionConfig && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6 }}
-          className="inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium"
+        <div
+          className="inline-flex items-center space-x-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
           style={{ 
             backgroundColor: conditionConfig.bgColor,
             color: conditionConfig.color 
@@ -111,40 +95,31 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
           <span>{conditionConfig.icon}</span>
           <span>{item.condition}</span>
           <span className="text-xs opacity-75">• {conditionConfig.description}</span>
-        </motion.div>
+        </div>
       )}
 
       {/* Tags */}
       {item.tags && item.tags.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+        <div
           className="space-y-2"
         >
           <h3 className="text-sm font-semibold text-gray-700">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {item.tags.map((tag, index) => (
-              <motion.span
+              <span
                 key={tag}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-xl text-sm hover:bg-gray-200 transition-colors duration-200"
               >
                 #{tag}
-              </motion.span>
+              </span>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Specifications */}
       {item.specifications && Object.keys(item.specifications).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+        <div
           className="space-y-3"
         >
           <h3 className="font-semibold text-gray-900 flex items-center space-x-2">
@@ -153,40 +128,31 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
           </h3>
           <div className="bg-gray-50 rounded-xl p-4 space-y-2">
             {Object.entries(item.specifications).map(([key, value], index) => (
-              <motion.div
+              <div
                 key={key}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.9 + index * 0.1 }}
                 className="flex justify-between items-center py-1"
               >
                 <span className="text-gray-600 text-sm font-medium">{key}</span>
                 <span className="text-gray-900 text-sm">{value}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Description */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
+      <div
         className="space-y-3"
       >
         <h3 className="font-semibold text-gray-900">Description</h3>
         <p className="text-gray-700 leading-relaxed whitespace-pre-line">
           {item.description}
         </p>
-      </motion.div>
+      </div>
 
       {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0 }}
-        className="flex items-center space-x-6 pt-4 border-t border-gray-100"
+      <div
+        className="flex items-center space-x-6 pt-4 border-t border-gray-200"
       >
         <div className="flex items-center space-x-2 text-sm text-gray-500">
           <Calendar size={16} />
@@ -206,7 +172,7 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
             <span>{item.interests} interested</span>
           </div>
         )}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

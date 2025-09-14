@@ -1,9 +1,6 @@
 'use client';
 
 import { ArrowLeft, Heart, Flag, Share, MoreHorizontal } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { ANIMATION_SYSTEM } from '../../../../lib/design-system';
-import { ACTION_BUTTONS } from '../constants';
 
 interface ItemHeaderProps {
   onBack: () => void;
@@ -35,144 +32,79 @@ export default function ItemHeader({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: ANIMATION_SYSTEM.duration.normal / 1000, 
-        ease: ANIMATION_SYSTEM.framerEasing.easeOut 
-      }}
-      className={`design-card sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-100/50 px-4 py-3 flex items-center justify-between z-50 shadow-sm hover:shadow-md transition-all ${className}`}
-      style={{
-        transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-      }}
+    <div 
+      className={`sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between z-50 shadow-sm transition-shadow duration-300 ${className}`}
     >
       {/* Back Button */}
-      <motion.button
+      <button
         onClick={onBack}
-        className="design-card p-2 -ml-2 hover:bg-gray-100/80 rounded-full transition-all border border-transparent hover:border-gray-200/50"
-        style={{
-          transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-          transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-        }}
+        className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-all duration-200 border border-transparent hover:border-gray-200"
         aria-label="Go back"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
       >
-        <ArrowLeft size={20} className="text-gray-700 transition-colors" 
-                   style={{
-                     transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                     transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                   }} />
-      </motion.button>
+        <ArrowLeft size={20} className="text-gray-700 transition-colors duration-200" />
+      </button>
       
       {/* Action Buttons */}
       <div className="flex items-center space-x-1">
         {/* Share Button */}
-        <motion.button
+        <button
           onClick={onShareClick}
-          className="design-card p-2 hover:bg-gray-100/80 rounded-full transition-all border border-transparent hover:border-gray-200/50"
-          style={{
-            transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-            transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-          }}
+          className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200"
           aria-label="Share item"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
         >
-          <Share size={18} className="text-gray-600 hover:text-[#009F9C] transition-colors"
-                 style={{
-                   transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                   transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                 }} />
-        </motion.button>
+          <Share size={18} className="text-gray-600 hover:text-[#009F9C] transition-colors duration-200" />
+        </button>
 
         {/* Favorite Button - Hidden for user's own items */}
         {!isOwnItem && (
-          <motion.button
+          <button
             onClick={handleFavoriteClick}
             disabled={isLoading.favorite}
-            className={`design-card p-2 hover:bg-gray-100/80 rounded-full transition-all border border-transparent hover:border-gray-200/50 ${
+            className={`p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200 ${
               isLoading.favorite ? 'opacity-50 cursor-not-allowed' : ''
             }`}
-            style={{
-              transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-            }}
             aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-            whileHover={{ scale: isLoading.favorite ? 1 : 1.05 }}
-            whileTap={{ scale: isLoading.favorite ? 1 : 0.95 }}
-            transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
           >
             {isLoading.favorite ? (
               <div className="w-5 h-5 border-2 border-gray-300 border-t-[#009F9C] rounded-full animate-spin" />
             ) : (
               <Heart
                 size={18}
-                className={`transition-all ${
+                className={`transition-all duration-200 ${
                   isFavorited 
-                    ? 'fill-red-500 text-red-500 scale-110' 
+                    ? 'fill-red-500 text-red-500' 
                     : 'text-gray-600 hover:text-red-400'
                 }`}
-                style={{
-                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                  transitionTimingFunction: ANIMATION_SYSTEM.easing.bounce
-                }}
               />
             )}
-          </motion.button>
+          </button>
         )}
         
         {/* Report Button - Hidden for user's own items */}
         {!isOwnItem && (
-          <motion.button
+          <button
             onClick={onReportClick}
-            className="design-card p-2 hover:bg-gray-100/80 rounded-full transition-all border border-transparent hover:border-gray-200/50"
-            style={{
-              transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-            }}
+            className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200"
             aria-label="Report listing"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
           >
-            <Flag size={18} className="text-gray-600 hover:text-red-500 transition-colors"
-                  style={{
-                    transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                  }} />
-          </motion.button>
+            <Flag size={18} className="text-gray-600 hover:text-red-500 transition-colors duration-200" />
+          </button>
         )}
 
         {/* More Options for Own Items */}
         {isOwnItem && (
-          <motion.button
+          <button
             onClick={() => {
               // Handle more options for own items (edit, delete, etc.)
               // TODO: Implement edit/delete functionality
             }}
-            className="design-card p-2 hover:bg-gray-100/80 rounded-full transition-all border border-transparent hover:border-gray-200/50"
-            style={{
-              transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-            }}
+            className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200"
             aria-label="More options"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
           >
-            <MoreHorizontal size={18} className="text-gray-600 hover:text-[#009F9C] transition-colors"
-                             style={{
-                               transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                             }} />
-          </motion.button>
+            <MoreHorizontal size={18} className="text-gray-600 hover:text-[#009F9C] transition-colors duration-200" />
+          </button>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

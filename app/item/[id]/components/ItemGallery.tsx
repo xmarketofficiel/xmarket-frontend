@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ItemImage } from '../types';
 import { ITEM_DETAIL_CONFIG, CAROUSEL_CONFIG } from '../constants';
 
@@ -107,7 +106,7 @@ export default function ItemGallery({
 
   return (
     <div 
-      className={`relative aspect-square bg-gray-100 overflow-hidden ${className}`}
+      className={`relative aspect-square bg-gray-100 overflow-hidden rounded-xl ${className}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -117,12 +116,9 @@ export default function ItemGallery({
       aria-label={`${title} - Image ${currentIndex + 1} of ${validImages.length}`}
     >
       {/* Main Image */}
-      <motion.div
+      <div
         key={currentIndex}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: ITEM_DETAIL_CONFIG.ANIMATION_DURATION }}
-        className="relative w-full h-full cursor-pointer"
+        className="relative w-full h-full cursor-pointer transition-opacity duration-300"
         onClick={handleImageClick}
       >
         <Image
@@ -138,27 +134,21 @@ export default function ItemGallery({
             // Silently handle image load failures
           }}
         />
-      </motion.div>
+      </div>
       
       {/* Featured Badge */}
       {isFeatured && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="absolute top-4 left-4 bg-[#FF6B35] text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-10"
+        <div 
+          className="absolute top-4 left-4 bg-[#FF6B35] text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-10 transition-all duration-300"
         >
           ⭐ Featured
-        </motion.div>
+        </div>
       )}
       
       {/* Navigation Arrows */}
       {hasMultipleImages && (
-        <AnimatePresence>
-          <motion.button
-            key="prev-arrow"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+        <>
+          <button
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -167,13 +157,9 @@ export default function ItemGallery({
             aria-label="Previous image"
           >
             <ChevronLeft size={20} />
-          </motion.button>
+          </button>
           
-          <motion.button
-            key="next-arrow"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+          <button
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
@@ -182,15 +168,15 @@ export default function ItemGallery({
             aria-label="Next image"
           >
             <ChevronRight size={20} />
-          </motion.button>
-        </AnimatePresence>
+          </button>
+        </>
       )}
       
       {/* Image Indicators */}
       {hasMultipleImages && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
           {validImages.map((_, index) => (
-            <motion.button
+            <button
               key={index}
               onClick={(e) => {
                 e.stopPropagation();
@@ -202,8 +188,6 @@ export default function ItemGallery({
                   : 'bg-white/50 hover:bg-white/75'
               }`}
               aria-label={`Go to image ${index + 1}`}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
             />
           ))}
         </div>
