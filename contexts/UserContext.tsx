@@ -26,7 +26,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const handleAuthError = useCallback(() => {
     setUser(null);
     // No need to remove localStorage tokens since we're using HTTP-only cookies
-    router.push('/login'); // Redirect to login, not landing
+    
+    // Only redirect if not on a public page
+    const currentPath = window.location.pathname;
+    const isPublicPage = currentPath === '/' || 
+                        currentPath.includes('/login') || 
+                        currentPath.includes('/signup') ||
+                        currentPath.includes('/landing');
+    
+    if (!isPublicPage) {
+      router.push('/'); // Redirect to home page instead of login
+    }
   }, [router]);
 
   // Check for existing session on mount
@@ -38,11 +48,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user-token');
     
-    // Set up global auth error handler
-    apiClient.setAuthErrorHandler(handleAuthError);
+    // Set up global auth error handler that respects public pages
+    apiClient.setAuthErrorHandler(() => {
+      const currentPath = window.location.pathname;
+      const isPublicPage = currentPath === '/' || 
+                          currentPath.includes('/login') || 
+                          currentPath.includes('/signup') ||
+                          currentPath.includes('/landing');
+      
+      if (!isPublicPage) {
+        handleAuthError();
+      }
+    });
     
     checkCurrentUser();
-  }, []);
+  }, [handleAuthError]);
 
   const checkCurrentUser = async () => {
     try {
@@ -58,7 +78,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser(response.data);
     } catch (error: any) {
       // Check if it's a 401 (token expired) and we're not already on a public page
-      if (error?.response?.status === 401 && !window.location.pathname.includes('/landing') && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
+      const isPublicPage = window.location.pathname === '/' || 
+                          window.location.pathname.includes('/login') || 
+                          window.location.pathname.includes('/signup');
+                          
+      if (error?.response?.status === 401 && !isPublicPage) {
         handleAuthError();
       } else {
         // No active session or on a public page - just clear state
@@ -93,8 +117,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Clear user state
       setUser(null);
       // No need to remove localStorage tokens since we're using HTTP-only cookies
-      // Redirect to login page
-      router.push('/login');
+      // Redirect to home page (which will show landing for non-authenticated users)
+      router.push('/');
     }
   }, [router]);
 

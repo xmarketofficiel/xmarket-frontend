@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { 
   Edit,
   Trash2,
@@ -74,16 +73,10 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ 
-        scale: 1.02,
-        transition: { duration: 0.2 }
-      }}
+    <div
       onClick={handleItemClick}
       className={`
-        bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 
+        bg-white rounded-xl border border-gray-200 hover:border-[#009F9C] transition-all duration-200 
         cursor-pointer group overflow-hidden
         ${compact ? 'p-3' : 'p-4'}
       `}
@@ -94,14 +87,14 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
           <img
             src={getSafeImageUrl(item.images[0].imageUrl || item.images[0].cloudinaryUrl || item.images[0].spacesUrl)}
             alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover transition-transform duration-200"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM;
             }}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
             <Tag className="w-8 h-8 text-gray-400" />
           </div>
         )}
@@ -140,25 +133,21 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
         {/* Action Buttons Overlay */}
         {showActions && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={(e) => handleAction(e, 'edit')}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+            <button
+              onClick={(e: React.MouseEvent) => handleAction(e, 'edit')}
+              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors hover:scale-110"
               title="Edit item"
             >
               <Edit className="w-4 h-4" />
-            </motion.button>
+            </button>
             
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={(e) => handleAction(e, 'delete')}
-              className="w-10 h-10 bg-red-500/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+            <button
+              onClick={(e: React.MouseEvent) => handleAction(e, 'delete')}
+              className="w-10 h-10 bg-red-500/80 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors hover:scale-110"
               title="Delete item"
             >
               <Trash2 className="w-4 h-4" />
-            </motion.button>
+            </button>
           </div>
         )}
       </div>
@@ -221,7 +210,7 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

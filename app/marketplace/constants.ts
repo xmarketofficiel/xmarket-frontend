@@ -50,7 +50,19 @@ export const CATEGORY_CONFIG = {
     color: '#3B82F6',
     description: 'Phones, laptops, gadgets & more'
   },
+  Electronics: {
+    name: 'Electronics',
+    icon: '💻',
+    color: '#3B82F6',
+    description: 'Phones, laptops, gadgets & more'
+  },
   books: {
+    name: 'Books',
+    icon: '📚',
+    color: '#10B981',
+    description: 'Textbooks, novels & academic materials'
+  },
+  Books: {
     name: 'Books',
     icon: '📚',
     color: '#10B981',
@@ -62,7 +74,19 @@ export const CATEGORY_CONFIG = {
     color: '#8B5CF6',
     description: 'Dorm furniture & home decor'
   },
+  Furniture: {
+    name: 'Furniture',
+    icon: '🪑',
+    color: '#8B5CF6',
+    description: 'Dorm furniture & home decor'
+  },
   clothing: {
+    name: 'Clothing',
+    icon: '👕',
+    color: '#F59E0B',
+    description: 'Fashion, shoes & accessories'
+  },
+  Clothing: {
     name: 'Clothing',
     icon: '👕',
     color: '#F59E0B',
@@ -74,11 +98,41 @@ export const CATEGORY_CONFIG = {
     color: '#EF4444',
     description: 'Sports equipment & fitness gear'
   },
+  Sports: {
+    name: 'Sports',
+    icon: '⚽',
+    color: '#EF4444',
+    description: 'Sports equipment & fitness gear'
+  },
   vehicles: {
     name: 'Vehicles',
     icon: '🚗',
     color: '#6366F1',
     description: 'Bikes, scooters & transportation'
+  },
+  transportation: {
+    name: 'Transportation',
+    icon: '🚗',
+    color: '#6366F1',
+    description: 'Bikes, scooters & transportation'
+  },
+  Transportation: {
+    name: 'Transportation',
+    icon: '🚗',
+    color: '#6366F1',
+    description: 'Bikes, scooters & transportation'
+  },
+  services: {
+    name: 'Services',
+    icon: '🔧',
+    color: '#059669',
+    description: 'Tutoring, cleaning, repairs'
+  },
+  Services: {
+    name: 'Services',
+    icon: '🔧',
+    color: '#059669',
+    description: 'Tutoring, cleaning, repairs'
   },
   'home & garden': {
     name: 'Home & Garden',
@@ -87,6 +141,12 @@ export const CATEGORY_CONFIG = {
     description: 'Home essentials & garden supplies'
   },
   other: {
+    name: 'Other',
+    icon: '📦',
+    color: '#6B7280',
+    description: 'Everything else'
+  },
+  Other: {
     name: 'Other',
     icon: '📦',
     color: '#6B7280',

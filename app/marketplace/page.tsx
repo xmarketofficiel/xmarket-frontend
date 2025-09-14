@@ -9,7 +9,8 @@ import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 
 // Components
 import { MarketplaceHeader } from './components/MarketplaceHeader';
-import { SearchBar } from './components/SearchBar';
+import { EnhancedSearchBar } from './components/EnhancedSearchBar';
+import { AdvancedFilterPanel } from './components/AdvancedFilterPanel';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ViewControls } from './components/ViewControls';
 import { FilterPanel } from './components/FilterPanel';
@@ -58,6 +59,19 @@ export default function MarketplacePage() {
     itemsPerPage: MARKETPLACE_CONFIG.ITEMS_PER_PAGE
   });
 
+  // Enhanced filter state
+  const [advancedFilters, setAdvancedFilters] = useState({
+    priceRange: [0, 1000] as [number, number],
+    condition: [] as string[],
+    category: '',
+    location: '',
+    datePosted: '',
+    rating: 0,
+    tags: [] as string[]
+  });
+
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
   // Categories list
   const [categories, setCategories] = useState<string[]>([]);
 
@@ -94,10 +108,26 @@ export default function MarketplacePage() {
   const loadCategories = useCallback(async () => {
     try {
       const response = await api.categories.getCategories();
+      // Backend returns full category objects with id, name, icon, description
       const categoryList = response.data || [];
-      setCategories(Array.isArray(categoryList) ? categoryList.map((cat: any) => cat.name || cat) : []);
+      
+      if (Array.isArray(categoryList)) {
+        // Extract just the names for the filter, but keep full objects for reference
+        const categoryNames = categoryList.map((cat: any) => {
+          // Handle both formats: object with name property or direct string
+          if (typeof cat === 'object' && cat.name) {
+            return cat.name;
+          }
+          return cat;
+        });
+        setCategories(categoryNames);
+      } else {
+        // Fallback to predefined categories
+        setCategories(Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all'));
+      }
     } catch (error) {
       console.error('Failed to load categories:', error);
+      // Fallback to predefined categories from CATEGORY_CONFIG
       setCategories(Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all'));
     }
   }, []); // Remove all dependencies to prevent loops
@@ -336,13 +366,18 @@ export default function MarketplacePage() {
         onNotificationClick={handleNotificationClick}
       />
 
-      {/* Search Bar */}
-      <div className="bg-white px-4 py-4 border-b border-gray-100">
-        <SearchBar
-          value={state.searchQuery}
-          onChange={handleSearchChange}
-          onClear={() => handleSearchChange('')}
-          loading={state.loading}
+      {/* Enhanced Search Bar */}
+      <div className="bg-gray-50 px-4 py-6">
+        <EnhancedSearchBar
+          searchQuery={state.searchQuery}
+          onSearchChange={handleSearchChange}
+          onSearch={(query) => {
+            handleSearchChange(query);
+            loadItems(1, true);
+          }}
+          showFilters={showAdvancedFilters}
+          onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          placeholder="Search items, categories, or sellers..."
         />
       </div>
 
@@ -432,6 +467,31 @@ export default function MarketplacePage() {
           </>
         )}
       </div>
+
+      {/* Advanced Filter Panel */}
+      <AdvancedFilterPanel
+        isOpen={showAdvancedFilters}
+        onClose={() => setShowAdvancedFilters(false)}
+        filters={advancedFilters}
+        onFiltersChange={setAdvancedFilters}
+        onApplyFilters={() => {
+          // Apply advanced filters logic here
+          console.log('Applied filters:', advancedFilters);
+          loadItems(1, true);
+        }}
+        onClearFilters={() => {
+          setAdvancedFilters({
+            priceRange: [0, 1000],
+            condition: [],
+            category: '',
+            location: '',
+            datePosted: '',
+            rating: 0,
+            tags: []
+          });
+          loadItems(1, true);
+        }}
+      />
     </div>
   );
 }

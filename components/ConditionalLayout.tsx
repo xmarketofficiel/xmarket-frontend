@@ -26,9 +26,27 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   }
   
   // Public pages - no navbar, no authentication required
-  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon' || pathname === '/landing' || pathname === '/') {
+  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon' || pathname === '/landing') {
     return (
       <main className={pathname === '/coming-soon' ? 'min-h-screen' : 'min-h-screen bg-gray-50'}>
+        {children}
+      </main>
+    );
+  }
+  
+  // Home page "/" - special handling for authentication
+  if (pathname === '/') {
+    // For home page, let the page itself handle authentication and layout
+    // Only show Navbar if user is authenticated
+    return user ? (
+      <>
+        <main className="pb-16 min-h-screen bg-gray-50">
+          {children}
+        </main>
+        <Navbar />
+      </>
+    ) : (
+      <main className="min-h-screen bg-gray-50">
         {children}
       </main>
     );

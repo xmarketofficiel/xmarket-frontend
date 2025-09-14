@@ -891,6 +891,105 @@ export const usersApi = {
     });
   },
 
+  // Security & Account Management
+  getLoginSessions: (): Promise<ApiResponse<any[]>> => {
+    console.warn("Login sessions not implemented in backend yet");
+    return Promise.resolve({
+      data: [
+        {
+          id: "session1",
+          deviceName: "Chrome on Windows",
+          deviceType: "desktop",
+          location: "New York, US",
+          lastActive: "2 minutes ago",
+          current: true,
+          ipAddress: "192.168.1.1"
+        },
+        {
+          id: "session2", 
+          deviceName: "Safari on iPhone",
+          deviceType: "mobile",
+          location: "New York, US", 
+          lastActive: "1 hour ago",
+          current: false,
+          ipAddress: "192.168.1.2"
+        }
+      ],
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  getSecuritySettings: (): Promise<ApiResponse<any>> => {
+    console.warn("Security settings not implemented in backend yet");
+    return Promise.resolve({
+      data: {
+        twoFactorEnabled: false,
+        loginAlerts: true,
+        sessionTimeout: 30,
+        requirePasswordForSensitive: true,
+      },
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  updateSecuritySettings: (settings: any): Promise<ApiResponse<any>> => {
+    console.warn("Update security settings not implemented in backend yet");
+    return Promise.resolve({
+      data: settings,
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  revokeSession: (sessionId: string): Promise<ApiResponse<void>> => {
+    console.warn("Revoke session not implemented in backend yet");
+    return Promise.resolve({
+      data: undefined,
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  revokeAllSessions: (): Promise<ApiResponse<void>> => {
+    console.warn("Revoke all sessions not implemented in backend yet");
+    return Promise.resolve({
+      data: undefined,
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  exportAccountData: (): Promise<ApiResponse<any>> => {
+    console.warn("Export account data not implemented in backend yet");
+    const mockData = {
+      user: {
+        id: "user123",
+        name: "John Doe",
+        email: "john@example.com",
+        joinDate: "2024-01-01"
+      },
+      items: [],
+      transactions: [],
+      messages: []
+    };
+    return Promise.resolve({
+      data: JSON.stringify(mockData, null, 2),
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
+  deleteAccount: (data: { password: string }): Promise<ApiResponse<void>> => {
+    console.warn("Delete account not implemented in backend yet");
+    return Promise.resolve({
+      data: undefined,
+      status: 200,
+      message: "Mock response",
+    });
+  },
+
   // Admin endpoints for user management
   getAllUsers: (): Promise<ApiResponse<User[]>> => {
     console.warn("Admin getAllUsers not implemented in backend yet");
