@@ -25,6 +25,9 @@ export const BRAND_FEATURES = [
 export const ERROR_MESSAGES = {
   INVALID_EMAIL: 'Please enter a valid email address.',
   INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
+  ACCOUNT_SUSPENDED: 'Your account has been suspended by the admin. Please contact support for assistance.',
+  ACCOUNT_BANNED: 'Your account has been banned. Please contact support for assistance.',
+  EMAIL_NOT_VERIFIED: 'Please verify your email address before logging in.',
   NETWORK_ERROR: 'Unable to connect to server. Please check your connection and try again.',
   GENERIC_ERROR: 'Login failed. Please try again.'
 } as const;

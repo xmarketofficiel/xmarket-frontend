@@ -38,7 +38,19 @@ export default function LoginPage() {
         // Using HTTP-only cookies now, no need for localStorage
         router.push('/marketplace');
       } else {
-        setError(data.message || "Login failed");
+        // Enhanced error handling for suspension
+        let errorMessage = data.message || "Login failed";
+        
+        // Check for specific suspension/ban messages
+        if (errorMessage.includes('suspended')) {
+          errorMessage = "Your account has been suspended by the admin. Please contact support for assistance.";
+        } else if (errorMessage.includes('banned')) {
+          errorMessage = "Your account has been banned. Please contact support for assistance.";
+        } else if (errorMessage.includes('verify your email')) {
+          errorMessage = "Please verify your email address before logging in.";
+        }
+        
+        setError(errorMessage);
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");

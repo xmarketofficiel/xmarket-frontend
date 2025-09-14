@@ -84,15 +84,30 @@ export default function LoginPage() {
   const getErrorMessage = (error: any): string => {
     const errorMessage = error?.message || '';
     
+    // Check for account status related errors
+    if (errorMessage.includes('suspended') || errorMessage.includes('Your account has been suspended')) {
+      return ERROR_MESSAGES.ACCOUNT_SUSPENDED;
+    }
+    if (errorMessage.includes('banned') || errorMessage.includes('Your account has been banned')) {
+      return ERROR_MESSAGES.ACCOUNT_BANNED;
+    }
+    if (errorMessage.includes('verify your email') || errorMessage.includes('Please verify your email')) {
+      return ERROR_MESSAGES.EMAIL_NOT_VERIFIED;
+    }
+    
+    // Check for credential related errors
     if (errorMessage.includes('Invalid email format')) {
       return ERROR_MESSAGES.INVALID_EMAIL;
     }
     if (errorMessage.includes('User not found') || errorMessage.includes('Invalid credentials')) {
       return ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
+    
+    // Check for network related errors
     if (errorMessage.includes('Network Error') || errorMessage.includes('fetch')) {
       return ERROR_MESSAGES.NETWORK_ERROR;
     }
+    
     return ERROR_MESSAGES.GENERIC_ERROR;
   };
 
