@@ -72,161 +72,174 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: PROFILE_CONSTANTS.ANIMATION_DELAYS.HEADER }}
-      className="bg-white rounded-2xl shadow-lg overflow-hidden"
+      className="relative"
     >
-      {/* Cover Image */}
-      <div className="h-32 bg-gradient-to-r from-[#009F9C] to-[#007A77] relative">
-        {user.coverImage && (
-          <img
-            src={getSafeImageUrl(user.coverImage)}
-            alt="Cover"
-            className="w-full h-full object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#009F9C]/80 to-[#007A77]/80" />
-      </div>
-
-      {/* Profile Content */}
-      <div className="px-6 pb-6">
-        <div className="flex items-start gap-6 -mt-12 relative">
-          {/* Profile Picture */}
-          <div className="relative z-10">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
-              {hasProfileImage ? (
-                <img
-                  src={getSafeImageUrl(profileImageUrl)}
-                  alt={user.fullName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <div className={`w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center ${hasProfileImage ? 'hidden' : ''}`}>
-                <User className="w-12 h-12 text-white" />
-              </div>
+      {/* Modern Profile Layout */}
+      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+        {/* Profile Picture */}
+        <div className="relative z-10 flex-shrink-0 mx-auto sm:mx-0">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white">
+            {hasProfileImage ? (
+              <img
+                src={getSafeImageUrl(profileImageUrl)}
+                alt={user.fullName}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div className={`w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center ${hasProfileImage ? 'hidden' : ''}`}>
+              <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
             </div>
-            
-            {/* Activity Status */}
-            {user.lastActive && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full" />
-              </div>
-            )}
           </div>
+          
+          {/* Verification Badge */}
+          {user.isVerified && (
+            <div className="absolute -top-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </div>
+          )}
+          
+          {/* Activity Status */}
+          {user.lastActive && (
+            <div className="absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-2 h-2 bg-white rounded-full" />
+            </div>
+          )}
+        </div>
 
-          {/* User Info */}
-          <div className="flex-1 mt-12">
-            <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {user.fullName}
-                  </h1>
+        {/* User Info */}
+        <div className="flex-1 min-w-0 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="space-y-2 sm:space-y-3 min-w-0 flex-1">
+              {/* Name and Verification */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
+                  {user.fullName}
+                </h1>
+                {user.isVerified && (
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="flex items-center gap-1 text-sm"
-                    title={getVerificationText()}
+                    className="flex items-center gap-1 px-3 py-1 bg-green-50 border border-green-200 rounded-full text-sm font-medium text-green-700 mx-auto sm:mx-0 w-fit"
+                    title="Verified Seller"
                   >
-                    {getVerificationIcon()}
+                    <CheckCircle className="w-4 h-4" />
+                    Verified
                   </motion.div>
-                </div>
+                )}
+              </div>
 
-                {/* User Rating */}
-                {user.averageRating && user.averageRating > 0 && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      <span className="text-sm font-medium text-gray-900">
-                        {user.averageRating.toFixed(1)}
-                      </span>
-                    </div>
+              {/* Rating and Response Time */}
+              {user.averageRating && user.averageRating > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 justify-center sm:justify-start">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 rounded-full mx-auto sm:mx-0 w-fit">
+                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                    <span className="text-sm font-semibold text-gray-900">
+                      {user.averageRating.toFixed(1)}
+                    </span>
                     <span className="text-sm text-gray-500">
-                      • {user.responseTime ? `${user.responseTime}h response time` : 'New seller'}
+                      ({user.totalRatings || 0} reviews)
                     </span>
                   </div>
-                )}
-
-                {/* Location and Join Date */}
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  {user.location && (
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{user.location}</span>
-                    </div>
-                  )}
-                  {user.joinedDate && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>Joined {new Date(user.joinedDate).toLocaleDateString()}</span>
+                  
+                  {user.responseTime && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full mx-auto sm:mx-0 w-fit">
+                      <Clock className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm font-medium text-gray-900">
+                        ~{user.responseTime}h response
+                      </span>
                     </div>
                   )}
                 </div>
+              )}
 
-                {/* Bio */}
-                {user.bio && (
-                  <p className="text-gray-700 max-w-md leading-relaxed">
-                    {user.bio}
-                  </p>
+              {/* Location and Join Date */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-gray-600 justify-center sm:justify-start">
+                {user.location && (
+                  <div className="flex items-center gap-2 justify-center sm:justify-start">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span>{user.location}</span>
+                  </div>
+                )}
+                {user.createdAt && (
+                  <div className="flex items-center gap-2 justify-center sm:justify-start">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span>Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                  </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3 mt-2">
-                {isOwner ? (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onEditProfile}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#009F9C] text-white rounded-lg hover:bg-[#007A77] transition-colors"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Edit Profile
-                  </motion.button>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onMessageUser}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#009F9C] text-white rounded-lg hover:bg-[#007A77] transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Message
-                  </motion.button>
-                )}
-              </div>
+              {/* Bio */}
+              {user.bio && (
+                <p className="text-gray-700 leading-relaxed max-w-2xl text-center sm:text-left">
+                  {user.bio}
+                </p>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center sm:justify-end gap-3 sm:ml-4">
+              {isOwner ? (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onEditProfile}
+                  className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#009F9C] text-white rounded-xl hover:bg-[#007A77] transition-all font-medium shadow-lg hover:shadow-xl text-sm sm:text-base"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Profile
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onMessageUser}
+                  className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#009F9C] text-white rounded-xl hover:bg-[#007A77] transition-all font-medium shadow-lg hover:shadow-xl text-sm sm:text-base"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Message
+                </motion.button>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Additional Info Bar */}
-        <div className="mt-6 pt-4 border-t border-gray-100">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <div className="flex items-center gap-6">
-              {user.activityScore && (
-                <div>
-                  Activity Score: <span className="font-medium text-gray-900">{user.activityScore}%</span>
-                </div>
-              )}
-              {user.preferredCategories && user.preferredCategories.length > 0 && (
-                <div>
-                  Interests: <span className="font-medium text-gray-900">{user.preferredCategories.slice(0, 3).join(', ')}</span>
-                  {user.preferredCategories.length > 3 && (
-                    <span className="text-gray-500"> +{user.preferredCategories.length - 3} more</span>
+      {/* Marketplace Activity Summary */}
+      <div className="mt-8 pt-6 border-t border-gray-100">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-8">
+            {user.activityScore && (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-gray-600">Activity Score:</span>
+                <span className="font-semibold text-gray-900">{user.activityScore}%</span>
+              </div>
+            )}
+            {user.preferredCategories && user.preferredCategories.length > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-gray-600">Interests:</span>
+                <span className="font-medium text-gray-900">
+                  {user.preferredCategories.slice(0, 2).join(', ')}
+                  {user.preferredCategories.length > 2 && (
+                    <span className="text-gray-500"> +{user.preferredCategories.length - 2} more</span>
                   )}
-                </div>
-              )}
-            </div>
-            
-            {user.lastActive && (
-              <div className="text-xs text-gray-500">
-                Last active {new Date(user.lastActive).toLocaleDateString()}
+                </span>
               </div>
             )}
           </div>
+          
+          {user.lastActive && (
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              Last active {new Date(user.lastActive).toLocaleDateString()}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

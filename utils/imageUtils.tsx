@@ -8,7 +8,7 @@
  * @returns A safe URL or empty string if invalid
  */
 export function getSafeImageUrl(url: string | null | undefined): string {
-  if (!url || url === 'undefined' || url === 'null' || url.trim() === '') {
+  if (!url || typeof url !== 'string' || url === 'undefined' || url === 'null' || url.trim() === '') {
     return '';
   }
   

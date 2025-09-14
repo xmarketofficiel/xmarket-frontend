@@ -92,7 +92,7 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
       <div className={`relative ${compact ? 'h-32' : 'h-48'} bg-gray-100 rounded-lg overflow-hidden mb-3`}>
         {item.images && item.images.length > 0 ? (
           <img
-            src={getSafeImageUrl(item.images[0])}
+            src={getSafeImageUrl(item.images[0].imageUrl || item.images[0].cloudinaryUrl || item.images[0].spacesUrl)}
             alt={item.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {

@@ -33,7 +33,8 @@ export const useProfile = (userId?: string): UseProfileReturn => {
   const [activeTab, setActiveTab] = useState<ProfileTab>("my-items");
 
   const isOwner = !userId || userId === currentUser?.id;
-  const targetUserId = userId || currentUser?.id;
+  // For now, fallback to user 1 for testing. In production, this should redirect to login
+  const targetUserId = userId || currentUser?.id || 1;
 
   // Analytics tracking
   const trackAnalytics = useCallback(
@@ -86,9 +87,9 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       const userResponse = await api.users.getUserProfile(String(targetUserId));
 
       if (userResponse.data) {
-        // Handle different possible response structures
         const userData = userResponse.data.user || userResponse.data;
         const statsData = userResponse.data.stats || {};
+        // Don't pre-populate items - let loadTabItems handle fetching active items
 
         const newProfileData: ProfileData = {
           user: {
@@ -119,8 +120,8 @@ export const useProfile = (userId?: string): UseProfileReturn => {
           },
           recentActivity: [],
           notifications: [],
-          items: {},
-          pagination: {},
+          items: {},  // Start with empty items - will be loaded by loadTabItems
+          pagination: {},  // Start with empty pagination
         };
 
         setProfileData(newProfileData);
@@ -193,14 +194,22 @@ export const useProfile = (userId?: string): UseProfileReturn => {
           setProfileData((prev) => {
             if (!prev) return prev;
 
+            // Handle different response structures for different tabs
+            let itemsData;
+            if (tab === 'my-items') {
+              // getUserItems returns array directly
+              itemsData = response.data || [];
+            } else {
+              // Other endpoints might return {items: [...]} or {notifications: [...]}
+              itemsData = response.data.items || response.data.notifications || [];
+            }
+
             const newItems =
               page === 1
-                ? response.data.items || response.data.notifications || []
+                ? itemsData
                 : [
                     ...(prev.items[tab as keyof typeof prev.items] || []),
-                    ...(response.data.items ||
-                      response.data.notifications ||
-                      []),
+                    ...itemsData,
                   ];
 
             return {
@@ -223,11 +232,11 @@ export const useProfile = (userId?: string): UseProfileReturn => {
               },
             };
           });
-
+          
           trackAnalytics("profile_tab_loaded", {
             tab,
             page,
-            itemCount: response.data.items?.length || 0,
+            itemCount: tab === 'my-items' ? (response.data?.length || 0) : (response.data.items?.length || 0),
           });
         }
       } catch (error) {
@@ -456,6 +465,13 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       loadProfile();
     }
   }, [targetUserId, loadProfile]);
+
+  // Force load items for default tab when profile is first loaded
+  useEffect(() => {
+    if (profileData && !profileData.items['my-items']) {
+      loadTabItems('my-items');
+    }
+  }, [profileData, loadTabItems]);
 
   // Load items for active tab when it changes
   useEffect(() => {

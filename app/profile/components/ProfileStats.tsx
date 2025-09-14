@@ -82,7 +82,8 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       icon: 'Package',
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600'
+      iconColor: 'text-blue-600',
+      border: 'border-blue-200'
     },
     {
       id: 'sold',
@@ -91,16 +92,8 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       icon: 'TrendingUp',
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
-      iconColor: 'text-green-600'
-    },
-    {
-      id: 'purchased',
-      label: 'Items Purchased',
-      value: stats.purchaseHistoryCount,
-      icon: 'ShoppingBag',
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600'
+      iconColor: 'text-green-600',
+      border: 'border-green-200'
     },
     {
       id: 'saved',
@@ -109,11 +102,32 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       icon: 'Heart',
       color: 'from-pink-500 to-pink-600',
       bgColor: 'bg-pink-50',
-      iconColor: 'text-pink-600'
+      iconColor: 'text-pink-600',
+      border: 'border-pink-200'
+    },
+    {
+      id: 'views',
+      label: 'Total Views',
+      value: stats.totalViews || 0,
+      icon: 'Eye',
+      color: 'from-purple-500 to-purple-600',
+      bgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      border: 'border-purple-200'
     }
   ];
 
   const secondaryStats = [
+    {
+      id: 'purchased',
+      label: 'Items Purchased',
+      value: stats.purchaseHistoryCount,
+      icon: 'ShoppingBag',
+      color: 'from-indigo-500 to-indigo-600',
+      bgColor: 'bg-indigo-50',
+      iconColor: 'text-indigo-600',
+      border: 'border-indigo-200'
+    },
     {
       id: 'earnings',
       label: 'Total Earnings',
@@ -121,16 +135,8 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       icon: 'DollarSign',
       color: 'from-emerald-500 to-emerald-600',
       bgColor: 'bg-emerald-50',
-      iconColor: 'text-emerald-600'
-    },
-    {
-      id: 'views',
-      label: 'Profile Views',
-      value: stats.profileViews || 0,
-      icon: 'Eye',
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      iconColor: 'text-indigo-600'
+      iconColor: 'text-emerald-600',
+      border: 'border-emerald-200'
     },
     {
       id: 'response',
@@ -139,16 +145,18 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       icon: 'Clock',
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600'
+      iconColor: 'text-orange-600',
+      border: 'border-orange-200'
     },
     {
       id: 'conversion',
-      label: 'Conversion Rate',
+      label: 'Success Rate',
       value: `${(stats.conversionRate || 0).toFixed(1)}%`,
       icon: 'BarChart3',
       color: 'from-cyan-500 to-cyan-600',
       bgColor: 'bg-cyan-50',
-      iconColor: 'text-cyan-600'
+      iconColor: 'text-cyan-600',
+      border: 'border-cyan-200'
     }
   ];
 
@@ -182,28 +190,35 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
               scale: 1.02,
               transition: { duration: 0.2 }
             }}
-            className={`bg-white rounded-2xl p-${compact ? '4' : '6'} shadow-lg hover:shadow-xl transition-all cursor-pointer group`}
+            className={`
+              ${compact ? 'p-4' : 'p-6'} 
+              border rounded-xl transition-all cursor-pointer group hover:shadow-md
+              ${stat.bgColor} ${stat.border}
+            `}
           >
             <div className="flex items-center gap-3">
               <div className={`
                 w-${compact ? '10' : '12'} 
                 h-${compact ? '10' : '12'} 
-                ${stat.bgColor} 
+                bg-white 
                 rounded-xl 
                 flex 
                 items-center 
                 justify-center 
                 group-hover:scale-110 
                 transition-transform
+                shadow-sm
+                border
+                ${stat.border}
               `}>
                 <IconComponent className={`w-${compact ? '5' : '6'} h-${compact ? '5' : '6'} ${stat.iconColor}`} />
               </div>
               
               <div className="flex-1 min-w-0">
-                <p className={`text-${compact ? 'xs' : 'sm'} font-medium text-gray-600 truncate`}>
+                <p className={`text-${compact ? 'xs' : 'sm'} font-medium text-gray-600 truncate mb-1`}>
                   {stat.label}
                 </p>
-                <p className={`text-${compact ? 'lg' : '2xl'} font-bold text-gray-900 mt-1`}>
+                <p className={`text-${compact ? 'xl' : '2xl'} font-bold text-gray-900`}>
                   {typeof stat.value === 'number' ? formatNumber(stat.value) : stat.value}
                 </p>
               </div>
@@ -211,13 +226,14 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
 
             {!compact && (
               <div className="mt-4">
-                <div className={`h-2 bg-gradient-to-r ${stat.color} rounded-full opacity-20`} />
-                <div 
-                  className={`h-2 bg-gradient-to-r ${stat.color} rounded-full -mt-2 transition-all duration-300 group-hover:opacity-100`}
-                  style={{ 
-                    width: `${Math.min(100, Math.max(10, (typeof stat.value === 'number' ? stat.value : 50) / 10))}%` 
-                  }}
-                />
+                <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full bg-gradient-to-r ${stat.color} rounded-full transition-all duration-500 group-hover:animate-pulse`}
+                    style={{ 
+                      width: `${Math.min(100, Math.max(10, (typeof stat.value === 'number' ? stat.value : 50) / 10))}%` 
+                    }}
+                  />
+                </div>
               </div>
             )}
           </motion.div>

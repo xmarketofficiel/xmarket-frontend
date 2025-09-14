@@ -85,7 +85,12 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
           return (
             <motion.button
               key={tab.id}
-              onClick={() => onTabChange(tab.id as ProfileTab)}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onTabChange(tab.id as ProfileTab);
+              }}
               className={`
                 flex-1 min-w-[120px] px-4 py-3 rounded-lg transition-all duration-200
                 flex items-center justify-center gap-2 text-sm font-medium
