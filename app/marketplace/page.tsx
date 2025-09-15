@@ -19,6 +19,14 @@ import { EmptyState } from './components/EmptyState';
 import { LoadMoreButton } from './components/LoadMoreButton';
 import Feed from '../../components/Feed';
 
+// Skeleton components
+import { 
+  SkeletonSearchBar, 
+  SkeletonCategoryFilter, 
+  SkeletonResultsCounter,
+  SkeletonGrid 
+} from '../../components/skeletons/SkeletonComponents';
+
 // Constants and Types
 import { MARKETPLACE_CONFIG, CATEGORY_CONFIG } from './constants';
 import type { 
@@ -369,38 +377,44 @@ export default function MarketplacePage() {
 
         {/* Enhanced Search Bar */}
         <div className="bg-gray-50 px-4 py-4">
-          <EnhancedSearchBar
-            searchQuery={state.searchQuery}
-            onSearchChange={handleSearchChange}
-            onSearch={(query) => {
-              handleSearchChange(query);
-              loadItems(1, true);
-            }}
-            showFilters={showAdvancedFilters}
-            onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            placeholder="Search items, categories, or sellers..."
-          />
+          {categories.length === 0 ? (
+            <SkeletonSearchBar />
+          ) : (
+            <EnhancedSearchBar
+              searchQuery={state.searchQuery}
+              onSearchChange={handleSearchChange}
+              onSearch={(query) => {
+                handleSearchChange(query);
+                loadItems(1, true);
+              }}
+              showFilters={showAdvancedFilters}
+              onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              placeholder="Search items, categories, or sellers..."
+            />
+          )}
         </div>
+      </div>
 
-        {/* Category Filter */}
-        <div className="bg-white border-b border-gray-100">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Category Filter - with brief sticky behavior */}
+        {categories.length === 0 ? (
+          <SkeletonCategoryFilter />
+        ) : (
           <CategoryFilter
             categories={categories}
             selectedCategory={state.selectedCategory}
             onChange={handleCategoryChange}
             loading={!categories.length}
           />
-        </div>
+        )}
 
         {/* Results Counter */}
         <div className="bg-white border-b border-gray-100 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              {state.loading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-[#009F9C] rounded-full animate-spin" />
-                  <span>Loading...</span>
-                </div>
+              {state.loading && state.items.length === 0 ? (
+                <SkeletonResultsCounter />
               ) : (
                 <span>
                   <span className="font-semibold text-gray-900">{state.totalItems.toLocaleString()}</span>{' '}
@@ -412,10 +426,8 @@ export default function MarketplacePage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Content */}
         {/* Filter Panel */}
         <FilterPanel
           isOpen={state.showFilters}
@@ -449,7 +461,9 @@ export default function MarketplacePage() {
 
           {/* Loading State */}
           {state.loading && state.items.length === 0 && (
-            <EmptyState type="loading" />
+            <div className="px-4 pt-4">
+              <SkeletonGrid count={8} />
+            </div>
           )}
 
           {/* Empty State */}
@@ -508,6 +522,6 @@ export default function MarketplacePage() {
           loadItems(1, true);
         }}
       />
-    </div>
+      </div>
   );
 }

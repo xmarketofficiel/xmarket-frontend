@@ -1,4 +1,5 @@
 import { Grid, List, SlidersHorizontal, Filter } from 'lucide-react';
+import { SkeletonLine } from '../../../components/skeletons/SkeletonComponents';
 import type { ViewControlsProps } from '../types';
 
 /**
@@ -19,10 +20,7 @@ export function ViewControls({
       <div className="flex items-center space-x-3">
         <div className="text-sm text-gray-600">
           {loading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-[#009F9C] rounded-full animate-spin" />
-              <span>Loading...</span>
-            </div>
+            <SkeletonLine className="w-24 h-4" />
           ) : (
             <span>
               <span className="font-semibold text-gray-900">{itemCount.toLocaleString()}</span>{' '}

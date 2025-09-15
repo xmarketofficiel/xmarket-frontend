@@ -4,6 +4,7 @@ import React from 'react';
 import { Item } from '../types';
 import ItemCard from './ItemCard';
 import SkeletonCard from './SkeletonCard';
+import { SkeletonGrid } from './skeletons/SkeletonComponents';
 
 interface FeedProps {
   items: Item[];
@@ -64,7 +65,7 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
           onClick={() => window.location.reload()}
           className="bg-[#009F9C] text-white px-6 py-2 rounded-xl hover:bg-[#007A77] transition-colors"
         >
-          Refresh Page
+          Refresh
         </button>
       </div>
     );
@@ -83,8 +84,8 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
           />
         ))}
         
-        {/* Loading skeletons for mobile */}
-        {loading && (
+        {/* Loading skeletons for mobile - only show initial loading */}
+        {loading && items.length === 0 && (
           Array.from({ length: 4 }).map((_, index) => (
             <SkeletonCard key={`skeleton-mobile-${index}`} layout="mobile" />
           ))
@@ -102,18 +103,25 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
           />
         ))}
         
-        {/* Loading skeletons for desktop */}
-        {loading && (
+        {/* Loading skeletons for desktop - only show initial loading */}
+        {loading && items.length === 0 && (
           Array.from({ length: 8 }).map((_, index) => (
             <SkeletonCard key={`skeleton-desktop-${index}`} layout="desktop" />
           ))
         )}
       </div>
 
-      {/* Load More Button/Infinite Scroll Trigger */}
-      {hasMore && !loading && (
-        <div ref={observerRef} className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#009F9C]"></div>
+      {/* Load More Button/Infinite Scroll Trigger - simplified */}
+      {hasMore && !loading && items.length > 0 && (
+        <div ref={observerRef} className="py-6">
+          <SkeletonGrid count={4} />
+        </div>
+      )}
+
+      {/* Loading more indicator - skeleton */}
+      {loading && items.length > 0 && (
+        <div className="py-4">
+          <SkeletonGrid count={2} />
         </div>
       )}
 

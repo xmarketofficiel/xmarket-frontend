@@ -56,7 +56,7 @@ export function SubmitButton({
     >
       {isLoading ? (
         <>
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <div className="w-5 h-5 bg-white/30 rounded animate-pulse" />
           <span>{loadingText}</span>
         </>
       ) : (

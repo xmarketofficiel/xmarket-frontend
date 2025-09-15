@@ -166,7 +166,7 @@ interface LoadingOverlayProps {
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   isVisible,
-  message = "Loading...",
+  message = "Loading",
   variant = 'spinner',
   backdrop = true
 }) => {

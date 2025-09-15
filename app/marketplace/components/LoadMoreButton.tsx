@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
+import { SkeletonBox } from '../../../components/skeletons/SkeletonComponents';
 import type { LoadMoreButtonProps } from '../types';
 
 /**
@@ -58,10 +59,7 @@ export function LoadMoreButton({
           whileTap={loading ? {} : { scale: 0.95 }}
         >
           {loading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
-              <span>Loading more...</span>
-            </>
+            <SkeletonBox className="w-32 h-6" />
           ) : (
             <>
               <ChevronUp className="w-5 h-5 rotate-180" />

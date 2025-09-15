@@ -21,7 +21,7 @@ export function MarketplaceHeader({
         duration: ANIMATION_SYSTEM.duration.normal / 1000, 
         ease: ANIMATION_SYSTEM.framerEasing.easeOut 
       }}
-      className="design-card bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 sticky top-0 z-30"
+      className="design-card bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 sticky top-0 z-40"
       style={{
         transitionDuration: ANIMATION_SYSTEM.durationString.normal,
         transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut

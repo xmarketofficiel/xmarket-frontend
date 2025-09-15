@@ -89,7 +89,6 @@ export default function ItemCard({
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isFavorited = isFavorite(String(item.id));
 
@@ -148,13 +147,12 @@ export default function ItemCard({
 
   const handleCardClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsNavigating(true);
     
+    // Use instant navigation without loading state for better UX
     try {
-      await router.push(`/item/${item.id}`);
+      router.push(`/item/${item.id}`);
     } catch (error) {
       console.error('Navigation error:', error);
-      setIsNavigating(false);
     }
   };
 
@@ -194,18 +192,7 @@ export default function ItemCard({
         onClick={handleCardClick}
         className="block group cursor-pointer"
       >
-        <div className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden ${
-          isNavigating ? 'opacity-75 pointer-events-none' : ''
-        }`}>
-          {/* Loading overlay */}
-          {isNavigating && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-50">
-              <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 border-2 border-gray-300 border-t-[#009F9C] rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-600">Loading...</span>
-              </div>
-            </div>
-          )}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden">
           {/* Image Section */}
           <div className="relative aspect-square bg-gray-100">
             {getImageUrl() ? (

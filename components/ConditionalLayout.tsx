@@ -4,6 +4,7 @@ import { useUser } from '../contexts/UserContext';
 import { usePathname } from 'next/navigation';
 import LoginPage from '../app/login/page';
 import Navbar from './Navbar';
+import { SkeletonPage } from './skeletons/SkeletonComponents';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -13,16 +14,9 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const { user, loading } = useUser();
   const pathname = usePathname();
   
-  // Show loading state while checking authentication
+  // Show skeleton loading while checking authentication
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#006666] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <SkeletonPage />;
   }
   
   // Public pages - no navbar, no authentication required

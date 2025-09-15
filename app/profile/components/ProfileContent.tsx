@@ -227,10 +227,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#009F9C] text-white rounded-xl hover:bg-[#007A77] transition-colors font-medium disabled:opacity-50"
           >
             {loading ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Loading...
-              </>
+              <div className="h-4 w-20 bg-white/20 rounded animate-pulse" />
             ) : (
               'Load More'
             )}

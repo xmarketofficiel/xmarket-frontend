@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ANIMATION_SYSTEM } from '../../../lib/design-system';
+import { SkeletonLine } from '../../../components/skeletons/SkeletonComponents';
 import type { SearchResultsHeaderProps } from '../types';
 
 /**
@@ -28,10 +29,7 @@ export function SearchResultsHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           {loading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-blue-800">Searching...</span>
-            </div>
+            <SkeletonLine className="w-48 h-4" />
           ) : (
             <div className="text-sm text-blue-800">
               <span className="font-semibold">{totalResults.toLocaleString()}</span>{' '}

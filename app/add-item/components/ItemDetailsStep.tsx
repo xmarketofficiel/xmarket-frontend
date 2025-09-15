@@ -242,8 +242,8 @@ export default function ItemDetailsStep({
         >
           {isSubmitting ? (
             <>
-              <Loader2 size={20} className="animate-spin" />
-              <span>Posting Item...</span>
+              <div className="w-5 h-5 bg-white/30 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-white/20 rounded animate-pulse" />
             </>
           ) : (
             <>
