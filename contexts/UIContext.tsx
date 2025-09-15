@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 type UIContextValue = {
   hideNavbar: boolean;
@@ -11,8 +11,18 @@ const UIContext = createContext<UIContextValue | undefined>(undefined);
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [hideNavbar, setHideNavbar] = useState(false);
+
+  const handleSetHideNavbar = useCallback((v: boolean) => {
+    setHideNavbar(v);
+  }, []);
+
+  const value = useMemo(() => ({
+    hideNavbar,
+    setHideNavbar: handleSetHideNavbar,
+  }), [hideNavbar, handleSetHideNavbar]);
+
   return (
-    <UIContext.Provider value={{ hideNavbar, setHideNavbar }}>
+    <UIContext.Provider value={value}>
       {children}
     </UIContext.Provider>
   );

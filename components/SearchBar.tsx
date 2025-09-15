@@ -2,6 +2,7 @@
 
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import React, { useRef, useEffect, useState } from 'react';
+import { ANIMATION_SYSTEM } from '../lib/design-system';
 
 interface SearchBarProps {
   value: string;
@@ -73,9 +74,17 @@ export default function SearchBar({
 
   return (
     <div className="relative">
-      <div className="relative">
+      <div className="relative design-card">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className={`h-4 w-4 ${isSearching ? 'text-[#006666] animate-pulse' : 'text-gray-400'}`} />
+          <Search 
+            className={`h-4 w-4 transition-all ${
+              isSearching ? 'text-[#006666] animate-pulse' : 'text-gray-400'
+            }`}
+            style={{
+              transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeInOut
+            }}
+          />
         </div>
         <input
           ref={searchRef}
@@ -87,7 +96,11 @@ export default function SearchBar({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
-          className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#006666] focus:border-transparent shadow-sm hover:shadow-md transition-all duration-200"
+          className="block w-full pl-10 pr-10 py-3 border border-[--color-border] rounded-xl bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#006666]/20 focus:border-[#006666] shadow-sm hover:shadow-md transition-all"
+          style={{
+            transitionDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+            transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+          }}
           placeholder={placeholder}
           aria-label="Search for items"
           aria-expanded={showSuggestions}
@@ -102,10 +115,14 @@ export default function SearchBar({
               onChange('');
               setShowSuggestions(false);
             }}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center transition-all hover:scale-110"
+            style={{
+              transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+              transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+            }}
             aria-label="Clear search"
           >
-            <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            <X className="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors" />
           </button>
         )}
 
@@ -113,7 +130,11 @@ export default function SearchBar({
         {showSuggestions && allSuggestions.length > 0 && (
           <div 
             id="search-suggestions"
-            className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-64 overflow-y-auto z-50"
+            className="design-card absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm border border-[--color-border] rounded-lg shadow-lg mt-1 max-h-64 overflow-y-auto z-50 animate-in fade-in-0 slide-in-from-top-2"
+            style={{
+              animationDuration: `${ANIMATION_SYSTEM.duration.normal}ms`,
+              animationTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+            }}
             role="listbox"
           >
             <div className="p-2">
@@ -132,7 +153,11 @@ export default function SearchBar({
                         setShowSuggestions(false);
                         onSearch?.(suggestion);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm flex items-center"
+                      className="w-full text-left px-3 py-2 hover:bg-[#006666]/5 rounded text-sm flex items-center transition-all hover:scale-[1.01] active:scale-[0.99]"
+                      style={{
+                        transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                      }}
                     >
                       <Clock size={14} className="mr-2 text-gray-400" />
                       <span className="text-gray-700">{suggestion}</span>
@@ -156,7 +181,11 @@ export default function SearchBar({
                         setShowSuggestions(false);
                         onSearch?.(suggestion);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm flex items-center"
+                      className="w-full text-left px-3 py-2 hover:bg-[#006666]/5 rounded text-sm flex items-center transition-all hover:scale-[1.01] active:scale-[0.99]"
+                      style={{
+                        transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                      }}
                     >
                       <TrendingUp size={14} className="mr-2 text-gray-400" />
                       <span className="text-gray-700">{suggestion}</span>
@@ -179,13 +208,17 @@ export default function SearchBar({
                         setShowSuggestions(false);
                         onSearch?.(suggestion);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm flex items-center"
+                      className="w-full text-left px-3 py-2 hover:bg-[#006666]/5 rounded text-sm flex items-center transition-all hover:scale-[1.01] active:scale-[0.99]"
+                      style={{
+                        transitionDuration: `${ANIMATION_SYSTEM.duration.fast}ms`,
+                        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                      }}
                     >
                       <Search size={14} className="mr-2 text-gray-400" />
                       <span className="text-gray-700">
                         {suggestion.split(new RegExp(`(${value})`, 'gi')).map((part, i) => 
                           part.toLowerCase() === value.toLowerCase() ? (
-                            <mark key={i} className="bg-yellow-200">{part}</mark>
+                            <mark key={i} className="bg-yellow-200 rounded px-1">{part}</mark>
                           ) : (
                             part
                           )

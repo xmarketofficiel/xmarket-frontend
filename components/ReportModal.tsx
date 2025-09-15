@@ -84,6 +84,7 @@ export default function ReportModal({ isOpen, onClose, itemId, itemTitle }: Repo
       return;
     }
 
+    // Only require description for "Other" option
     if (selectedReason === 'other' && !customMessage.trim()) {
       addToast('Please provide details when selecting "Other"', 'error');
       return;
@@ -94,10 +95,14 @@ export default function ReportModal({ isOpen, onClose, itemId, itemTitle }: Repo
     try {
       const selectedReasonData = REPORT_REASONS.find(r => r.id === selectedReason);
       const reportReason = selectedReason === 'other' 
+        ? 'Other'
+        : selectedReasonData?.label || 'Other';
+      
+      const reportDescription = selectedReason === 'other' 
         ? customMessage.trim()
-        : `${selectedReasonData?.label}: ${customMessage.trim() || selectedReasonData?.description}`;
+        : customMessage.trim();
 
-      await api.items.reportItem(itemId, reportReason);
+      await api.items.reportItem(itemId, reportReason, reportDescription);
       
       addToast('Report submitted successfully. We will review it shortly.', 'success');
       onClose();

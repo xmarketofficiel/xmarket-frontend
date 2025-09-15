@@ -102,8 +102,6 @@ export default function ItemDetail({ item }: ItemDetailProps) {
       // Open WhatsApp automatically after expressing interest
       openWhatsApp();
     } catch (error: any) {
-      console.log('Express interest error:', error); // Debug log
-      
       // Check for duplicate interest error
       if (error.name === 'DuplicateInterestError' || 
           error.message?.includes('already shown interest') ||
@@ -373,7 +371,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
             <div className="flex space-x-3">
               <button
                 onClick={handleFavoriteClick}
-                className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 ${
+                className={`w-full py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 ${
                   isItemFavorite
                     ? 'bg-red-50 text-red-600 border border-red-200'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -382,16 +380,6 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                 <Heart size={18} className={isItemFavorite ? 'fill-current' : ''} />
                 <span>{isItemFavorite ? 'Saved' : 'Save'}</span>
               </button>
-              
-              {item.seller?.whatsappNumber && (
-                <button
-                  onClick={openWhatsApp}
-                  className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <MessageCircle size={18} />
-                  <span>Just Chat</span>
-                </button>
-              )}
             </div>
           </>
         ) : (

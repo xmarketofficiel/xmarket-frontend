@@ -79,7 +79,8 @@ export default function FavoritesList() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:space-y-0">
+        <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -89,25 +90,29 @@ export default function FavoritesList() {
 
   if (favoriteItems.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <div className="text-gray-400 mb-4">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-xl border border-gray-200">
+        <div className="text-gray-400 mb-6">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5 2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No favorites yet</h3>
-        <p className="text-gray-600">Start browsing and save items you like!</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-3">No favorites yet</h3>
+        <p className="text-gray-600 mb-6 max-w-md">Start browsing the marketplace and save items you like by tapping the heart icon!</p>
+        <a 
+          href="/" 
+          className="bg-[#009F9C] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#007A77] transition-colors"
+        >
+          Browse Items
+        </a>
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {favoriteItems.map((item) => (
-          <ItemCard key={item.id} item={item} />
-        ))}
-      </div>
+    <div className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:space-y-0">
+      {favoriteItems.map((item) => (
+        <ItemCard key={item.id} item={item} />
+      ))}
     </div>
   );
 }

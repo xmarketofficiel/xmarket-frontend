@@ -22,6 +22,7 @@ export default function AddItemForm() {
       title: '',
       description: '',
       price: '',
+      quantity: '1',
       category: '',
       condition: 'Good',
       photos: [],
@@ -88,6 +89,7 @@ export default function AddItemForm() {
         title: values.title,
         description: values.description,
         price: Number(values.price),
+        quantity: Number(values.quantity),
         category: values.category, // Backend expects category as string
         condition: values.condition,
         anonymous: !values.showIdentity, // If user wants to show identity, item is not anonymous
@@ -304,13 +306,41 @@ export default function AddItemForm() {
             }`}
             placeholder="e.g., 8500"
             min="0"
-            step="1"
+            max="100000"
+            step="0.01"
             aria-describedby="price-help price-error"
             aria-invalid={!!form.errors.price}
           />
-          <p id="price-help" className="text-xs text-gray-500 mt-1">Enter the price in Moroccan Dirhams (DH)</p>
+          <p id="price-help" className="text-xs text-gray-500 mt-1">Enter the price in Moroccan Dirhams (DH) - Max: 100,000 DH</p>
           {form.errors.price && (
             <p id="price-error" className="mt-1 text-sm text-red-500" role="alert" aria-live="polite">{form.errors.price}</p>
+          )}
+        </div>
+
+        {/* Quantity */}
+        <div>
+          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+            Quantity <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            id="quantity"
+            value={form.values.quantity}
+            onChange={form.handleChange('quantity')}
+            onBlur={form.handleBlur('quantity')}
+            className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
+              form.errors.quantity ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="e.g., 1"
+            min="1"
+            max="1000"
+            step="1"
+            aria-describedby="quantity-help quantity-error"
+            aria-invalid={!!form.errors.quantity}
+          />
+          <p id="quantity-help" className="text-xs text-gray-500 mt-1">How many units do you have? (1-1000)</p>
+          {form.errors.quantity && (
+            <p id="quantity-error" className="mt-1 text-sm text-red-500" role="alert" aria-live="polite">{form.errors.quantity}</p>
           )}
         </div>
 

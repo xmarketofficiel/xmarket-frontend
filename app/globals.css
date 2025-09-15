@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import enhanced design tokens */
+@import './design-tokens.css';
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -83,8 +86,27 @@
   }
 }
 
-/* Font optimization */
+/* Custom scrollbar styles */
 @layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(0, 159, 156, 0.3);
+    border-radius: 2px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 159, 156, 0.5);
+  }
+  
+  /* Font optimization */
   .font-inter {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   }

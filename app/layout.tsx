@@ -10,7 +10,6 @@ import { UIProvider } from '../contexts/UIContext';
 import KeyboardShortcutsProvider from '../components/KeyboardShortcutsProvider';
 import { PerformanceProvider, PerformanceDebugger } from '../contexts/PerformanceContext';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
-import PWATestButton from '../components/PWATestButton';
 import OfflineStatus from '../components/OfflineStatus';
 import ErrorBoundary from '../components/ErrorBoundary';
 import '../utils/consoleFilters';
