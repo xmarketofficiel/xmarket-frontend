@@ -1,0 +1,385 @@
+/**
+ * XMarket Design System - CSS Variables & Utilities
+ * 
+ * This file extends the existing globals.css with enhanced design tokens
+ * while preserving all existing functionality and variables.
+ * 
+ * SAFETY: All additions are additive - no existing styles are modified.
+ */
+
+/* =============================================================================
+   🎨 ENHANCED DESIGN TOKENS
+   ============================================================================= */
+
+:root {
+  /* 
+   * EXISTING VARIABLES PRESERVED - DO NOT MODIFY
+   * These are already defined in globals.css and must remain unchanged
+   */
+  
+  /* 🎨 ENHANCED BRAND COLORS */
+  --brand-primary: 0 63% 31%;        /* #009F9C - Current brand color */
+  --brand-secondary: 0 63% 24%;      /* #007B78 - Current secondary */
+  --brand-accent: 15 100% 60%;       /* #FF6B35 - Current accent */
+    
+    /* 🎨 PRIMARY COLOR SCALE */
+    --primary-50: 179 86% 93%;         /* #E6F9F8 */
+    --primary-100: 178 79% 82%;        /* #B3F0EE */
+    --primary-200: 178 79% 70%;        /* #80E7E3 */
+    --primary-300: 178 79% 58%;        /* #4DDED8 */
+    --primary-400: 178 86% 46%;        /* #1AD5CD */
+    --primary-500: 179 100% 31%;       /* #009F9C - MAIN BRAND */
+    --primary-600: 179 100% 28%;       /* #008F8C */
+    --primary-700: 179 100% 24%;       /* #007B78 */
+    --primary-800: 179 100% 20%;       /* #006763 */
+    --primary-900: 179 100% 16%;       /* #00534F */
+    
+    /* 🎨 SEMANTIC COLORS */
+    --success: 158 64% 52%;            /* #10B981 */
+    --success-light: 158 64% 85%;      /* Light success */
+    --success-dark: 158 64% 35%;       /* Dark success */
+    
+    --warning: 45 93% 47%;             /* #F59E0B */
+    --warning-light: 45 93% 85%;       /* Light warning */
+    --warning-dark: 45 93% 30%;        /* Dark warning */
+    
+    --error: 0 84% 60%;                /* #EF4444 */
+    --error-light: 0 84% 85%;          /* Light error */
+    --error-dark: 0 84% 40%;           /* Dark error */
+    
+    --info: 217 91% 60%;               /* #3B82F6 */
+    --info-light: 217 91% 85%;         /* Light info */
+    --info-dark: 217 91% 40%;          /* Dark info */
+    
+    /* 📏 SPACING SCALE */
+    --space-xs: 0.25rem;               /* 4px */
+    --space-sm: 0.5rem;                /* 8px */
+    --space-md: 1rem;                  /* 16px */
+    --space-lg: 1.5rem;                /* 24px */
+    --space-xl: 2rem;                  /* 32px */
+    --space-2xl: 3rem;                 /* 48px */
+    --space-3xl: 4rem;                 /* 64px */
+    --space-4xl: 6rem;                 /* 96px */
+    
+    /* 🔤 TYPOGRAPHY SCALE */
+    --text-xs: 0.75rem;                /* 12px */
+    --text-sm: 0.875rem;               /* 14px */
+    --text-base: 1rem;                 /* 16px */
+    --text-lg: 1.125rem;               /* 18px */
+    --text-xl: 1.25rem;                /* 20px */
+    --text-2xl: 1.5rem;                /* 24px */
+    --text-3xl: 1.875rem;              /* 30px */
+    --text-4xl: 2.25rem;               /* 36px */
+    
+    /* 🔲 BORDER RADIUS SCALE */
+    --radius-sm: 0.125rem;             /* 2px */
+    --radius-base: 0.25rem;            /* 4px */
+    --radius-md: 0.375rem;             /* 6px */
+    --radius-lg: 0.5rem;               /* 8px */
+    --radius-xl: 0.75rem;              /* 12px */
+    --radius-2xl: 1rem;                /* 16px */
+    --radius-3xl: 1.5rem;              /* 24px */
+    --radius-full: 9999px;             /* Full rounding */
+    
+    /* 🌟 ELEVATION (SHADOWS) */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    
+    /* 🎬 ANIMATION TIMING */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 700ms;
+    
+    /* 🎬 ANIMATION EASING */
+    --ease-linear: linear;
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 🌙 DARK MODE ENHANCEMENTS */
+.dark {
+  /* Enhanced dark mode variables can be added here if needed */
+  /* Currently preserving existing dark mode implementation */
+}
+
+/* =============================================================================
+   🛠️ UTILITY CLASSES
+   ============================================================================= */
+
+/* 🎨 BRAND COLOR UTILITIES */
+.text-brand-primary { color: hsl(var(--brand-primary)); }
+.text-brand-secondary { color: hsl(var(--brand-secondary)); }
+.text-brand-accent { color: hsl(var(--brand-accent)); }
+  
+  .bg-brand-primary { background-color: hsl(var(--brand-primary)); }
+  .bg-brand-secondary { background-color: hsl(var(--brand-secondary)); }
+  .bg-brand-accent { background-color: hsl(var(--brand-accent)); }
+  
+  .border-brand-primary { border-color: hsl(var(--brand-primary)); }
+  .border-brand-secondary { border-color: hsl(var(--brand-secondary)); }
+  .border-brand-accent { border-color: hsl(var(--brand-accent)); }
+  
+  /* 🎨 SEMANTIC COLOR UTILITIES */
+  .text-success { color: hsl(var(--success)); }
+  .text-warning { color: hsl(var(--warning)); }
+  .text-error { color: hsl(var(--error)); }
+  .text-info { color: hsl(var(--info)); }
+  
+  .bg-success { background-color: hsl(var(--success)); }
+  .bg-warning { background-color: hsl(var(--warning)); }
+  .bg-error { background-color: hsl(var(--error)); }
+  .bg-info { background-color: hsl(var(--info)); }
+  
+  .bg-success-light { background-color: hsl(var(--success-light)); }
+  .bg-warning-light { background-color: hsl(var(--warning-light)); }
+  .bg-error-light { background-color: hsl(var(--error-light)); }
+  .bg-info-light { background-color: hsl(var(--info-light)); }
+  
+  /* 🌟 ELEVATION UTILITIES */
+  .shadow-brand-sm { box-shadow: var(--shadow-sm); }
+  .shadow-brand-base { box-shadow: var(--shadow-base); }
+  .shadow-brand-md { box-shadow: var(--shadow-md); }
+  .shadow-brand-lg { box-shadow: var(--shadow-lg); }
+  .shadow-brand-xl { box-shadow: var(--shadow-xl); }
+  .shadow-brand-2xl { box-shadow: var(--shadow-2xl); }
+  
+  /* 🎬 ANIMATION UTILITIES */
+  .transition-brand { 
+    transition-duration: var(--duration-normal);
+    transition-timing-function: var(--ease-out);
+  }
+  
+  .transition-fast { 
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-out);
+  }
+  
+  .transition-slow { 
+    transition-duration: var(--duration-slow);
+    transition-timing-function: var(--ease-out);
+  }
+  
+  /* 📏 SPACING UTILITIES */
+  .space-brand-xs { margin: var(--space-xs); }
+  .space-brand-sm { margin: var(--space-sm); }
+  .space-brand-md { margin: var(--space-md); }
+  .space-brand-lg { margin: var(--space-lg); }
+  .space-brand-xl { margin: var(--space-xl); }
+  
+  .gap-brand-xs { gap: var(--space-xs); }
+  .gap-brand-sm { gap: var(--space-sm); }
+  .gap-brand-md { gap: var(--space-md); }
+  .gap-brand-lg { gap: var(--space-lg); }
+  .gap-brand-xl { gap: var(--space-xl); }
+  
+  /* 🔲 BORDER RADIUS UTILITIES */
+  .rounded-brand-sm { border-radius: var(--radius-sm); }
+  .rounded-brand-base { border-radius: var(--radius-base); }
+  .rounded-brand-md { border-radius: var(--radius-md); }
+  .rounded-brand-lg { border-radius: var(--radius-lg); }
+  .rounded-brand-xl { border-radius: var(--radius-xl); }
+  .rounded-brand-2xl { border-radius: var(--radius-2xl); }
+  .rounded-brand-3xl { border-radius: var(--radius-3xl); }
+
+/* =============================================================================
+   🧩 COMPONENT BASE STYLES
+   ============================================================================= */
+
+/* 🔘 ENHANCED BUTTON STYLES */
+.btn-brand-primary {
+    @apply bg-[#008A84] text-white border border-transparent;
+    @apply hover:bg-[#007A77] active:bg-[#006663];
+    @apply focus:ring-2 focus:ring-[#008A84] focus:ring-offset-2;
+    @apply transition-all duration-300 ease-out rounded-lg px-4 py-2;
+    @apply font-medium text-sm;
+    @apply shadow-sm hover:shadow-md;
+  }
+  
+  .btn-brand-secondary {
+    @apply bg-transparent text-[#008A84] border border-[#008A84];
+    @apply hover:bg-[#008A84] hover:text-white;
+    @apply focus:ring-2 focus:ring-[#008A84] focus:ring-offset-2;
+    @apply transition-all duration-300 ease-out rounded-lg px-4 py-2;
+    @apply font-medium text-sm;
+  }
+  
+  .btn-brand-ghost {
+    @apply bg-transparent text-[#008A84] border border-transparent;
+    @apply hover:bg-gray-50 hover:text-[#008A84];
+    @apply focus:ring-2 focus:ring-[#008A84] focus:ring-offset-2;
+    @apply transition-all duration-300 ease-out rounded-lg px-4 py-2;
+    @apply font-medium text-sm;
+  }
+  
+  /* 📄 ENHANCED CARD STYLES */
+  .card-brand {
+    @apply bg-white border border-gray-200 rounded-xl;
+    @apply shadow-sm hover:shadow-md;
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .card-brand-elevated {
+    @apply bg-white border border-gray-200 rounded-xl;
+    @apply shadow-md hover:shadow-lg;
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  /* 📝 ENHANCED INPUT STYLES */
+  .input-brand {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-[#008A84] focus:border-transparent;
+    @apply transition-all duration-300 ease-out;
+    @apply placeholder-gray-400 text-gray-900;
+  }
+  
+  .input-brand-error {
+    @apply w-full px-3 py-2 border border-red-500 rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent;
+    @apply transition-all duration-300 ease-out;
+    @apply placeholder-gray-400 text-gray-900;
+  }
+  
+  .input-brand-success {
+    @apply w-full px-3 py-2 border border-green-500 rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent;
+    @apply transition-all duration-300 ease-out;
+    @apply placeholder-gray-400 text-gray-900;
+  }
+  
+  /* 🏷️ ENHANCED BADGE STYLES */
+  .badge-brand {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded;
+    @apply text-xs font-medium bg-[#008A84] text-white;
+  }
+  
+  .badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded;
+    @apply text-xs font-medium bg-green-500 text-white;
+  }
+  
+  .badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded;
+    @apply text-xs font-medium bg-yellow-500 text-white;
+  }
+  
+  .badge-error {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded;
+    @apply text-xs font-medium bg-red-500 text-white;
+  }
+  
+  /* 🎯 FOCUS UTILITIES */
+  .focus-brand {
+    @apply focus:outline-none focus:ring-2 focus:ring-[#008A84] focus:ring-offset-2;
+  }
+  
+  .focus-visible-brand {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A84] focus-visible:ring-offset-2;
+  }
+
+/* =============================================================================
+   📱 RESPONSIVE DESIGN ENHANCEMENTS
+   ============================================================================= */
+
+/* 📱 MOBILE-FIRST SPACING */
+.container-brand {
+    @apply mx-auto px-4;
+    @apply sm:px-6 lg:px-8;
+    @apply max-w-7xl;
+  }
+  
+  .section-brand {
+    @apply py-8 sm:py-12 lg:py-16;
+  }
+  
+  .section-brand-tight {
+    @apply py-4 sm:py-6 lg:py-8;
+  }
+  
+  /* 📱 RESPONSIVE TEXT SCALING */
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+
+/* =============================================================================
+   ♿ ACCESSIBILITY ENHANCEMENTS
+   ============================================================================= */
+
+/* 🎯 FOCUS INDICATORS */
+*:focus-visible {
+  outline: 2px solid hsl(var(--brand-primary));
+  outline-offset: 2px;
+}
+  
+  /* 📱 MOTION PREFERENCES */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* 🔤 TEXT SELECTION */
+  ::selection {
+    background-color: hsl(var(--brand-primary) / 0.2);
+  }
+  
+  /* 📏 SCROLLBAR STYLING */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: var(--radius-full);
+  }
+  
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--brand-primary));
+}/* =============================================================================
+   🎨 PRINT STYLES
+   ============================================================================= */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  * {
+    color: black !important;
+    background: white !important;
+  }
+}

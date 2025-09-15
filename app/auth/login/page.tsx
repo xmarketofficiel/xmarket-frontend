@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { ANIMATION_SYSTEM } from "../../../lib/design-system";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,7 +38,19 @@ export default function LoginPage() {
         // Using HTTP-only cookies now, no need for localStorage
         router.push('/marketplace');
       } else {
-        setError(data.message || "Login failed");
+        // Enhanced error handling for suspension
+        let errorMessage = data.message || "Login failed";
+        
+        // Check for specific suspension/ban messages
+        if (errorMessage.includes('suspended')) {
+          errorMessage = "Your account has been suspended by the admin. Please contact support for assistance.";
+        } else if (errorMessage.includes('banned')) {
+          errorMessage = "Your account has been banned. Please contact support for assistance.";
+        } else if (errorMessage.includes('verify your email')) {
+          errorMessage = "Please verify your email address before logging in.";
+        }
+        
+        setError(errorMessage);
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -71,9 +84,13 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="design-card bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-shadow"
+             style={{ 
+               transitionDuration: ANIMATION_SYSTEM.duration.slow + 'ms',
+               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+             }}>
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="design-card mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-800 text-sm">{error}</p>
             </div>
           )}
@@ -89,7 +106,11 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] focus:border-transparent transition-all"
+                style={{ 
+                  transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
+                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                }}
                 placeholder={userType === 'student' ? 'your.name@student.um6p.ma' : 'your.name@um6p.ma'}
               />
             </div>

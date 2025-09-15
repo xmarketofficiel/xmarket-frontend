@@ -70,7 +70,7 @@
       "name": "Post Item",
       "short_name": "Post",
       "description": "Post a new item for sale",
-      "url": "/add",
+      "url": "/add-item",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {

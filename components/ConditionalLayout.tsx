@@ -4,6 +4,7 @@ import { useUser } from '../contexts/UserContext';
 import { usePathname } from 'next/navigation';
 import LoginPage from '../app/login/page';
 import Navbar from './Navbar';
+import { SkeletonPage } from './skeletons/SkeletonComponents';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -13,22 +14,33 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const { user, loading } = useUser();
   const pathname = usePathname();
   
-  // Show loading state while checking authentication
+  // Show skeleton loading while checking authentication
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#006666] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <SkeletonPage />;
   }
   
   // Public pages - no navbar, no authentication required
-  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon' || pathname === '/landing' || pathname === '/') {
+  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon' || pathname === '/landing') {
     return (
       <main className={pathname === '/coming-soon' ? 'min-h-screen' : 'min-h-screen bg-gray-50'}>
+        {children}
+      </main>
+    );
+  }
+  
+  // Home page "/" - special handling for authentication
+  if (pathname === '/') {
+    // For home page, let the page itself handle authentication and layout
+    // Only show Navbar if user is authenticated
+    return user ? (
+      <div className="h-screen flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-y-auto bg-gray-50">
+          {children}
+        </main>
+        <Navbar />
+      </div>
+    ) : (
+      <main className="min-h-screen bg-gray-50">
         {children}
       </main>
     );
@@ -44,13 +56,13 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     );
   }
   
-  // User is authenticated - show navbar and content
+  // User is authenticated - show navbar and content with proper fixed layout
   return (
-    <>
-      <main className="pb-16 min-h-screen bg-gray-50">
+    <div className="h-screen flex flex-col overflow-hidden">
+      <main className="flex-1 overflow-y-auto bg-gray-50">
         {children}
       </main>
       <Navbar />
-    </>
+    </div>
   );
 }

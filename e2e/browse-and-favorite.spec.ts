@@ -115,7 +115,7 @@ test.describe('Browse and Favorite Flow', () => {
     
     // Navigate to Add Item page
     await page.locator('[data-testid="nav-add"]').click();
-    await expect(page).toHaveURL('/add');
+    await expect(page).toHaveURL('/add-item');
     await expect(page.locator('h1')).toContainText('Post New Item');
     
     // Navigate to Messages page

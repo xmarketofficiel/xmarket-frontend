@@ -333,214 +333,214 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center z-10">
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center z-10">
         <button
           onClick={() => router.push('/profile')}
-          className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 -ml-2 hover:bg-gray-100 rounded-xl transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} className="text-gray-600" />
         </button>
-        <h1 className="ml-2 text-lg font-semibold text-gray-900">Edit Item</h1>
+        <h1 className="ml-3 text-xl font-semibold text-gray-900">Edit Item</h1>
       </div>
 
-      {/* Current Item Information */}
-      <div className="bg-white border-b border-gray-200 p-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-md font-semibold text-blue-900 mb-3 flex items-center">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        {/* Current Item Information */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <span className="mr-2">📝</span>
             Currently Editing: {item.title}
           </h3>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <span className="font-medium text-blue-800">Current Price:</span>
-              <span className="ml-2 text-blue-700">{item.price} DH</span>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="bg-gray-50 rounded-lg p-3">
+              <span className="font-medium text-gray-700">Current Price:</span>
+              <div className="text-[#009F9C] font-semibold mt-1">{item.price} DH</div>
             </div>
-            <div>
-              <span className="font-medium text-blue-800">Category:</span>
-              <span className="ml-2 text-blue-700">
+            <div className="bg-gray-50 rounded-lg p-3">
+              <span className="font-medium text-gray-700">Category:</span>
+              <div className="text-gray-900 mt-1">
                 {typeof item.category === 'object' ? item.category.name : item.category}
-              </span>
+              </div>
             </div>
-            <div>
-              <span className="font-medium text-blue-800">Condition:</span>
-              <span className="ml-2 text-blue-700">{item.condition}</span>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <span className="font-medium text-gray-700">Condition:</span>
+              <div className="text-gray-900 mt-1">{item.condition}</div>
             </div>
-            <div>
-              <span className="font-medium text-blue-800">Quantity:</span>
-              <span className="ml-2 text-blue-700">{item.quantity || 1} units</span>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <span className="font-medium text-gray-700">Quantity:</span>
+              <div className="text-gray-900 mt-1">{item.quantity || 1} units</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <form onSubmit={handleSubmit} className="p-4 space-y-6">
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-              errors.title ? 'border-red-500 ring-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter item title..."
-            maxLength={100}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-500">{errors.title}</p>
-          )}
-          <p className="text-xs text-gray-500 mt-1">5-100 characters</p>
-        </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            rows={4}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-              errors.description ? 'border-red-500 ring-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Describe your item in detail..."
-            maxLength={1000}
-          />
-          {errors.description && (
-            <p className="mt-1 text-sm text-red-500">{errors.description}</p>
-          )}
-          <p className="text-xs text-gray-500 mt-1">20-1000 characters</p>
-        </div>
-
-        {/* Price and Quantity Row */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Price */}
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-              Price (DH) <span className="text-red-500">*</span>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Title */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <label htmlFor="title" className="block text-sm font-semibold text-gray-900 mb-3">
+              Title <span className="text-red-500">*</span>
             </label>
             <input
-              type="number"
-              id="price"
-              value={formData.price}
-              onChange={(e) => handleInputChange('price', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-                errors.price ? 'border-red-500 ring-red-500' : 'border-gray-300'
+              type="text"
+              id="title"
+              value={formData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                errors.title ? 'border-red-500 ring-red-500' : 'border-gray-200'
               }`}
-              placeholder="0.00"
-              min="0"
-              max="100000"
-              step="0.01"
+              placeholder="Enter item title..."
+              maxLength={100}
             />
-            {errors.price && (
-              <p className="mt-1 text-sm text-red-500">{errors.price}</p>
+            {errors.title && (
+              <p className="mt-2 text-sm text-red-500">{errors.title}</p>
             )}
+            <p className="text-xs text-gray-500 mt-2">5-100 characters</p>
           </div>
 
-          {/* Quantity */}
-          <div>
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
-              Quantity <span className="text-red-500">*</span>
+          {/* Description */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <label htmlFor="description" className="block text-sm font-semibold text-gray-900 mb-3">
+              Description <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              id="quantity"
-              value={formData.quantity}
-              onChange={(e) => handleInputChange('quantity', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-                errors.quantity ? 'border-red-500 ring-red-500' : 'border-gray-300'
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              rows={4}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                errors.description ? 'border-red-500 ring-red-500' : 'border-gray-200'
               }`}
-              placeholder="1"
-              min="1"
-              max="1000"
-              step="1"
+              placeholder="Describe your item in detail..."
+              maxLength={1000}
             />
-            {errors.quantity && (
-              <p className="mt-1 text-sm text-red-500">{errors.quantity}</p>
+            {errors.description && (
+              <p className="mt-2 text-sm text-red-500">{errors.description}</p>
             )}
-          </div>
-        </div>
-
-        {/* Category and Condition Row */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Category */}
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Category <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="category"
-              value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-                errors.category ? 'border-red-500 ring-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="">Select category</option>
-              {categories.map((cat: any, index: number) => (
-                <option key={`${cat.name || cat}-${index}`} value={cat.name || cat}>
-                  {cat.icon || '🔖'} {cat.name || cat}
-                </option>
-              ))}
-            </select>
-            {errors.category && (
-              <p className="mt-1 text-sm text-red-500">{errors.category}</p>
-            )}
+            <p className="text-xs text-gray-500 mt-2">20-1000 characters</p>
           </div>
 
-          {/* Condition */}
-          <div>
-            <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-2">
-              Condition <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="condition"
-              value={formData.condition}
-              onChange={(e) => handleInputChange('condition', e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] ${
-                errors.condition ? 'border-red-500 ring-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="New">📦 New</option>
-              <option value="Like New">✨ Like New</option>
-              <option value="Good">👍 Good</option>
-              <option value="Fair">👌 Fair</option>
-            </select>
-            {errors.condition && (
-              <p className="mt-1 text-sm text-red-500">{errors.condition}</p>
-            )}
+          {/* Price and Quantity Row */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Price */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <label htmlFor="price" className="block text-sm font-semibold text-gray-900 mb-3">
+                Price (DH) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="price"
+                value={formData.price}
+                onChange={(e) => handleInputChange('price', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                  errors.price ? 'border-red-500 ring-red-500' : 'border-gray-200'
+                }`}
+                placeholder="0.00"
+                min="0"
+                max="100000"
+                step="0.01"
+              />
+              {errors.price && (
+                <p className="mt-2 text-sm text-red-500">{errors.price}</p>
+              )}
+            </div>
+
+            {/* Quantity */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <label htmlFor="quantity" className="block text-sm font-semibold text-gray-900 mb-3">
+                Quantity <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                value={formData.quantity}
+                onChange={(e) => handleInputChange('quantity', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                  errors.quantity ? 'border-red-500 ring-red-500' : 'border-gray-200'
+                }`}
+                placeholder="1"
+                min="1"
+                max="1000"
+                step="1"
+              />
+              {errors.quantity && (
+                <p className="mt-2 text-sm text-red-500">{errors.quantity}</p>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* Category and Condition Row */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Category */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <label htmlFor="category" className="block text-sm font-semibold text-gray-900 mb-3">
+                Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="category"
+                value={formData.category}
+                onChange={(e) => handleInputChange('category', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                  errors.category ? 'border-red-500 ring-red-500' : 'border-gray-200'
+                }`}
+              >
+                <option value="">Select category</option>
+                {categories.map((cat: any, index: number) => (
+                  <option key={`${cat.name || cat}-${index}`} value={cat.name || cat}>
+                    {cat.icon || '🔖'} {cat.name || cat}
+                  </option>
+                ))}
+              </select>
+              {errors.category && (
+                <p className="mt-2 text-sm text-red-500">{errors.category}</p>
+              )}
+            </div>
+
+            {/* Condition */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <label htmlFor="condition" className="block text-sm font-semibold text-gray-900 mb-3">
+                Condition <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="condition"
+                value={formData.condition}
+                onChange={(e) => handleInputChange('condition', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-[#009F9C] transition-colors ${
+                  errors.condition ? 'border-red-500 ring-red-500' : 'border-gray-200'
+                }`}
+              >
+                <option value="New">📦 New</option>
+                <option value="Like New">✨ Like New</option>
+                <option value="Good">👍 Good</option>
+                <option value="Fair">👌 Fair</option>
+              </select>
+              {errors.condition && (
+                <p className="mt-2 text-sm text-red-500">{errors.condition}</p>
+              )}
+            </div>
+          </div>
 
         {/* Privacy Setting */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-gray-900">Show my identity</h3>
-              <p className="text-sm text-gray-600">Let buyers see your name and verification status</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleInputChange('showIdentity', !formData.showIdentity)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.showIdentity ? 'bg-[#006666]' : 'bg-gray-300'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  formData.showIdentity ? 'translate-x-6' : 'translate-x-1'
+                  {/* Privacy Setting */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-gray-900">Show my identity</h3>
+                <p className="text-sm text-gray-600 mt-1">Let buyers see your name and verification status</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleInputChange('showIdentity', !formData.showIdentity)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:ring-offset-2 ${
+                  formData.showIdentity ? 'bg-[#009F9C]' : 'bg-gray-200'
                 }`}
-              />
-            </button>
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    formData.showIdentity ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
-        </div>
 
         {/* Additional Photos */}
         <div>
@@ -581,10 +581,10 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+            className={`w-full py-3 px-4 rounded-xl font-semibold transition-colors ${
               submitting 
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                : 'bg-[#006666] text-white hover:bg-[#005555]'
+                : 'bg-[#009F9C] text-white hover:bg-[#007A77]'
             }`}
           >
             {submitting ? '💾 Updating...' : '💾 Update Item'}
@@ -594,6 +594,7 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
         {/* Bottom Spacing */}
         <div className="h-8"></div>
       </form>
+      </div>
 
       {/* Confirmed Purchase Info Modal */}
       {showPurchaseWarning && warningData && (

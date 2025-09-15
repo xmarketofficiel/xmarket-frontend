@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export async function GET() {
+  return NextResponse.json({ message: "Join requests API endpoint" });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -23,7 +27,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Send to backend API
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/join-request`, {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+    const backendResponse = await fetch(`${apiUrl}/auth/join-request`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +47,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (!backendResponse.ok) {
-      throw new Error("Failed to submit request to backend");
+      const errorData = await backendResponse.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to submit request to backend");
     }
 
     const result = await backendResponse.json();
@@ -51,10 +57,10 @@ export async function POST(request: NextRequest) {
       message: "Join request submitted successfully",
       id: result.id,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error submitting join request:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error.message || "Internal server error" },
       { status: 500 }
     );
   }

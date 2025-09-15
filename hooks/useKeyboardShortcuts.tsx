@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const KEYBOARD_SHORTCUTS = {
   'KeyH': '/',           // Home
   'KeyF': '/favorites',  // Favorites  
-  'KeyA': '/add',        // Add item
+  'KeyA': '/add-item',   // Add item
   'KeyM': '/messages',   // Messages
   'KeyP': '/profile',    // Profile
   'KeyS': '/settings',   // Settings
