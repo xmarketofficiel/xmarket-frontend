@@ -115,11 +115,15 @@ export default function MarketplacePage() {
    */
   const loadCategories = useCallback(async () => {
     try {
+      console.log('🔄 Loading categories from API...');
       const response = await api.categories.getCategories();
+      console.log('📦 Categories API response:', response);
+      
       // Backend returns full category objects with id, name, icon, description
       const categoryList = response.data || [];
+      console.log('📋 Category list:', categoryList);
       
-      if (Array.isArray(categoryList)) {
+      if (Array.isArray(categoryList) && categoryList.length > 0) {
         // Extract just the names for the filter, but keep full objects for reference
         const categoryNames = categoryList.map((cat: any) => {
           // Handle both formats: object with name property or direct string
@@ -128,15 +132,21 @@ export default function MarketplacePage() {
           }
           return cat;
         });
+        console.log('✅ Setting categories:', categoryNames);
         setCategories(categoryNames);
       } else {
+        console.log('⚠️ No categories from API, using fallback');
         // Fallback to predefined categories
-        setCategories(Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all'));
+        const fallbackCategories = Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all');
+        setCategories(fallbackCategories);
+        console.log('📋 Fallback categories:', fallbackCategories);
       }
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      console.error('❌ Failed to load categories:', error);
       // Fallback to predefined categories from CATEGORY_CONFIG
-      setCategories(Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all'));
+      const fallbackCategories = Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all');
+      setCategories(fallbackCategories);
+      console.log('🔄 Using fallback categories after error:', fallbackCategories);
     }
   }, []); // Remove all dependencies to prevent loops
 
@@ -197,19 +207,24 @@ export default function MarketplacePage() {
    * Load items with current filters
    */
   const loadItems = useCallback(async (page: number = 1, replaceItems: boolean = true) => {
+    console.log('🔄 Loading items - Page:', page, 'Replace:', replaceItems);
     updateState({ loading: true, error: null });
 
     try {
       const params = buildSearchParams();
       params.page = page;
+      console.log('📝 Search params:', params);
 
       const response = await api.items.getItems(params);
-      const pageItems = response.data.items || [];
-      const total = response.data.total || 0;
+      console.log('📦 Items API response:', response);
+      
+      const pageItems = response.data?.items || response.data || [];
+      const total = response.data?.total || 0;
+      console.log('📋 Items loaded:', pageItems.length, 'Total:', total);
 
       updateState({
         totalItems: total,
-        hasMore: response.data.hasMore || false,
+        hasMore: response.data?.hasMore || false,
         currentPage: page
       });
 
@@ -220,6 +235,7 @@ export default function MarketplacePage() {
         setState(prev => {
           const existingIds = new Set(prev.items.map(item => item.id));
           const newItems = pageItems.filter((item: Item) => !existingIds.has(item.id));
+          console.log('🔄 Appending items:', newItems.length);
           return {
             ...prev,
             items: [...prev.items, ...newItems]
@@ -227,7 +243,7 @@ export default function MarketplacePage() {
         });
       }
     } catch (error: any) {
-      console.error('Failed to load items:', error);
+      console.error('❌ Failed to load items:', error);
       updateState({ 
         error: error.message || 'Failed to load items',
         items: replaceItems ? [] : state.items
