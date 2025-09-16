@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Upload, X, Image as ImageIcon, Camera, Sparkles } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Camera, Sparkles, Lightbulb } from 'lucide-react';
 import { ADD_ITEM_CONFIG, VALIDATION_MESSAGES } from '../constants';
 import { PhotoUploadStepProps } from '../types';
 import Image from 'next/image';
@@ -107,21 +107,19 @@ export default function PhotoUploadStep({
             Photos {photos.length === 0 && <span className="text-red-500">*</span>}
           </label>
           
-          {/* Enhanced Drag & Drop Zone */}
-          <motion.div
-            className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
+          {/* Modern Upload Zone - Smaller and mobile-friendly */}
+          <div
+            className={`relative border-2 border-dashed rounded-lg p-4 md:p-6 text-center transition-all duration-300 ${
               photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES
                 ? 'border-gray-200 bg-gray-50'
                 : isDragActive
-                ? 'border-[#006666] bg-[#006666]/10 scale-105 shadow-lg'
-                : 'border-gray-300 hover:border-[#006666] hover:bg-[#006666]/5'
+                ? 'border-[#009F9C] bg-[#009F9C]/10'
+                : 'border-gray-300 hover:border-[#009F9C] hover:bg-[#009F9C]/5'
             }`}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            whileHover={photos.length < ADD_ITEM_CONFIG.MAX_IMAGES ? { scale: 1.02 } : {}}
-            animate={isDragActive ? { scale: 1.05 } : { scale: 1 }}
+            onDragEnter={window.innerWidth >= 768 ? handleDragEnter : undefined}
+            onDragLeave={window.innerWidth >= 768 ? handleDragLeave : undefined}
+            onDragOver={window.innerWidth >= 768 ? handleDragOver : undefined}
+            onDrop={window.innerWidth >= 768 ? handleDrop : undefined}
           >
             {/* Animated Background */}
             {isDragActive && (
@@ -144,55 +142,45 @@ export default function PhotoUploadStep({
             />
             
             <div className="space-y-4 relative z-0">
-              <motion.div
-                className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
+              <div
+                className={`mx-auto w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center ${
                   photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES
                     ? 'bg-gray-200'
                     : isDragActive 
-                    ? 'bg-[#006666] text-white shadow-lg'
-                    : 'bg-[#006666]/10'
+                    ? 'bg-[#009F9C] text-white shadow-lg'
+                    : 'bg-[#009F9C]/10'
                 }`}
-                initial={{ scale: 0 }}
-                animate={{ 
-                  scale: 1,
-                  rotate: isDragActive ? 360 : 0 
-                }}
-                transition={{ 
-                  delay: 0.2,
-                  rotate: { duration: 1, ease: "easeInOut" }
-                }}
               >
                 {isDragActive ? (
-                  <Sparkles size={28} className="text-white" />
+                  <Sparkles size={20} className="text-white" />
                 ) : (
                   <Upload 
-                    size={28} 
-                    className={photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES ? 'text-gray-400' : 'text-[#006666]'} 
+                    size={20} 
+                    className={photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES ? 'text-gray-400' : 'text-[#009F9C]'} 
                   />
                 )}
-              </motion.div>
+              </div>
               
               <div>
-                <motion.p 
-                  className={`text-lg font-semibold ${
+                <p 
+                  className={`text-base md:text-lg font-medium ${
                     photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES ? 'text-gray-400' : 
-                    isDragActive ? 'text-[#006666]' : 'text-gray-900'
+                    isDragActive ? 'text-[#009F9C]' : 'text-gray-900'
                   }`}
-                  animate={isDragActive ? { scale: 1.1 } : { scale: 1 }}
                 >
                   {photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES 
                     ? 'Maximum photos reached' 
                     : isDragActive
                     ? 'Drop your photos here!'
-                    : 'Add stunning photos'
+                    : 'Add photos'
                   }
-                </motion.p>
-                <p className="text-sm text-gray-500 mt-2">
+                </p>
+                <p className="text-xs md:text-sm text-gray-500 mt-1">
                   {!isDragActive && (
                     <>
-                      <span className="flex items-center justify-center gap-2 mb-1">
-                        <Camera size={16} />
-                        Drag & drop or click to browse
+                      <span className="flex items-center justify-center gap-1 mb-1">
+                        <Camera size={14} />
+                        <span className="hidden md:inline">Drag & drop or </span>Tap to browse
                       </span>
                     </>
                   )}
@@ -213,7 +201,7 @@ export default function PhotoUploadStep({
                 />
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Enhanced Photo Preview Grid */}
@@ -352,7 +340,7 @@ export default function PhotoUploadStep({
               </div>
             </div>
             <p className="text-xs text-gray-500 italic border-t border-gray-200 pt-2">
-              💡 Pro tip: The first photo will be your main display image and appears in search results
+              <span className="flex items-center gap-1"><Lightbulb size={12} className="text-blue-500" /> Pro tip:</span> The first photo will be your main display image and appears in search results
             </p>
           </div>
         </motion.div>

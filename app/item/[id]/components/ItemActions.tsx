@@ -60,51 +60,26 @@ export default function ItemActions({
     <div 
       className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg ${className}`}
     >
-      <div className="max-w-md mx-auto space-y-3">
-        {/* Primary Action - Interest Button */}
-        <button
-          onClick={handleInterestClick}
-          disabled={isLoading.interest}
-          className={`w-full ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
-            isLoading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-lg hover:scale-[1.02]'
-          }`}
-        >
-          {isLoading.interest ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>{ACTION_BUTTONS.interested.loadingLabel}</span>
-            </>
-          ) : (
-            <>
-              <span className="text-lg">{ACTION_BUTTONS.interested.icon}</span>
-              <span>{ACTION_BUTTONS.interested.label}</span>
-            </>
-          )}
-        </button>
-        
-        {/* Secondary Actions */}
-        <div className="flex space-x-3">
-          {/* Favorite Button */}
+      <div className="max-w-md mx-auto">
+        {/* Action Buttons - I'm Interested and Share in one line */}
+        <div className="flex space-x-3 mb-3">
+          {/* Interest Button */}
           <button
-            onClick={handleFavoriteClick}
-            disabled={isLoading.favorite}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
-              isFavorited
-                ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
-                : `${ACTION_BUTTONS.favorite.bgColor} ${ACTION_BUTTONS.favorite.textColor} ${ACTION_BUTTONS.favorite.hoverColor} border border-gray-200`
-            } ${isLoading.favorite ? 'opacity-75 cursor-not-allowed' : 'hover:scale-[1.02]'}`}
+            onClick={handleInterestClick}
+            disabled={isLoading.interest}
+            className={`flex-1 ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
+              isLoading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-lg hover:scale-[1.02]'
+            }`}
           >
-            {isLoading.favorite ? (
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            {isLoading.interest ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>{ACTION_BUTTONS.interested.loadingLabel}</span>
+              </>
             ) : (
               <>
-                <Heart 
-                  size={18} 
-                  className={`transition-all duration-200 ${
-                    isFavorited ? 'fill-current text-red-500' : ''
-                  }`} 
-                />
-                <span>{isFavorited ? 'Saved' : 'Save'}</span>
+                <span className="text-lg">{ACTION_BUTTONS.interested.icon}</span>
+                <span>{ACTION_BUTTONS.interested.label}</span>
               </>
             )}
           </button>
@@ -112,7 +87,7 @@ export default function ItemActions({
           {/* Share Button */}
           <button
             onClick={onShareClick}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${ACTION_BUTTONS.favorite.bgColor} ${ACTION_BUTTONS.favorite.textColor} ${ACTION_BUTTONS.favorite.hoverColor} border border-gray-200 hover:scale-[1.02]`}
+            className={`flex-1 py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${ACTION_BUTTONS.favorite.bgColor} ${ACTION_BUTTONS.favorite.textColor} ${ACTION_BUTTONS.favorite.hoverColor} border border-gray-200 hover:scale-[1.02] shadow-md`}
           >
             <Share size={18} />
             <span>Share</span>
@@ -120,9 +95,7 @@ export default function ItemActions({
         </div>
 
         {/* Additional Info */}
-        <div
-          className="text-center"
-        >
+        <div className="text-center">
           <p className="text-xs text-gray-500">
             Express interest to start chatting with the seller
           </p>

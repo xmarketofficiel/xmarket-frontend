@@ -192,28 +192,28 @@ export default function ItemCard({
         onClick={handleCardClick}
         className="block group cursor-pointer"
       >
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden">
-          {/* Image Section */}
-          <div className="relative aspect-square bg-gray-100">
+        <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+          {/* Image Section - Fixed aspect ratio for grid layout */}
+          <div className="relative aspect-[4/3] bg-gray-100">
             {getImageUrl() ? (
               <img
                 src={getImageUrl()!}
                 alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
               </div>
             )}
             
-            {/* Favorite Button - Enhanced with better visual feedback */}
+            {/* Favorite Button - Top left */}
             <button
               onClick={handleFavoriteClick}
-              className="absolute top-3 right-3 p-2 rounded-full bg-white/95 hover:bg-white shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 border border-white/20"
+              className="absolute top-2 left-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
               aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart 
@@ -223,91 +223,34 @@ export default function ItemCard({
               />
             </button>
 
+            {/* Condition Badge - Top right */}
+            <div className="absolute top-2 right-2">
+              <span className="px-2 py-1 text-xs font-medium bg-white/90 text-gray-700 rounded-md shadow-sm">
+                {item.condition}
+              </span>
+            </div>
+
             {/* Sold Badge */}
             {item.isSold && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <div className="bg-red-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm font-semibold shadow-lg">
+                <div className="bg-red-500 text-white px-3 py-1.5 rounded-md flex items-center space-x-1 text-sm font-semibold">
                   <CheckCircle className="w-4 h-4" />
                   <span>SOLD</span>
                 </div>
               </div>
             )}
-
-            {/* Category Badge - Enhanced with better contrast */}
-            <div className="absolute top-3 left-3">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white/95 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 shadow-md border border-white/20">
-                <span>{getCategoryIcon(item.category)}</span>
-                <span>{getCategoryDisplayName(item.category)}</span>
-              </span>
-            </div>
-
-            {/* Price Badge - New feature for quick price visibility */}
-            <div className="absolute bottom-3 left-3">
-              <span className="inline-flex items-center px-2.5 py-1.5 bg-[#009F9C]/95 backdrop-blur-sm rounded-lg text-xs font-bold text-white shadow-md">
-                {item.price} DH
-              </span>
-            </div>
           </div>
 
-          {/* Content Section - Enhanced spacing and typography */}
-          <div className="p-4 space-y-3">
-            {/* Title with better line height */}
-            <h3 className="font-semibold text-gray-900 text-base line-clamp-2 leading-snug group-hover:text-[#009F9C] transition-colors">
+          {/* Content Section - Simplified */}
+          <div className="p-3 space-y-2">
+            {/* Title - Truncated for grid layout */}
+            <h3 className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
               {item.title}
             </h3>
 
-            {/* Price and Condition - Reduced since price is on image */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Condition:</span>
-                <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-md">
-                  {item.condition}
-                </span>
-              </div>
-            </div>
-
-            {/* Seller Info - Enhanced layout */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                  <User className="w-3 h-3 text-gray-500" />
-                </div>
-                <span className="font-medium">{getSellerName()}</span>
-                {!item.anonymous && item.seller?.isVerified && (
-                  <CheckCircle className="w-4 h-4 ml-1 text-blue-500" />
-                )}
-              </div>
-              
-              {/* More Actions */}
-              {!isOwnItem && (
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={handleMoreClick}
-                    className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-                    aria-label="More options"
-                  >
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
-
-                  {showDropdown && (
-                    <div className="absolute right-0 bottom-full mb-2 w-32 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20">
-                      <button
-                        onClick={handleReportClick}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                      >
-                        <Flag className="w-3 h-3 text-red-500" />
-                        Report
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Location - Enhanced with better icon */}
-            <div className="flex items-center text-sm text-gray-500 pt-1 border-t border-gray-100">
-              <MapPin className="w-4 h-4 mr-1 text-[#009F9C]" />
-              <span>Campus</span>
+            {/* Price */}
+            <div className="text-lg font-bold text-[#009F9C]">
+              {item.price} DH
             </div>
           </div>
         </div>

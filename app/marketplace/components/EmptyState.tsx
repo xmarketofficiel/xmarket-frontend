@@ -45,46 +45,19 @@ export function EmptyState({
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      {/* Icon */}
-      <div className="text-6xl mb-4">
-        {config.icon}
-      </div>
-
       {/* Title */}
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-medium text-gray-900 mb-4">
         {getTitle()}
       </h3>
 
-      {/* Description */}
-      <p className="text-gray-600 mb-6 max-w-md">
-        {getDescription()}
-      </p>
-
-      {/* Action Button */}
-      {'action' in config && config.action && onAction && (
+      {/* Action Button for search */}
+      {type === 'noItems' && searchQuery && onAction && (
         <button
           onClick={onAction}
-          className="px-6 py-3 bg-[#009F9C] text-white rounded-lg font-medium hover:bg-[#008A87] transition-colors"
+          className="px-4 py-2 bg-[#009F9C] text-white rounded-lg text-sm font-medium hover:bg-[#008A87] transition-colors"
         >
-          {config.action}
+          Clear search
         </button>
-      )}
-
-      {/* Additional suggestions for no items */}
-      {type === 'noItems' && (
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200 max-w-md">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Quick suggestions:</h4>
-          <div className="flex flex-wrap gap-2">
-            {['textbooks', 'laptop', 'furniture', 'phone'].map((suggestion) => (
-              <span
-                key={suggestion}
-                className="px-3 py-1 bg-white rounded-full text-xs text-gray-600 border border-gray-200"
-              >
-                {suggestion}
-              </span>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );

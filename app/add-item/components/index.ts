@@ -8,7 +8,7 @@ export { default as TextInput } from './TextInput';
 export { default as Textarea } from './Textarea';
 export { default as Select } from './Select';
 export { default as Toggle } from './Toggle';
-export { default as OptimizedAddItemForm } from './OptimizedAddItemForm';
+export { default as OptimizedAddItemForm } from './AddItemForm';
 
 // Re-export types and constants for convenience
 export * from '../types';

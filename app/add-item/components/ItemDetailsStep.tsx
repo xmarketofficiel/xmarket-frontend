@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Lightbulb, AlertTriangle, Send } from 'lucide-react';
 import { ItemDetailsStepProps } from '../types';
 import { CATEGORY_CONFIG, CONDITION_OPTIONS, FIELD_CONFIG, PRIVACY_CONFIG } from '../constants';
 import TextInput from './TextInput';
@@ -97,6 +97,7 @@ export default function ItemDetailsStep({
           onChange={(value) => onChange('category', value)}
           error={errors.category}
           required
+          placeholder="Select category"
           options={categoryOptions}
           helpText="Choose the category that best describes your item"
         />
@@ -183,27 +184,6 @@ export default function ItemDetailsStep({
           )}
         </div>
 
-        {/* Tips Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-blue-50 border border-blue-200 rounded-xl p-4"
-        >
-          <div className="flex items-start space-x-3">
-            <div className="text-blue-500 mt-0.5">💡</div>
-            <div>
-              <h4 className="font-medium text-blue-900 mb-2">Tips for a great listing</h4>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Write a clear, descriptive title</li>
-                <li>• Include all relevant details in the description</li>
-                <li>• Be honest about the condition</li>
-                <li>• Set a fair, competitive price</li>
-                <li>• Choose the most accurate category</li>
-              </ul>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Form Validation Summary */}
         {Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0 && (
@@ -213,7 +193,9 @@ export default function ItemDetailsStep({
             className="bg-red-50 border border-red-200 rounded-xl p-4"
           >
             <div className="flex items-start space-x-3">
-              <div className="text-red-500 mt-0.5">⚠️</div>
+              <div className="text-red-500 mt-0.5">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
               <div>
                 <h4 className="font-medium text-red-900 mb-2">Please fix the following errors:</h4>
                 <ul className="text-sm text-red-700 space-y-1">
@@ -247,11 +229,29 @@ export default function ItemDetailsStep({
             </>
           ) : (
             <>
-              <span>🎉</span>
+              <Send className="w-5 h-5" />
               <span>Post Item</span>
             </>
           )}
         </motion.button>
+
+        {/* Tips Section - Moved after submit button */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
+            <div className="text-blue-500 mt-0.5">
+              <Lightbulb className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-medium text-blue-900 mb-1 text-sm">Tips for a great listing</h4>
+              <ul className="text-xs text-blue-700 space-y-0.5">
+                <li>• Write a clear, descriptive title</li>
+                <li>• Include all relevant details</li>
+                <li>• Be honest about the condition</li>
+                <li>• Set a fair, competitive price</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         {/* Legal Notice */}
         <motion.div

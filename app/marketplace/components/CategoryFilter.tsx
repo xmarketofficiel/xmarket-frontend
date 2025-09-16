@@ -44,8 +44,8 @@ export function CategoryFilter({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [originalTop]);
 
-  // Ensure "all" is always first, then add other categories
-  const orderedCategories = ['all', ...categories.filter(cat => cat !== 'all')];
+  // Ensure "all" is always first, then add other categories (avoid duplicates)
+  const orderedCategories = ['all', ...categories.filter(cat => cat !== 'all' && cat !== 'All')];
 
   if (loading) {
     return (
@@ -102,14 +102,6 @@ export function CategoryFilter({
         })}
       </div>
 
-      {/* Category description */}
-      {selectedCategory && CATEGORY_CONFIG[selectedCategory as keyof typeof CATEGORY_CONFIG] && (
-        <div className="mt-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
-          <p className="text-sm text-gray-600">
-            {CATEGORY_CONFIG[selectedCategory as keyof typeof CATEGORY_CONFIG].description}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

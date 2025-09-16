@@ -79,7 +79,7 @@ export default function FavoritesList() {
 
   if (loading) {
     return (
-      <div className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:space-y-0">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -109,7 +109,7 @@ export default function FavoritesList() {
   }
 
   return (
-    <div className="space-y-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 md:space-y-0">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-20">
       {favoriteItems.map((item) => (
         <ItemCard key={item.id} item={item} />
       ))}

@@ -139,6 +139,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </div>
           </div>
           
+          {/* Edit Button - Bottom right of profile picture */}
+          {isOwner && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onEditProfile}
+              className="absolute -bottom-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 bg-[#009F9C] border-4 border-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#007A77] transition-colors"
+            >
+              <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </motion.button>
+          )}
+          
           {/* Verification Badge */}
           {user.isVerified && (
             <div className="absolute -top-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
@@ -146,9 +158,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </div>
           )}
           
-          {/* Activity Status */}
-          {user.lastActive && (
+          {/* Activity Status - Move to left if edit button is present */}
+          {user.lastActive && !isOwner && (
             <div className="absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-2 h-2 bg-white rounded-full" />
+            </div>
+          )}
+          {user.lastActive && isOwner && (
+            <div className="absolute -bottom-2 -left-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
               <div className="w-2 h-2 bg-white rounded-full" />
             </div>
           )}
@@ -174,6 +191,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   </motion.div>
                 )}
               </div>
+
+              {/* Email */}
+              {user.email && (
+                <div className="text-gray-600 text-sm truncate">
+                  {user.email}
+                </div>
+              )}
 
               {/* Rating and Response Time */}
               {user.averageRating && user.averageRating > 0 && (
@@ -223,19 +247,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-center sm:justify-end gap-3 sm:ml-4">
-              {isOwner ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onEditProfile}
-                  className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#009F9C] text-white rounded-xl hover:bg-[#007A77] transition-all font-medium shadow-lg hover:shadow-xl text-sm sm:text-base"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Profile
-                </motion.button>
-              ) : (
+            {/* Action Buttons - Only show message button for non-owners */}
+            {!isOwner && (
+              <div className="flex items-center justify-center sm:justify-end gap-3 sm:ml-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -245,8 +259,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   <MessageCircle className="w-4 h-4" />
                   Message
                 </motion.button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
