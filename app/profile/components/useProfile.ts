@@ -195,13 +195,15 @@ export const useProfile = (userId?: string): UseProfileReturn => {
             if (!prev) return prev;
 
             // Handle different response structures for different tabs
+            // Handle the new wrapped response format: {success: true, data: {...}}
+            const responseData = response.data?.data || response.data || {};
             let itemsData;
             if (tab === 'my-items') {
-              // getUserItems returns array directly
-              itemsData = response.data || [];
+              // getUserItems returns array directly or wrapped
+              itemsData = Array.isArray(responseData) ? responseData : (responseData.items || responseData || []);
             } else {
               // Other endpoints might return {items: [...]} or {notifications: [...]}
-              itemsData = response.data.items || response.data.notifications || [];
+              itemsData = responseData.items || responseData.notifications || [];
             }
 
             const newItems =

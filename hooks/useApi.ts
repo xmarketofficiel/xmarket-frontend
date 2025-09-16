@@ -113,10 +113,12 @@ export function usePaginatedApi<T = any>(
       });
 
       if (response && response.data) {
-        setItems(prev => [...prev, ...response.data.items]);
+        // Handle the new wrapped response format
+        const responseData = (response.data as any).data || response.data;
+        setItems(prev => [...prev, ...(responseData.items || [])]);
         setPage(prev => prev + 1);
-        setHasMore(response.data.hasMore);
-        setTotal(response.data.total);
+        setHasMore(responseData.hasMore || false);
+        setTotal(responseData.total || 0);
       }
     } catch (error) {
       console.error('Failed to load more items:', error);
@@ -137,9 +139,11 @@ export function usePaginatedApi<T = any>(
       });
 
       if (response && response.data) {
-        setItems(response.data.items);
-        setHasMore(response.data.hasMore);
-        setTotal(response.data.total);
+        // Handle the new wrapped response format
+        const responseData = (response.data as any).data || response.data;
+        setItems(responseData.items || []);
+        setHasMore(responseData.hasMore || false);
+        setTotal(responseData.total || 0);
       }
     } catch (error) {
       console.error('Failed to refresh items:', error);
