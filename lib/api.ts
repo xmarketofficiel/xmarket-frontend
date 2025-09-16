@@ -15,6 +15,12 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+export interface WrappedApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
 export class ApiError extends Error {
   status: number;
   code?: string;

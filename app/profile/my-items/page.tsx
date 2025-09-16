@@ -24,7 +24,9 @@ export default function MyItemsPage() {
 
       try {
         const response = await api.users.getUserItems(user.id.toString());
-        setItems(response.data || []);
+        // Handle the new wrapped response format
+        const responseData = response.data?.data || response.data || [];
+        setItems(Array.isArray(responseData) ? responseData : (responseData.items || []));
       } catch (error) {
         console.error('Failed to load user items:', error);
         addToast('Failed to load your items', 'error');
