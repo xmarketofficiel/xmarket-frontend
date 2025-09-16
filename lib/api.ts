@@ -61,15 +61,24 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.config.baseUrl}${endpoint}`;
     
-    const defaultHeaders: HeadersInit = {
+    let defaultHeaders: HeadersInit = {
       'Content-Type': 'application/json',
     };
 
-    // No need to add Authorization header - using HTTP-only cookies
+    // Add Authorization header for Bearer token authentication
+    if (typeof window !== 'undefined') {
+      const accessToken = localStorage.getItem('access_token');
+      if (accessToken) {
+        defaultHeaders = {
+          ...defaultHeaders,
+          'Authorization': `Bearer ${accessToken}`
+        };
+      }
+    }
 
     const requestOptions: RequestInit = {
       ...options,
-      credentials: 'include', // Include cookies for authentication
+      credentials: 'omit', // Don't include cookies for Bearer token auth
       headers: {
         ...defaultHeaders,
         ...options.headers,
@@ -235,14 +244,23 @@ class ApiClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
-        const headers: HeadersInit = {};
-        // No need to add Authorization header - using HTTP-only cookies
+        let headers: HeadersInit = {};
+        
+        // Add Authorization header for Bearer token authentication
+        if (typeof window !== 'undefined') {
+          const accessToken = localStorage.getItem('access_token');
+          if (accessToken) {
+            headers = {
+              'Authorization': `Bearer ${accessToken}`
+            };
+          }
+        }
 
         const response = await fetch(url, {
           method: 'POST',
           body: formData,
           headers,
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'omit', // Don't include cookies for Bearer token auth
           signal: controller.signal,
         });
 
