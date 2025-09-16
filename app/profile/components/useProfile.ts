@@ -41,11 +41,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
     (event: string, metadata?: any) => {
       if (typeof window !== "undefined") {
         // Track analytics event
-        console.log("Profile Analytics:", {
-          event,
-          userId: targetUserId,
-          ...metadata,
-        });
+        
       }
     },
     [targetUserId]

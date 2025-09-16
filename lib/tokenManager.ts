@@ -49,7 +49,7 @@ export class TokenManager {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
       localStorage.setItem(this.TOKEN_EXPIRES_KEY, (Date.now() + (expiresIn * 1000)).toString());
     } catch (error) {
-      console.warn('Failed to store tokens:', error);
+      
     }
   }
 
@@ -61,7 +61,7 @@ export class TokenManager {
       localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
       localStorage.setItem(this.TOKEN_EXPIRES_KEY, (Date.now() + (expiresIn * 1000)).toString());
     } catch (error) {
-      console.warn('Failed to update access token:', error);
+      
     }
   }
 
@@ -74,7 +74,7 @@ export class TokenManager {
       localStorage.removeItem(this.REFRESH_TOKEN_KEY);
       localStorage.removeItem(this.TOKEN_EXPIRES_KEY);
     } catch (error) {
-      console.warn('Failed to clear tokens:', error);
+      
     }
   }
 

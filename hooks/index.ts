@@ -19,5 +19,4 @@ export { useLocalStorage, useSessionStorage, useNamespacedStorage } from './useL
 export { useDebounceSearch } from './useDebounceSearch';
 export { useDragAndDrop } from './useDragAndDrop';
 export { useKeyboardShortcuts } from './useKeyboardShortcuts';
-export { usePerformanceMonitoring } from './usePerformanceMonitoring';
 export { usePullToRefresh } from './usePullToRefresh';

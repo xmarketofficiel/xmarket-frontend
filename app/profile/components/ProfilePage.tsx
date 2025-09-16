@@ -216,7 +216,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
   };
 
   const handleQuickAction = async (actionId: string) => {
-    // TODO: Implement quick actions
+    
     addToast("Quick actions coming soon!", "info");
   };
 
@@ -295,7 +295,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         try {
-          // TODO: Implement actual photo upload logic
+          
           addToast('Photo upload functionality coming soon!', 'info');
         } catch (error) {
           addToast('Failed to upload photo. Please try again.', 'error');

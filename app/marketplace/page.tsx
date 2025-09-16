@@ -499,7 +499,7 @@ export default function MarketplacePage() {
         onFiltersChange={setAdvancedFilters}
         onApplyFilters={() => {
           // Apply advanced filters logic here
-          console.log('Applied filters:', advancedFilters);
+          
           loadItems(1, true);
         }}
         onClearFilters={() => {

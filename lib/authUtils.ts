@@ -23,7 +23,7 @@ export function useAuthErrorHandler() {
   };
 
   const handleTokenExpiration = () => {
-    console.warn('Token expired - redirecting to landing page');
+    
     handleAuthError();
   };
 

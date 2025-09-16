@@ -49,10 +49,9 @@ export default function ItemDetailsStep({
   };
 
   // Debug: Log errors for troubleshooting
-  console.log('Current errors:', errors);
+  
   console.log('Error count:', Object.keys(errors).length);
-  console.log('Form data:', data);
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -183,7 +182,6 @@ export default function ItemDetailsStep({
             />
           )}
         </div>
-
 
         {/* Form Validation Summary */}
         {Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0 && (

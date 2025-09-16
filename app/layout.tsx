@@ -8,11 +8,9 @@ import { ToastProvider } from '../contexts/ToastContext';
 import ToastContainer from '../components/ToastProvider';
 import { UIProvider } from '../contexts/UIContext';
 import KeyboardShortcutsProvider from '../components/KeyboardShortcutsProvider';
-import { PerformanceProvider, PerformanceDebugger } from '../contexts/PerformanceContext';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import OfflineStatus from '../components/OfflineStatus';
 import ErrorBoundary from '../components/ErrorBoundary';
-import '../utils/consoleFilters';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -61,18 +59,15 @@ export default function RootLayout({
             <ToastProvider>
               <FavoritesProvider>
                 <UIProvider>
-                  <PerformanceProvider>
-                    <KeyboardShortcutsProvider>
-                      <ConditionalLayout>
-                        {children}
-                      </ConditionalLayout>
-                      <ToastContainer />
-                      <PWAInstallPrompt />
-                      {/* <PWATestButton /> */}
-                      <OfflineStatus />
-                      {/* <PerformanceDebugger /> */}
-                    </KeyboardShortcutsProvider>
-                  </PerformanceProvider>
+                  <KeyboardShortcutsProvider>
+                    <ConditionalLayout>
+                      {children}
+                    </ConditionalLayout>
+                    <ToastContainer />
+                    <PWAInstallPrompt />
+                    {/* <PWATestButton /> */}
+                    <OfflineStatus />
+                  </KeyboardShortcutsProvider>
                 </UIProvider>
               </FavoritesProvider>
             </ToastProvider>

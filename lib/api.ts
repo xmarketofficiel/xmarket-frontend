@@ -151,7 +151,7 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              console.warn('Failed to parse JSON response:', text);
+              
               data = { message: 'Operation completed successfully' };
             }
           } else {
@@ -286,7 +286,7 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              console.warn('Failed to parse JSON response:', text);
+              
               data = { message: 'File uploaded successfully' };
             }
           } else {
@@ -321,7 +321,7 @@ class ApiClient {
 }
 
 const apiClient = new ApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
+  baseUrl: process.env.NODE_ENV === 'production' ? '/api' : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'),
   timeout: 10000,
   retries: 3,
 });
