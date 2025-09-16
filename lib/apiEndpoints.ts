@@ -22,7 +22,10 @@ export interface CompleteRegistrationData {
 export interface AuthResponse {
   message: string;
   user: User;
-  // Note: Tokens are in HTTP-only cookies, not response body
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
 }
 
 // ===== ITEMS INTERFACES =====
@@ -150,26 +153,98 @@ export const authApi = {
   ): Promise<ApiResponse<{ message: string }>> =>
     apiClient.post("/auth/verify-otp", { email, otp }),
 
-  completeRegistration: (
+  completeRegistration: async (
     data: CompleteRegistrationData
-  ): Promise<ApiResponse<AuthResponse>> =>
-    apiClient.post("/auth/signup", data),
+  ): Promise<ApiResponse<AuthResponse>> => {
+    const response = await apiClient.post("/auth/signup", data) as ApiResponse<AuthResponse>;
+    
+    // Store tokens in localStorage for Bearer token authentication
+    if (response.data && 'access_token' in response.data) {
+      try {
+        localStorage.setItem('access_token', response.data.access_token);
+        localStorage.setItem('refresh_token', response.data.refresh_token);
+        localStorage.setItem('token_expires', (Date.now() + (response.data.expires_in * 1000)).toString());
+        console.log('Registration tokens stored successfully');
+      } catch (error) {
+        console.warn('Failed to store tokens after registration:', error);
+      }
+    }
+    
+    return response;
+  },
 
-  // Cookie-based Authentication
+  // Bearer Token Authentication
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
-    const response = await apiClient.post("/auth/login", credentials);
-    // Using HTTP-only cookies - no need to manage tokens in client
-    return response as ApiResponse<AuthResponse>;
+    const response = await apiClient.post("/auth/login", credentials) as ApiResponse<AuthResponse>;
+    
+    // Store tokens in localStorage for Bearer token authentication
+    if (response.data && 'access_token' in response.data) {
+      try {
+        localStorage.setItem('access_token', response.data.access_token);
+        localStorage.setItem('refresh_token', response.data.refresh_token);
+        localStorage.setItem('token_expires', (Date.now() + (response.data.expires_in * 1000)).toString());
+        console.log('Login tokens stored successfully');
+      } catch (error) {
+        console.warn('Failed to store tokens after login:', error);
+      }
+    }
+    
+    return response;
   },
 
   logout: async (): Promise<ApiResponse<{ message: string }>> => {
     const response = await apiClient.post("/auth/logout");
-    // HTTP-only cookies are cleared by server on logout
+    
+    // Clear tokens from localStorage
+    try {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('token_expires');
+      console.log('Tokens cleared on logout');
+    } catch (error) {
+      console.warn('Failed to clear tokens on logout:', error);
+    }
+    
     return response as ApiResponse<{ message: string }>;
   },
 
-  refreshToken: (): Promise<ApiResponse<{ message: string }>> =>
-    apiClient.post("/auth/refresh"),
+  refreshToken: async (): Promise<ApiResponse<{ access_token: string; expires_in: number }>> => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    // Get the base URL from environment or default
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+    
+    // Use fetch directly for the refresh token request with Authorization header
+    const response = await fetch(`${baseUrl}/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${refreshToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
+    }
+
+    const data = await response.json();
+
+    // Update access token in localStorage
+    if (data && data.access_token) {
+      try {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('token_expires', (Date.now() + (data.expires_in * 1000)).toString());
+        console.log('Access token refreshed successfully');
+      } catch (error) {
+        console.warn('Failed to store refreshed token:', error);
+      }
+    }
+
+    return { data } as ApiResponse<{ access_token: string; expires_in: number }>;
+  },
 
   // Password Reset Flow
   forgotPassword: (email: string): Promise<ApiResponse<{ message: string }>> =>

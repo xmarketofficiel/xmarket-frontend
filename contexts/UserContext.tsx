@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User } from '../types';
 import { api } from '../lib/apiEndpoints';
 import apiClient from '../lib/api';
+import TokenManager from '../lib/tokenManager';
 
 interface UserContextType {
   user: User | null;
@@ -25,7 +26,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Handle authentication errors (token expiration)
   const handleAuthError = useCallback(() => {
     setUser(null);
-    // No need to remove localStorage tokens since we're using HTTP-only cookies
+    // Clear tokens from localStorage
+    TokenManager.clearTokens();
     
     // Only redirect if not on a public page
     const currentPath = window.location.pathname;
@@ -35,18 +37,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
                         currentPath.includes('/landing');
     
     if (!isPublicPage) {
-      router.push('/'); // Redirect to home page instead of login
+      router.push('/login'); // Redirect to login page
     }
   }, [router]);
 
   // Check for existing session on mount
   useEffect(() => {
-    // Clean up any old localStorage tokens that might conflict with cookies
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user-token');
+    // Clean up any old localStorage tokens that might conflict
+    const oldTokenKeys = ['token', 'user', 'accessToken', 'refreshToken', 'user-token'];
+    oldTokenKeys.forEach(key => {
+      if (localStorage.getItem(key)) {
+        localStorage.removeItem(key);
+      }
+    });
     
     // Set up global auth error handler that respects public pages
     apiClient.setAuthErrorHandler(() => {
@@ -66,6 +69,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const checkCurrentUser = async () => {
     try {
+      // Check if we have valid tokens before making request
+      if (!TokenManager.isAuthenticated()) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      // Check if token needs refresh
+      if (TokenManager.shouldRefreshToken()) {
+        try {
+          await api.auth.refreshToken();
+        } catch (refreshError) {
+          console.warn('Token refresh failed:', refreshError);
+          TokenManager.clearTokens();
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+      }
+      
       // Add timeout to prevent infinite loading
       const timeoutPromise = new Promise<never>((_, reject) => 
         setTimeout(() => reject(new Error('Request timeout')), 10000)
@@ -82,12 +105,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
                           window.location.pathname.includes('/login') || 
                           window.location.pathname.includes('/signup');
                           
-      if (error?.response?.status === 401 && !isPublicPage) {
+      if (error?.status === 401 && !isPublicPage) {
         handleAuthError();
       } else {
         // No active session or on a public page - just clear state
         setUser(null);
-        // No need to remove localStorage tokens since we're using HTTP-only cookies
+        TokenManager.clearTokens();
       }
     } finally {
       setLoading(false);
@@ -114,9 +137,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       // Logout errors are non-critical, continue with client-side cleanup
     } finally {
-      // Clear user state
+      // Clear user state and tokens
       setUser(null);
-      // No need to remove localStorage tokens since we're using HTTP-only cookies
+      TokenManager.clearTokens();
       // Redirect to home page (which will show landing for non-authenticated users)
       router.push('/');
     }
@@ -128,14 +151,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     try {
+      // Check if we have valid tokens before making request
+      if (!TokenManager.isAuthenticated()) {
+        setUser(null);
+        return;
+      }
+
+      // Check if token needs refresh
+      if (TokenManager.shouldRefreshToken()) {
+        try {
+          await api.auth.refreshToken();
+        } catch (refreshError) {
+          console.warn('Token refresh failed during user refresh:', refreshError);
+          TokenManager.clearTokens();
+          setUser(null);
+          return;
+        }
+      }
+
       const response = await api.auth.getCurrentUser();
       setUser(response.data);
     } catch (error: any) {
-      if (error?.response?.status === 401) {
+      if (error?.status === 401) {
         handleAuthError();
       } else {
         // For other errors, just clear the user state
         setUser(null);
+        TokenManager.clearTokens();
       }
     }
   }, [handleAuthError]);  return (
