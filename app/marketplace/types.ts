@@ -97,6 +97,11 @@ export interface MarketplaceHeaderProps {
   user: any;
   pendingSalesCount: number;
   onNotificationClick: () => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onSearch: (query: string) => void;
+  showFilters?: boolean;
+  onToggleFilters?: () => void;
 }
 
 export interface SearchBarProps {

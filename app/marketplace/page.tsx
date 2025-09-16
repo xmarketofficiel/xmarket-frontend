@@ -115,7 +115,7 @@ export default function MarketplacePage() {
    */
   const loadCategories = useCallback(async () => {
     try {
-      const response = await api.categories.getCategories();
+      const response = await api.items.getCategories();
       
       // Backend returns full category objects with id, name, icon, description
       const categoryList = response.data || [];
@@ -131,15 +131,13 @@ export default function MarketplacePage() {
         });
         setCategories(categoryNames);
       } else {
-        // Fallback to predefined categories
-        const fallbackCategories = Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all');
-        setCategories(fallbackCategories);
+        // Minimal fallback to prevent hanging - just basic categories
+        setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
       }
     } catch (error) {
       console.error('Failed to load categories:', error);
-      // Fallback to predefined categories from CATEGORY_CONFIG
-      const fallbackCategories = Object.keys(CATEGORY_CONFIG).filter(cat => cat !== 'all');
-      setCategories(fallbackCategories);
+      // Minimal fallback to prevent hanging
+      setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
     }
   }, []); // Remove all dependencies to prevent loops
 
@@ -379,30 +377,19 @@ export default function MarketplacePage() {
           user={user}
           pendingSalesCount={state.pendingSalesCount}
           onNotificationClick={handleNotificationClick}
+          searchQuery={state.searchQuery}
+          onSearchChange={handleSearchChange}
+          onSearch={(query) => {
+            handleSearchChange(query);
+            loadItems(1, true);
+          }}
+          showFilters={showAdvancedFilters}
+          onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
         />
-
-        {/* Enhanced Search Bar */}
-        <div className="bg-gray-50 px-4 py-4">
-          {categories.length === 0 ? (
-            <SkeletonSearchBar />
-          ) : (
-            <EnhancedSearchBar
-              searchQuery={state.searchQuery}
-              onSearchChange={handleSearchChange}
-              onSearch={(query) => {
-                handleSearchChange(query);
-                loadItems(1, true);
-              }}
-              showFilters={showAdvancedFilters}
-              onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              placeholder="Search items, categories, or sellers..."
-            />
-          )}
-        </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50">
+      <div className="flex-1 overflow-y-auto bg-gray-50 pb-20">
         {/* Category Filter - with brief sticky behavior */}
         {categories.length === 0 ? (
           <SkeletonCategoryFilter />

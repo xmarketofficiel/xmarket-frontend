@@ -75,7 +75,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
     {
       id: 'my-interests', 
       title: 'Saved Items',
-      description: 'Items you\'ve saved',
+      description: 'Items you\'ve saved for later',
       icon: Heart,
       count: profileData?.stats?.savedItemsCount || 0
     },
@@ -261,8 +261,14 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       return;
     }
     
-    // Available functionality
-    if (['my-items', 'my-interests', 'purchase-history', 'sold-items'].includes(itemId)) {
+    // Route to separate pages for profile sections
+    if (['purchase-history', 'sold-items', 'pending-sales'].includes(itemId)) {
+      router.push(`/profile/${itemId}`);
+      return;
+    }
+    
+    // Available functionality that stays in current page (nested views)
+    if (['my-items', 'my-interests'].includes(itemId)) {
       setActiveTab(itemId as ProfileTab);
       setCurrentView(itemId as ProfileTab);
     } else {
@@ -274,7 +280,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   // Define which items are coming soon
   const isComingSoon = (itemId: string) => {
-    return ['pending-sales', 'viewed-items', 'privacy-settings', 'language', 'notifications', 'contact-us', 'get-help', 'privacy-policy', 'terms-conditions'].includes(itemId);
+    return ['viewed-items', 'privacy-settings', 'language', 'notifications', 'contact-us', 'get-help', 'privacy-policy', 'terms-conditions', 'address-book'].includes(itemId);
   };
 
   const handleBackToProfile = () => {
@@ -384,7 +390,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-20">
         <div className="max-w-2xl mx-auto px-4 py-6">
           {/* Profile Info Card - Simple Design */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">

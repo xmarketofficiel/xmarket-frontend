@@ -386,6 +386,26 @@ export const itemsApi = {
     }
   },
 
+  // Remove item from favorites
+  removeFavorite: async (itemId: string): Promise<ApiResponse<{ isFavorite: boolean }>> => {
+    try {
+      const sanitizedItemId = itemId?.toString()?.trim();
+      if (!sanitizedItemId || isNaN(Number(sanitizedItemId)) || Number(sanitizedItemId) <= 0) {
+        throw new Error('Invalid item ID provided');
+      }
+
+      const response = await apiClient.delete(`/items/${sanitizedItemId}/favorite`);
+      return {
+        data: { isFavorite: false },
+        status: 200,
+        message: "Removed from favorites",
+      };
+    } catch (error: any) {
+      console.error("Remove favorite failed:", error);
+      throw new Error('Unable to remove from favorites. Please try again.');
+    }
+  },
+
   checkFavorite: async (
     itemId: string
   ): Promise<ApiResponse<{ isFavorite: boolean }>> => {
@@ -489,6 +509,22 @@ export const itemsApi = {
       };
     }
   },
+
+  // Purchase-related endpoints
+  getPendingConfirmations: (): Promise<ApiResponse<any[]>> =>
+    apiClient.get("/items/purchases/pending-confirmations"),
+
+  getMyPurchases: (status?: string): Promise<ApiResponse<any[]>> =>
+    apiClient.get("/items/purchases/my-purchases", status ? { status } : {}),
+
+  getPurchaseById: (id: string): Promise<ApiResponse<any>> =>
+    apiClient.get(`/items/purchases/${id}`),
+
+  confirmPurchase: (id: string, confirmed: boolean, notes?: string): Promise<ApiResponse<any>> =>
+    apiClient.post(`/items/purchases/${id}/confirm`, { confirmed, notes }),
+
+  sellerConfirmPurchase: (id: string, confirmed: boolean, notes?: string): Promise<ApiResponse<any>> =>
+    apiClient.post(`/items/purchases/${id}/seller-confirm`, { confirmed, notes }),
 
   reportItem: async (itemId: string, reason: string, description?: string): Promise<ApiResponse<void>> => {
     try {
@@ -611,175 +647,6 @@ export const itemsApi = {
     }
   },
 
-  // Confirm or decline purchase
-  confirmPurchase: async (purchaseId: string, confirmed: boolean, notes?: string): Promise<ApiResponse<any>> => {
-    if (!purchaseId) {
-      throw new Error('Purchase ID is required');
-    }
-
-    const sanitizedPurchaseId = purchaseId.toString().trim();
-    
-    if (!/^\d+$/.test(sanitizedPurchaseId)) {
-      throw new Error('Invalid purchase ID format');
-    }
-
-    const sanitizedNotes = notes ? notes.trim().substring(0, 500) : '';
-
-    try {
-      const response = await apiClient.post(`/items/purchases/${sanitizedPurchaseId}/confirm`, {
-        confirmed,
-        notes: sanitizedNotes
-      });
-
-      return {
-        data: response.data,
-        status: 200,
-        message: confirmed ? "Purchase confirmed successfully" : "Purchase declined",
-      };
-    } catch (error: any) {
-      console.error("Confirm purchase failed:", error);
-      
-      if (error?.response?.status === 400) {
-        throw new Error('Invalid request or purchase already processed');
-      } else if (error?.response?.status === 403) {
-        throw new Error('You are not authorized to modify this purchase');
-      } else if (error?.response?.status === 404) {
-        throw new Error('Purchase record not found');
-      } else if (error?.response?.status === 401) {
-        throw new Error('Please log in to confirm purchase');
-      } else if (error?.response?.status >= 500) {
-        throw new Error('Server error. Please try again later');
-      }
-      
-      throw new Error('Unable to process purchase confirmation. Please try again.');
-    }
-  },
-
-  // Seller confirms or rejects buyer purchase
-  sellerConfirmPurchase: async (purchaseId: string, confirmed: boolean, notes?: string): Promise<ApiResponse<any>> => {
-    if (!purchaseId) {
-      throw new Error('Purchase ID is required');
-    }
-
-    const sanitizedPurchaseId = purchaseId.toString().trim();
-    
-    if (!/^\d+$/.test(sanitizedPurchaseId)) {
-      throw new Error('Invalid purchase ID format');
-    }
-
-    const sanitizedNotes = notes ? notes.trim().substring(0, 500) : '';
-
-    try {
-      const response = await apiClient.post(`/items/purchases/${sanitizedPurchaseId}/seller-confirm`, {
-        confirmed,
-        notes: sanitizedNotes
-      });
-
-      return {
-        data: response.data,
-        status: 200,
-        message: confirmed ? "Sale confirmed successfully!" : "Purchase request declined",
-      };
-    } catch (error: any) {
-      console.error("Seller confirm purchase failed:", error);
-      
-      if (error?.response?.status === 400) {
-        throw new Error('Purchase is not waiting for your confirmation');
-      } else if (error?.response?.status === 403) {
-        throw new Error('You are not authorized to confirm this purchase');
-      } else if (error?.response?.status === 404) {
-        throw new Error('Purchase record not found');
-      } else if (error?.response?.status === 401) {
-        throw new Error('Please log in to confirm purchase');
-      } else if (error?.response?.status >= 500) {
-        throw new Error('Server error. Please try again later');
-      }
-      
-      throw new Error('Unable to process confirmation. Please try again.');
-    }
-  },
-
-  // Get user's purchase history
-  getMyPurchases: async (status?: string): Promise<ApiResponse<any[]>> => {
-    try {
-      const queryParams: Record<string, string> = {};
-      if (status) {
-        queryParams.status = status;
-      }
-
-      const response = await apiClient.get('/items/purchases/my-purchases', queryParams);
-      const responseData = response.data as any;
-
-      return {
-        data: Array.isArray(responseData) ? responseData : (responseData?.data || []),
-        status: 200,
-        message: "Purchase history retrieved successfully",
-      };
-    } catch (error: any) {
-      console.error("Get purchases failed:", error);
-      
-      if (error?.response?.status === 401) {
-        throw new Error('Please log in to view purchase history');
-      } else if (error?.response?.status >= 500) {
-        throw new Error('Server error. Please try again later');
-      }
-      
-      throw new Error('Unable to load purchase history. Please try again.');
-    }
-  },
-
-  // Get pending purchase confirmations
-  getPendingConfirmations: async (): Promise<ApiResponse<any[]>> => {
-    try {
-      const response = await apiClient.get('/items/purchases/pending-confirmations');
-      const responseData = response.data as any;
-
-      return {
-        data: Array.isArray(responseData) ? responseData : (responseData?.data || []),
-        status: 200,
-        message: "Pending confirmations retrieved successfully",
-      };
-    } catch (error: any) {
-      console.error("Get pending confirmations failed:", error);
-      
-      if (error?.response?.status === 401) {
-        throw new Error('Please log in to view pending confirmations');
-      } else if (error?.response?.status >= 500) {
-        throw new Error('Server error. Please try again later');
-      }
-      
-      throw new Error('Unable to load pending confirmations. Please try again.');
-    }
-  },
-
-  // Get purchase by ID
-  getPurchaseById: async (purchaseId: string): Promise<ApiResponse<any>> => {
-    if (!purchaseId) {
-      throw new Error('Purchase ID is required');
-    }
-
-    const sanitizedPurchaseId = purchaseId.toString().trim();
-    
-    if (!/^\d+$/.test(sanitizedPurchaseId)) {
-      throw new Error('Invalid purchase ID format');
-    }
-
-    try {
-      return await apiClient.get(`/items/purchases/${sanitizedPurchaseId}`);
-    } catch (error: any) {
-      console.error("Get purchase failed:", error);
-      
-      if (error?.response?.status === 403) {
-        throw new Error('You are not authorized to view this purchase');
-      } else if (error?.response?.status === 404) {
-        throw new Error('Purchase not found');
-      } else if (error?.response?.status === 401) {
-        throw new Error('Please log in to view purchase details');
-      }
-      
-      throw new Error('Unable to load purchase details. Please try again.');
-    }
-  },
 
   // Get pending sales for seller
   getPendingSales: async (): Promise<ApiResponse<any[]>> => {

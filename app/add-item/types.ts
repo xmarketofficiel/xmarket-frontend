@@ -64,6 +64,8 @@ export interface FormActions {
   previousStep: () => void;
   updateField: (field: keyof AddItemFormData, value: any) => void;
   updateMultipleFields: (updates: Partial<AddItemFormData>) => void;
+  updatePhotos: (photos: File[]) => void;
+  setSubmitting: (submitting: boolean) => void;
   validateField: (field: keyof AddItemFormData) => void;
   validateStep: (step: number) => boolean;
   validateForm: () => boolean;
@@ -92,6 +94,7 @@ export interface FormHeaderProps {
   onBack: () => void;
   step?: number;
   totalSteps?: number;
+  showBackButton?: boolean;
   className?: string;
 }
 

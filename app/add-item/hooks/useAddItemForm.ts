@@ -465,6 +465,8 @@ export function useAddItemForm({
     previousStep,
     updateField,
     updateMultipleFields,
+    updatePhotos: (photos: File[]) => updateField('photos', photos),
+    setSubmitting: (submitting: boolean) => setState(prev => ({ ...prev, isSubmitting: submitting })),
     validateField: (field) => validateField(field, state.data[field]),
     validateStep,
     validateForm,

@@ -16,62 +16,25 @@ export function SearchResultsHeader({
   if (!searchQuery && !loading) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ 
-        duration: ANIMATION_SYSTEM.duration.normal / 1000,
-        ease: 'easeOut'
-      }}
-      className="design-card px-4 py-3 bg-blue-50/80 backdrop-blur-sm border-b border-blue-100"
-    >
+    <div className="px-4 py-2 bg-white border-b border-gray-100">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          {loading ? (
-            <SkeletonLine className="w-48 h-4" />
-          ) : (
-            <div className="text-sm text-blue-800">
-              <span className="font-semibold">{totalResults.toLocaleString()}</span>{' '}
-              {totalResults === 1 ? 'result' : 'results'} for{' '}
-              <span className="font-medium">"{searchQuery}"</span>
-            </div>
-          )}
-        </div>
+        {loading ? (
+          <SkeletonLine className="w-32 h-4" />
+        ) : (
+          <div className="text-sm text-gray-700">
+            <span className="font-medium">{totalResults}</span> result{totalResults !== 1 ? 's' : ''} for "{searchQuery}"
+          </div>
+        )}
 
         {searchQuery && !loading && (
-          <motion.button
+          <button
             onClick={onClearSearch}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{
-              duration: ANIMATION_SYSTEM.duration.fast / 1000,
-              ease: 'easeOut'
-            }}
+            className="text-[#009F9C] hover:text-[#008A87] text-sm font-medium"
           >
             Clear
-          </motion.button>
+          </button>
         )}
       </div>
-
-      {/* Search suggestions for no results */}
-      {!loading && totalResults === 0 && searchQuery && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          transition={{ 
-            delay: 0.2,
-            duration: ANIMATION_SYSTEM.duration.normal / 1000,
-            ease: 'easeOut'
-          }}
-          className="mt-2 pt-2 border-t border-blue-200"
-        >
-          <p className="text-xs text-blue-600">
-            Try searching for: textbooks, electronics, furniture, or browse by category
-          </p>
-        </motion.div>
-      )}
-    </motion.div>
+    </div>
   );
 }

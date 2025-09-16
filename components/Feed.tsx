@@ -72,9 +72,9 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
   }
 
   return (
-    <div className="py-4">
-      {/* Mobile layout - single column list */}
-      <div className="block md:hidden space-y-4">
+    <div className="py-4 px-4">
+      {/* Mobile layout - 2 column grid */}
+      <div className="grid grid-cols-2 gap-3 md:hidden">
         {items.map((item, index) => (
           <ItemCard 
             key={item.id} 
@@ -84,15 +84,15 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
           />
         ))}
         
-        {/* Loading skeletons for mobile - only show initial loading */}
+        {/* Loading skeletons for mobile */}
         {loading && items.length === 0 && (
-          Array.from({ length: 4 }).map((_, index) => (
+          Array.from({ length: 6 }).map((_, index) => (
             <SkeletonCard key={`skeleton-mobile-${index}`} layout="mobile" />
           ))
         )}
       </div>
 
-      {/* Desktop layout - grid */}
+      {/* Desktop layout - 3-4 column grid */}
       <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-6">
         {items.map((item, index) => (
           <ItemCard 
@@ -103,7 +103,7 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
           />
         ))}
         
-        {/* Loading skeletons for desktop - only show initial loading */}
+        {/* Loading skeletons for desktop */}
         {loading && items.length === 0 && (
           Array.from({ length: 8 }).map((_, index) => (
             <SkeletonCard key={`skeleton-desktop-${index}`} layout="desktop" />

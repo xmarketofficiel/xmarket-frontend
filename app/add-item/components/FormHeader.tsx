@@ -9,6 +9,7 @@ interface FormHeaderProps {
   onBack: () => void;
   step?: number;
   totalSteps?: number;
+  showBackButton?: boolean;
   className?: string;
 }
 

@@ -1,18 +1,42 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Bell, ShoppingBag, User } from 'lucide-react';
+import { Bell, ShoppingBag, User, Search, X, Filter } from 'lucide-react';
 import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import type { MarketplaceHeaderProps } from '../types';
+import { useState, useRef, useEffect } from 'react';
 
 /**
  * Marketplace Header Component
- * Top navigation with notifications and user actions
+ * Top navigation with search, notifications and actions
  */
 export function MarketplaceHeader({ 
   user, 
   pendingSalesCount, 
-  onNotificationClick 
+  onNotificationClick,
+  searchQuery,
+  onSearchChange,
+  onSearch,
+  showFilters = false,
+  onToggleFilters
 }: MarketplaceHeaderProps) {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSearchExpanded && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchExpanded]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchExpanded(false);
+    onSearchChange('');
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -21,144 +45,118 @@ export function MarketplaceHeader({
         duration: ANIMATION_SYSTEM.duration.normal / 1000, 
         ease: ANIMATION_SYSTEM.framerEasing.easeOut 
       }}
-      className="design-card bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 sticky top-0 z-40"
-      style={{
-        transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-      }}
+      className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 sticky top-0 z-40"
     >
       <div className="px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo and Title */}
-          <motion.div 
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
-          >
-            <div className="w-8 h-8 bg-gradient-to-r from-[#009F9C] to-[#00B8B5] rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-all"
-                 style={{
-                   transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                   transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                 }}>
-              <ShoppingBag className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 transition-colors"
-                  style={{
-                    transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                  }}>
-                Marketplace
-              </h1>
-              <p className="text-xs text-gray-500 transition-colors"
-                 style={{
-                   transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                   transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                 }}>
-                Find what you need
-              </p>
-            </div>
-          </motion.div>
+        <AnimatePresence mode="wait">
+          {!isSearchExpanded ? (
+            // Normal Header
+            <motion.div 
+              key="normal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center justify-between"
+            >
+              {/* Logo and Title */}
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#009F9C] to-[#00B8B5] rounded-lg flex items-center justify-center">
+                  <ShoppingBag className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">Marketplace</h1>
+                  <p className="text-xs text-gray-500">Find what you need</p>
+                </div>
+              </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-3">
-            {/* Notifications */}
-            {user && (
-              <motion.button
-                onClick={onNotificationClick}
-                className="design-card relative p-2 rounded-lg bg-gray-50/80 hover:bg-gray-100/80 backdrop-blur-sm border border-gray-200/50 hover:border-gray-300/50 transition-all"
-                style={{
-                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
-              >
-                <Bell className="w-5 h-5 text-gray-600 transition-colors"
-                      style={{
-                        transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                      }} />
-                {pendingSalesCount > 0 && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                      duration: ANIMATION_SYSTEM.duration.normal / 1000,
-                      ease: ANIMATION_SYSTEM.framerEasing.bounce 
-                    }}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-lg"
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-3">
+                {/* Notifications */}
+                {user && (
+                  <motion.button
+                    onClick={onNotificationClick}
+                    className="relative p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <span className="text-xs font-medium text-white">
-                      {pendingSalesCount > 9 ? '9+' : pendingSalesCount}
-                    </span>
-                  </motion.div>
+                    <Bell className="w-5 h-5 text-gray-600" />
+                    {pendingSalesCount > 0 && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-white">
+                          {pendingSalesCount > 9 ? '9+' : pendingSalesCount}
+                        </span>
+                      </div>
+                    )}
+                  </motion.button>
                 )}
-              </motion.button>
-            )}
 
-            {/* Profile */}
-            {user ? (
-              <Link href="/profile">
-                <motion.div
-                  className="design-card flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50/80 backdrop-blur-sm border border-gray-200/50 hover:border-gray-300/50 transition-all"
-                  style={{
-                    transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
-                >
-                  {user.profilePhoto ? (
-                    <img
-                      src={user.profilePhoto}
-                      alt={user.fullName}
-                      className="w-8 h-8 rounded-full object-cover border border-gray-200 shadow-sm hover:shadow-md transition-all"
-                      style={{
-                        transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                      }}
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#009F9C] to-[#00B8B5] rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
-                         style={{
-                           transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                           transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                         }}>
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-gray-900 truncate max-w-20 transition-colors"
-                       style={{
-                         transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                         transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                       }}>
-                      {user.fullName?.split(' ')[0] || 'User'}
-                    </p>
-                  </div>
-                </motion.div>
-              </Link>
-            ) : (
-              <Link href="/login">
+                {/* Search Icon */}
                 <motion.button
-                  className="design-card px-4 py-2 bg-[#009F9C] text-white rounded-lg text-sm font-medium hover:bg-[#008A87] hover:shadow-md transition-all border border-transparent hover:border-[#007A77]"
-                  style={{
-                    transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                    transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                  }}
+                  onClick={() => setIsSearchExpanded(true)}
+                  className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
                 >
-                  Sign In
+                  <Search className="w-5 h-5 text-gray-600" />
                 </motion.button>
-              </Link>
-            )}
-          </div>
-        </div>
+              </div>
+            </motion.div>
+          ) : (
+            // Expanded Search
+            <motion.form
+              key="search"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onSubmit={handleSearchSubmit}
+              className="flex items-center space-x-3"
+            >
+              {/* Search Input */}
+              <div className="flex-1 flex items-center space-x-2">
+                <div className="flex-1 relative">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    placeholder="Search items, categories, or sellers..."
+                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009F9C] focus:border-transparent"
+                  />
+                </div>
+                
+                {/* Filter Button */}
+                {onToggleFilters && (
+                  <motion.button
+                    type="button"
+                    onClick={onToggleFilters}
+                    className={`p-2 rounded-lg transition-colors ${
+                      showFilters 
+                        ? 'bg-[#009F9C] text-white' 
+                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Filter className="w-5 h-5" />
+                  </motion.button>
+                )}
+              </div>
+
+              {/* Close Button */}
+              <motion.button
+                type="button"
+                onClick={handleSearchClose}
+                className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
+            </motion.form>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

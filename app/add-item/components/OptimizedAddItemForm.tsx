@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { api } from '../../../lib/apiEndpoints';
@@ -79,39 +78,35 @@ export default function OptimizedAddItemForm({
       if (onCancel) {
         onCancel();
       } else {
-        router.back();
+        router.push('/');
       }
     }
   };
 
+  // Handle photo step navigation
+  const handleNextFromPhotos = () => {
+    if (state.data.photos.length === 0) {
+      addToast('Please add at least one photo', 'error');
+      return;
+    }
+    actions.nextStep();
+  };
+
+  // Handle photo changes
+  const handlePhotosChange = (photos: File[]) => {
+    actions.updatePhotos(photos);
+  };
+
+  // Handle cancel
   const handleCancel = () => {
     if (onCancel) {
       onCancel();
     } else {
-      router.back();
+      router.push('/');
     }
   };
 
-  // Handle photo step
-  const handlePhotosChange = (photos: File[]) => {
-    actions.updateField('photos', photos);
-  };
-
-  const handleNextFromPhotos = () => {
-    if (actions.validateStep(ADD_ITEM_CONFIG.STEP_PHOTOS)) {
-      actions.nextStep();
-      
-      // Analytics
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', ANALYTICS_EVENTS.STEP_COMPLETED, {
-          step: ADD_ITEM_CONFIG.STEP_PHOTOS,
-          photos_count: state.data.photos.length
-        });
-      }
-    }
-  };
-
-  // Handle form submission
+  // Handle form submission with Instagram-style background processing
   const handleSubmit = async () => {
     if (!user) {
       addToast(ERROR_MESSAGES.UNAUTHORIZED, 'error');
@@ -124,6 +119,9 @@ export default function OptimizedAddItemForm({
       return;
     }
 
+    // Set loading state immediately
+    actions.setSubmitting(true);
+
     try {
       // Validate numeric fields before conversion
       const priceValue = parseFloat(state.data.price);
@@ -131,14 +129,27 @@ export default function OptimizedAddItemForm({
       
       if (isNaN(priceValue) || priceValue <= 0) {
         addToast('Please enter a valid price', 'error');
+        actions.setSubmitting(false);
         return;
       }
       
       if (isNaN(quantityValue) || quantityValue <= 0) {
         addToast('Please enter a valid quantity', 'error');
+        actions.setSubmitting(false);
         return;
       }
 
+      // Show posting message and redirect immediately (Instagram-style)
+      addToast('Your item is being posted...', 'info');
+      
+      // Redirect to homepage immediately
+      if (onSuccess) {
+        onSuccess('posting');
+      } else {
+        router.push('/');
+      }
+
+      // Process in background
       const itemData = {
         title: state.data.title,
         description: state.data.description,
@@ -149,66 +160,53 @@ export default function OptimizedAddItemForm({
         anonymous: !state.data.showIdentity,
       };
 
-      // Create item
-      const response = await api.items.createItem(itemData);
-      const newItem = response.data;
+      // Background processing
+      setTimeout(async () => {
+        try {
+          // Create item
+          const response = await api.items.createItem(itemData);
+          const newItem = response.data;
 
-      // Upload photos if item creation succeeded
-      if (state.data.photos.length > 0) {
-        await api.items.uploadItemImages(String(newItem.id), state.data.photos);
-      }
+          // Upload photos if item creation succeeded
+          if (state.data.photos.length > 0) {
+            await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+          }
 
-      // Success
-      actions.reset();
-      
-      if (onSuccess) {
-        onSuccess(String(newItem.id));
-      } else {
-        addToast(SUCCESS_MESSAGES.ITEM_CREATED, 'success');
-        router.push('/');
-      }
+          // Show success toast
+          addToast('Item posted successfully!', 'success');
+          actions.reset();
+          
+          // Analytics tracking
+          if (typeof window !== 'undefined' && window.gtag) {
+            window.gtag('event', ANALYTICS_EVENTS.ITEM_CREATED, {
+              item_id: String(newItem.id),
+              category: state.data.category,
+              price: state.data.price
+            });
+          }
+        } catch (error: any) {
+          console.error('Error creating item:', error);
+          addToast('Failed to post item. Please try again.', 'error');
+        }
+      }, 100);
+
     } catch (error: any) {
       console.error('Error creating item:', error);
       addToast(error.message || ERROR_MESSAGES.CREATION_FAILED, 'error');
+      actions.setSubmitting(false);
     }
   };
 
-  // Step transition variants
-  const stepVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 300 : -300,
-      opacity: 0
-    })
-  };
-
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className={`h-full flex flex-col bg-gray-50 ${className}`}
-    >
+    <div className={`h-full flex flex-col bg-gray-50 ${className}`}>
       {/* Header */}
       <div className="flex-shrink-0">
         <FormHeader
           title="Add Item"
           onBack={handleBack}
-          step={state.currentStep}
-          totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
+          showBackButton={true}
         />
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 pb-20">
         {/* Step Indicator */}
         <StepIndicator
           currentStep={state.currentStep}
@@ -218,67 +216,34 @@ export default function OptimizedAddItemForm({
 
         {/* Step Content */}
         <div className="max-w-md mx-auto">
-          <AnimatePresence mode="wait" custom={state.currentStep}>
-            {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS && (
-              <motion.div
-                key="photos"
-                custom={state.currentStep}
-                variants={stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
-                }}
-              >
-                <PhotoUploadStep
-                  photos={state.data.photos}
-                  onPhotosChange={handlePhotosChange}
-                  error={state.validation.errors.photos}
-                  onNext={handleNextFromPhotos}
-                  onCancel={handleCancel}
-                />
-              </motion.div>
-            )}
+          {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS && (
+            <PhotoUploadStep
+              photos={state.data.photos}
+              onPhotosChange={handlePhotosChange}
+              error={state.validation.errors.photos}
+              onNext={handleNextFromPhotos}
+              onCancel={handleCancel}
+            />
+          )}
 
-            {state.currentStep === ADD_ITEM_CONFIG.STEP_DETAILS && (
-              <motion.div
-                key="details"
-                custom={state.currentStep}
-                variants={stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
-                }}
-              >
-                <ItemDetailsStep
-                  data={state.data}
-                  onChange={actions.updateField}
-                  errors={state.validation.errors}
-                  categories={categories || []}
-                  isSubmitting={state.isSubmitting}
-                  onSubmit={handleSubmit}
-                  onBack={actions.previousStep}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {state.currentStep === ADD_ITEM_CONFIG.STEP_DETAILS && (
+            <ItemDetailsStep
+              data={state.data}
+              onChange={actions.updateField}
+              errors={state.validation.errors}
+              categories={categories || []}
+              isSubmitting={state.isSubmitting}
+              onSubmit={handleSubmit}
+              onBack={actions.previousStep}
+            />
+          )}
         </div>
 
         {/* Draft Auto-save Indicator */}
         {state.isAutoSaving && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm"
-          >
+          <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm">
             💾 Auto-saving draft...
-          </motion.div>
+          </div>
         )}
 
         {/* Progress Indicator */}
@@ -287,20 +252,27 @@ export default function OptimizedAddItemForm({
             <span className="text-gray-600">
               Step {state.currentStep} of {ADD_ITEM_CONFIG.TOTAL_STEPS}
             </span>
-            <div className="flex space-x-1">
-              {Array.from({ length: ADD_ITEM_CONFIG.TOTAL_STEPS }, (_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${
-                    i + 1 <= state.currentStep ? 'bg-[#006666]' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
+            <span className="text-gray-900 font-medium">
+              {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? 'Add Photos' : 'Item Details'}
+            </span>
+          </div>
+          <div className="mt-2 bg-gray-200 rounded-full h-1">
+            <div 
+              className="bg-[#006666] h-1 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${(state.currentStep / ADD_ITEM_CONFIG.TOTAL_STEPS) * 100}%` }}
+            />
           </div>
         </div>
+
+        {/* Keyboard Shortcuts Help (Desktop) */}
+        <div className="hidden md:block fixed bottom-4 right-4 text-xs text-gray-500 bg-white rounded-lg shadow-lg p-3 max-w-48">
+          <div className="font-medium mb-1">Keyboard Shortcuts:</div>
+          <div>• Enter: Next step</div>
+          <div>• Esc: Go back</div>
+          <div>• Tab: Navigate fields</div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
