@@ -228,6 +228,10 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
     try {
       switch (action) {
         case "edit":
+          if (item.isSold || item.status === 'sold') {
+            addToast('Cannot edit sold items. Sold items are locked to maintain transaction integrity.', 'error');
+            return;
+          }
           router.push(`/item/${item.id}/edit`);
           break;
         case "delete":

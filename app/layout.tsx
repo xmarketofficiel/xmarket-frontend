@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import ConditionalLayout from '../components/ConditionalLayout';
 import { UserProvider } from '../contexts/UserContext';
 import { FavoritesProvider } from '../contexts/FavoritesContext';
@@ -73,6 +74,7 @@ export default function RootLayout({
             </ToastProvider>
           </UserProvider>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   );

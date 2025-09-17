@@ -169,7 +169,13 @@ export default function OptimizedAddItemForm({
 
           // Upload photos if item creation succeeded
           if (state.data.photos.length > 0) {
-            await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+            try {
+              await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+            } catch (uploadError: any) {
+              console.error('Error uploading images:', uploadError);
+              addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
+              return; // Don't throw the error, item was created successfully
+            }
           }
 
           // Show success toast
