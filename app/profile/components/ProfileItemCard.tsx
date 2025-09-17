@@ -134,11 +134,27 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
         {showActions && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
             <button
-              onClick={(e: React.MouseEvent) => handleAction(e, 'edit')}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors hover:scale-110"
-              title="Edit item"
+              onClick={(e: React.MouseEvent) => {
+                if (item.isSold || item.status === 'sold') {
+                  e.stopPropagation();
+                  return;
+                }
+                handleAction(e, 'edit');
+              }}
+              disabled={item.isSold || item.status === 'sold'}
+              className={`w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors ${
+                item.isSold || item.status === 'sold'
+                  ? 'bg-gray-500/50 cursor-not-allowed'
+                  : 'bg-white/20 hover:bg-white/30 hover:scale-110'
+              }`}
+              title={item.isSold || item.status === 'sold' ? 'Cannot edit sold items' : 'Edit item'}
             >
               <Edit className="w-4 h-4" />
+              {(item.isSold || item.status === 'sold') && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs">🔒</span>
+                </div>
+              )}
             </button>
             
             <button

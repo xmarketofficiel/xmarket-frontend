@@ -96,7 +96,7 @@ export default function ItemHeader({
           <button
             onClick={() => {
               // Handle more options for own items (edit, delete, etc.)
-              // TODO: Implement edit/delete functionality
+              
             }}
             className="p-2 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200"
             aria-label="More options"

@@ -49,7 +49,6 @@ export default function EmailVerificationPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Add actual email verification logic here
-      console.log('Verifying email with token:', verificationToken);
       
       // Simulate different outcomes
       const success = Math.random() > 0.3; // 70% success rate for demo
@@ -80,7 +79,6 @@ export default function EmailVerificationPage() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Add actual resend verification logic here
-      console.log('Resending verification to:', email);
       
       setMessage('New verification email sent! Check your inbox.');
       setResendTimer(60); // 60 seconds cooldown

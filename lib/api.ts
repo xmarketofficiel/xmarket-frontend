@@ -151,7 +151,7 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              console.warn('Failed to parse JSON response:', text);
+              
               data = { message: 'Operation completed successfully' };
             }
           } else {
@@ -267,9 +267,29 @@ class ApiClient {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
+          let errorData: any = {};
+          let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          
+          try {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              errorData = await response.json();
+              errorMessage = errorData.message || errorMessage;
+            } else {
+              // For non-JSON responses (like multipart form errors), get text
+              const errorText = await response.text();
+              if (errorText) {
+                errorMessage = errorText;
+                errorData = { rawError: errorText };
+              }
+            }
+          } catch (parseError) {
+            // If we can't parse the error response, use the default message
+            console.warn('Failed to parse error response:', parseError);
+          }
+          
           throw new ApiError({
-            message: errorData.message || `HTTP ${response.status}: ${response.statusText}`,
+            message: errorMessage,
             status: response.status,
             code: errorData.code,
             details: errorData,
@@ -286,7 +306,7 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              console.warn('Failed to parse JSON response:', text);
+              
               data = { message: 'File uploaded successfully' };
             }
           } else {
@@ -320,8 +340,9 @@ class ApiClient {
   }
 }
 
+// Always use SSR API routes to hide backend URLs
 const apiClient = new ApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001',
+  baseUrl: '/api',
   timeout: 10000,
   retries: 3,
 });

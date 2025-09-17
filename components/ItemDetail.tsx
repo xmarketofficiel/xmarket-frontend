@@ -31,9 +31,8 @@ export default function ItemDetail({ item }: ItemDetailProps) {
     String(user.id) === String(item.seller?.id)
   );
 
-  // Handle both backend format (images array) and mock format (photos array)
-  const photos = item.photos || 
-                 item.images?.map(img => {
+  // Handle backend format (images array)
+  const photos = item.images?.map(img => {
                    const url = img.imageUrl;
                    // Add full URL prefix if it's a relative path and not 'undefined'
                    if (url && !url.includes('undefined') && url.startsWith('/')) {

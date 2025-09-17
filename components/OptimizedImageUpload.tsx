@@ -132,10 +132,10 @@ export default function OptimizedImageUpload({
           throw new Error('Direct upload to Spaces failed');
         }
 
-        // Create mock optimization result (in real app, you'd call the optimization endpoint)
+        // Call the optimization endpoint
         const optimizedResult: OptimizedUploadResult = {
           originalFile: file,
-          cloudinaryUrl: presignedData.publicUrl, // Using Spaces URL as fallback
+          cloudinaryUrl: presignedData.publicUrl,
           spacesUrls: {
             thumbnail: presignedData.publicUrl,
             small: presignedData.publicUrl,

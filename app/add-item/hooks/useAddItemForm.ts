@@ -342,7 +342,7 @@ export function useAddItemForm({
       localStorage.setItem(STORAGE_KEYS.DRAFT_FORM, JSON.stringify(draft));
       setState((prev) => ({ ...prev, hasUnsavedChanges: false }));
     } catch (error) {
-      console.warn("Failed to save draft:", error);
+      
     }
   }, [state.data, state.currentStep]);
 
@@ -367,7 +367,7 @@ export function useAddItemForm({
         return true;
       }
     } catch (error) {
-      console.warn("Failed to load draft:", error);
+      
     }
     return false;
   }, []);
@@ -376,7 +376,7 @@ export function useAddItemForm({
     try {
       localStorage.removeItem(STORAGE_KEYS.DRAFT_FORM);
     } catch (error) {
-      console.warn("Failed to clear draft:", error);
+      
     }
   }, []);
 
@@ -435,7 +435,7 @@ export function useAddItemForm({
       // Clear draft and reset form
       clearDraft();
 
-      onSuccess?.("mock-item-id");
+      onSuccess?.(response.data.id);
     } catch (error: any) {
       onError?.(error.message || "Failed to create item");
     } finally {

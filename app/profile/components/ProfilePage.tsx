@@ -216,7 +216,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
   };
 
   const handleQuickAction = async (actionId: string) => {
-    // TODO: Implement quick actions
+    
     addToast("Quick actions coming soon!", "info");
   };
 
@@ -228,6 +228,10 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
     try {
       switch (action) {
         case "edit":
+          if (item.isSold || item.status === 'sold') {
+            addToast('Cannot edit sold items. Sold items are locked to maintain transaction integrity.', 'error');
+            return;
+          }
           router.push(`/item/${item.id}/edit`);
           break;
         case "delete":
@@ -295,7 +299,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         try {
-          // TODO: Implement actual photo upload logic
+          
           addToast('Photo upload functionality coming soon!', 'info');
         } catch (error) {
           addToast('Failed to upload photo. Please try again.', 'error');

@@ -25,7 +25,7 @@ export class AuthService {
         }
       }
     } catch (error) {
-      console.warn('Failed to store tokens in localStorage:', error);
+      
     }
   }
 
@@ -43,7 +43,7 @@ export class AuthService {
         return localStorage.getItem(this.ACCESS_TOKEN_KEY);
       }
     } catch (error) {
-      console.warn('Failed to get access token from localStorage:', error);
+      
     }
     return null;
   }
@@ -55,7 +55,7 @@ export class AuthService {
         return localStorage.getItem(this.REFRESH_TOKEN_KEY);
       }
     } catch (error) {
-      console.warn('Failed to get refresh token from localStorage:', error);
+      
     }
     return null;
   }
@@ -69,7 +69,7 @@ export class AuthService {
         localStorage.removeItem(`${this.ACCESS_TOKEN_KEY}_expires`);
       }
     } catch (error) {
-      console.warn('Failed to clear tokens from localStorage:', error);
+      
     }
   }
 

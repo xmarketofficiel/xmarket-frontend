@@ -91,7 +91,8 @@ export default function MarketplacePage() {
   }, []);
 
   /**
-   * Load pending sales count for notifications
+   * Load pending confirmations count for notifications
+   * This should match what's shown in the pending confirmations page
    */
   const loadPendingSalesCount = useCallback(async () => {
     if (!user) {
@@ -100,12 +101,33 @@ export default function MarketplacePage() {
     }
 
     try {
-      const response = await api.items.getPendingSales();
-      const pendingSales = response.data || [];
+      // Get both pending confirmations (for seller) and user's purchases (for buyer)
+      const [confirmationsResponse, purchasesResponse] = await Promise.all([
+        api.items.getPendingConfirmations(),
+        api.items.getMyPurchases()
+      ]);
+      
+      const confirmationsData = (confirmationsResponse.data as any)?.data || confirmationsResponse.data || [];
+      const purchasesData = (purchasesResponse.data as any)?.data || purchasesResponse.data || [];
+      
+      // Combine both - pending confirmations for seller role and pending purchases for buyer role
+      const allPurchases = [...confirmationsData, ...purchasesData];
+      
+      // Filter for pending items only and remove duplicates
+      const uniquePurchases = allPurchases
+        .filter((purchase: any) => 
+          purchase.status === 'pending' || 
+          purchase.status === 'buyer_confirmed'
+        )
+        .filter((purchase: any, index: number, self: any[]) => 
+          index === self.findIndex(p => p.id === purchase.id)
+        );
+      
       updateState({ 
-        pendingSalesCount: Array.isArray(pendingSales) ? pendingSales.length : 0 
+        pendingSalesCount: uniquePurchases.length
       });
     } catch (error) {
+      console.error('Error loading pending confirmations count:', error);
       updateState({ pendingSalesCount: 0 });
     }
   }, [user]); // Only depend on user, not updateState
@@ -499,7 +521,7 @@ export default function MarketplacePage() {
         onFiltersChange={setAdvancedFilters}
         onApplyFilters={() => {
           // Apply advanced filters logic here
-          console.log('Applied filters:', advancedFilters);
+          
           loadItems(1, true);
         }}
         onClearFilters={() => {

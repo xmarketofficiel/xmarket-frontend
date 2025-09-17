@@ -40,6 +40,12 @@ interface PendingPurchase {
     price: number;
     condition: string;
     sellerId?: number;
+    seller?: {
+      id: number;
+      fullName: string;
+      email: string;
+      whatsappNumber?: string;
+    };
     images: Array<{
       id: number;
       imageUrl: string;
@@ -65,27 +71,61 @@ export default function PendingConfirmationsPage() {
     try {
       setLoading(true);
       
-      // Get both pending confirmations (for seller) and user's purchases (for buyer)
-      const [confirmationsResponse, purchasesResponse] = await Promise.all([
-        api.items.getPendingConfirmations(),
-        api.items.getMyPurchases()
-      ]);
+      // Use the same approach as purchase-confirmations page
+      // Get pending sales where current user is the seller
+      const response = await api.items.getPendingSales();
+      let pendingSales = (response.data as any)?.data || response.data || [];
+      if (!Array.isArray(pendingSales)) {
+        pendingSales = [];
+      }
       
-      const confirmationsData = (confirmationsResponse.data as any)?.data || confirmationsResponse.data || [];
-      const purchasesData = (purchasesResponse.data as any)?.data || purchasesResponse.data || [];
+      // Also get buyer's pending confirmations
+      const confirmationsResponse = await api.items.getPendingConfirmations();
+      let pendingConfirmations = (confirmationsResponse.data as any)?.data || confirmationsResponse.data || [];
+      if (!Array.isArray(pendingConfirmations)) {
+        pendingConfirmations = [];
+      }
       
-      // Combine both - pending confirmations for seller role and pending purchases for buyer role
-      const allPurchases = [...confirmationsData, ...purchasesData];
+      // Also get buyer's purchases that need confirmation
+      const purchasesResponse = await api.items.getMyPurchases();
+      let purchasesData = (purchasesResponse.data as any)?.data || purchasesResponse.data || [];
+      if (!Array.isArray(purchasesData)) {
+        purchasesData = [];
+      }
       
-      // Filter for pending items only and remove duplicates
-      const uniquePurchases = allPurchases
-        .filter((purchase: any) => 
-          purchase.status === 'pending' || 
-          purchase.status === 'buyer_confirmed'
-        )
-        .filter((purchase: any, index: number, self: any[]) => 
-          index === self.findIndex(p => p.id === purchase.id)
-        );
+      // Filter for pending purchases
+      const buyerPending = purchasesData.filter((p: any) => p && p.status === 'pending');
+      
+      // Ensure all arrays are valid before combining
+      const safePendingSales = Array.isArray(pendingSales) ? pendingSales : [];
+      const safePendingConfirmations = Array.isArray(pendingConfirmations) ? pendingConfirmations : [];
+      const safeBuyerPending = Array.isArray(buyerPending) ? buyerPending : [];
+      
+      // Combine all types of pending items
+      const allPendingItems = [
+        ...safePendingSales,
+        ...safePendingConfirmations, 
+        ...safeBuyerPending
+      ];
+      
+      // Remove duplicates based on ID
+      const uniquePurchases = allPendingItems.filter((item: any, index: number, self: any[]) => 
+        item && item.id && index === self.findIndex(p => p && p.id === item.id)
+      );
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Raw API Responses:');
+        console.log('- getPendingSales response:', response);
+        console.log('- getPendingConfirmations response:', confirmationsResponse);
+        console.log('- getMyPurchases response:', purchasesResponse);
+        console.log('Processed Data:');
+        console.log('- Pending Sales (seller):', pendingSales, 'Type:', typeof pendingSales, 'IsArray:', Array.isArray(pendingSales));
+        console.log('- Pending Confirmations (buyer):', pendingConfirmations, 'Type:', typeof pendingConfirmations, 'IsArray:', Array.isArray(pendingConfirmations));
+        console.log('- Buyer Pending:', buyerPending, 'Type:', typeof buyerPending, 'IsArray:', Array.isArray(buyerPending));
+        console.log('- Combined Unique:', uniquePurchases, 'Length:', uniquePurchases.length);
+        console.log('- Current User ID:', user?.id);
+      }
       
       setPendingPurchases(uniquePurchases);
     } catch (error: any) {
@@ -153,8 +193,11 @@ export default function PendingConfirmationsPage() {
   };
 
   const openWhatsApp = (purchase: PendingPurchase) => {
-    const contact = purchase.buyer;
-    if (!contact.whatsappNumber) {
+    // Determine the contact based on user role
+    const isSeller = (purchase.item?.sellerId === user?.id) || (purchase.item?.seller?.id === user?.id);
+    const contact = isSeller ? purchase.buyer : purchase.item?.seller;
+    
+    if (!contact || !contact.whatsappNumber) {
       addToast('Contact has no WhatsApp number available', 'error');
       return;
     }
@@ -168,16 +211,21 @@ export default function PendingConfirmationsPage() {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Filter purchases by type
-  const buyerPendingPurchases = pendingPurchases.filter(p => 
-    p.buyerId === user?.id && p.status === 'pending'
-  );
-  const buyerAwaitingSellerPurchases = pendingPurchases.filter(p => 
-    p.buyerId === user?.id && p.status === 'buyer_confirmed'
-  );
-  const sellerPendingPurchases = pendingPurchases.filter(p => 
-    p.item.sellerId === user?.id && (p.status === 'buyer_confirmed' || p.status === 'pending')
-  );
+  // Filter purchases by type - simplified approach
+  const buyerPendingPurchases = pendingPurchases.filter(p => {
+    const isBuyer = p.buyerId === user?.id;
+    return isBuyer && p.status === 'pending';
+  });
+  
+  const buyerAwaitingSellerPurchases = pendingPurchases.filter(p => {
+    const isBuyer = p.buyerId === user?.id;
+    return isBuyer && p.status === 'buyer_confirmed';
+  });
+  
+  const sellerPendingPurchases = pendingPurchases.filter(p => {
+    const isSeller = (p.item?.sellerId === user?.id) || (p.item?.seller?.id === user?.id);
+    return isSeller && p.status === 'buyer_confirmed';
+  });
 
   const filteredPurchases = (() => {
     switch (filter) {
@@ -284,9 +332,12 @@ export default function PendingConfirmationsPage() {
           ) : (
             <div className="space-y-4 pb-6">
               {filteredPurchases.map((purchase) => {
-                const isBuyerPending = purchase.buyerId === user?.id && purchase.status === 'pending';
-                const isAwaitingSeller = purchase.buyerId === user?.id && purchase.status === 'buyer_confirmed';
-                const isSellerPending = purchase.item.sellerId === user?.id && purchase.status === 'buyer_confirmed';
+                const isBuyer = purchase.buyerId === user?.id;
+                const isSeller = (purchase.item?.sellerId === user?.id) || (purchase.item?.seller?.id === user?.id);
+                
+                const isBuyerPending = isBuyer && purchase.status === 'pending';
+                const isAwaitingSeller = isBuyer && purchase.status === 'buyer_confirmed';
+                const isSellerPending = isSeller && purchase.status === 'buyer_confirmed';
                 
                 return (
                   <div key={purchase.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -317,9 +368,9 @@ export default function PendingConfirmationsPage() {
                               {purchase.agreedPrice || purchase.item.price} DH
                             </p>
                             <p className="text-sm text-gray-600 mt-1">
-                              {isBuyerPending || isAwaitingSeller 
-                                ? `Seller: ${purchase.buyer.fullName}` 
-                                : `Buyer: ${purchase.buyer.fullName}`
+                              {isSeller 
+                                ? `Buyer: ${purchase.buyer?.fullName || 'Unknown'}` 
+                                : `Seller: ${purchase.item?.seller?.fullName || 'Unknown'}`
                               }
                             </p>
                           </div>
@@ -423,15 +474,18 @@ export default function PendingConfirmationsPage() {
                           )}
 
                           {/* Contact Button */}
-                          {purchase.buyer.whatsappNumber && (
-                            <button
-                              onClick={() => openWhatsApp(purchase)}
-                              className="flex-1 bg-[#25D366] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#20b558] transition-colors flex items-center justify-center gap-2"
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                              Contact
-                            </button>
-                          )}
+                          {(() => {
+                            const contactForButton = isSeller ? purchase.buyer : purchase.item?.seller;
+                            return contactForButton?.whatsappNumber && (
+                              <button
+                                onClick={() => openWhatsApp(purchase)}
+                                className="flex-1 bg-[#25D366] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#20b558] transition-colors flex items-center justify-center gap-2"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                                Contact {isSeller ? 'Buyer' : 'Seller'}
+                              </button>
+                            );
+                          })()}
                         </div>
 
                         <p className="text-xs text-gray-500 mt-3">

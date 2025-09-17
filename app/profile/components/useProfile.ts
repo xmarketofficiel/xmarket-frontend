@@ -41,11 +41,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
     (event: string, metadata?: any) => {
       if (typeof window !== "undefined") {
         // Track analytics event
-        console.log("Profile Analytics:", {
-          event,
-          userId: targetUserId,
-          ...metadata,
-        });
+        
       }
     },
     [targetUserId]
@@ -84,7 +80,14 @@ export const useProfile = (userId?: string): UseProfileReturn => {
 
     try {
       // Load user profile with stats
-      const userResponse = await api.users.getUserProfile(String(targetUserId));
+      let userResponse;
+      try {
+        userResponse = await api.users.getUserProfile(String(targetUserId));
+      } catch (profileError: any) {
+        console.warn('getUserProfile failed, falling back to getUser:', profileError);
+        // Fallback to basic user data if getUserProfile fails
+        userResponse = await api.users.getUser(String(targetUserId));
+      }
 
       if (userResponse.data) {
         const userData = userResponse.data.user || userResponse.data;

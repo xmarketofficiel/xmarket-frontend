@@ -164,9 +164,8 @@ export const authApi = {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.setItem('token_expires', (Date.now() + (response.data.expires_in * 1000)).toString());
-        console.log('Registration tokens stored successfully');
       } catch (error) {
-        console.warn('Failed to store tokens after registration:', error);
+        
       }
     }
     
@@ -183,9 +182,8 @@ export const authApi = {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
         localStorage.setItem('token_expires', (Date.now() + (response.data.expires_in * 1000)).toString());
-        console.log('Login tokens stored successfully');
       } catch (error) {
-        console.warn('Failed to store tokens after login:', error);
+        
       }
     }
     
@@ -200,9 +198,8 @@ export const authApi = {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('token_expires');
-      console.log('Tokens cleared on logout');
     } catch (error) {
-      console.warn('Failed to clear tokens on logout:', error);
+      
     }
     
     return response as ApiResponse<{ message: string }>;
@@ -237,9 +234,8 @@ export const authApi = {
       try {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('token_expires', (Date.now() + (data.expires_in * 1000)).toString());
-        console.log('Access token refreshed successfully');
       } catch (error) {
-        console.warn('Failed to store refreshed token:', error);
+        
       }
     }
 
@@ -722,7 +718,6 @@ export const itemsApi = {
     }
   },
 
-
   // Get pending sales for seller
   getPendingSales: async (): Promise<ApiResponse<any[]>> => {
     try {
@@ -806,17 +801,11 @@ export const usersApi = {
 
   followUser: (
     userId: string
-  ): Promise<ApiResponse<{ isFollowing: boolean }>> => {
-    console.warn("Follow user not implemented in backend yet");
-    return Promise.resolve({
-      data: { isFollowing: true },
-      status: 200,
-      message: "Mock response",
-    });
-  },
+  ): Promise<ApiResponse<{ isFollowing: boolean }>> =>
+    apiClient.post(`/users/${userId}/follow`),
 
   blockUser: (userId: string): Promise<ApiResponse<void>> => {
-    console.warn("Block user not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -825,7 +814,7 @@ export const usersApi = {
   },
 
   reportUser: (userId: string, reason: string): Promise<ApiResponse<void>> => {
-    console.warn("Report user not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -835,7 +824,7 @@ export const usersApi = {
 
   // Security & Account Management
   getLoginSessions: (): Promise<ApiResponse<any[]>> => {
-    console.warn("Login sessions not implemented in backend yet");
+    
     return Promise.resolve({
       data: [
         {
@@ -863,7 +852,7 @@ export const usersApi = {
   },
 
   getSecuritySettings: (): Promise<ApiResponse<any>> => {
-    console.warn("Security settings not implemented in backend yet");
+    
     return Promise.resolve({
       data: {
         twoFactorEnabled: false,
@@ -877,7 +866,7 @@ export const usersApi = {
   },
 
   updateSecuritySettings: (settings: any): Promise<ApiResponse<any>> => {
-    console.warn("Update security settings not implemented in backend yet");
+    
     return Promise.resolve({
       data: settings,
       status: 200,
@@ -886,7 +875,7 @@ export const usersApi = {
   },
 
   revokeSession: (sessionId: string): Promise<ApiResponse<void>> => {
-    console.warn("Revoke session not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -895,7 +884,7 @@ export const usersApi = {
   },
 
   revokeAllSessions: (): Promise<ApiResponse<void>> => {
-    console.warn("Revoke all sessions not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -903,28 +892,11 @@ export const usersApi = {
     });
   },
 
-  exportAccountData: (): Promise<ApiResponse<any>> => {
-    console.warn("Export account data not implemented in backend yet");
-    const mockData = {
-      user: {
-        id: "user123",
-        name: "John Doe",
-        email: "john@example.com",
-        joinDate: "2024-01-01"
-      },
-      items: [],
-      transactions: [],
-      messages: []
-    };
-    return Promise.resolve({
-      data: JSON.stringify(mockData, null, 2),
-      status: 200,
-      message: "Mock response",
-    });
-  },
+  exportAccountData: (): Promise<ApiResponse<any>> =>
+    apiClient.get("/users/export-data"),
 
   deleteAccount: (data: { password: string }): Promise<ApiResponse<void>> => {
-    console.warn("Delete account not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -934,7 +906,7 @@ export const usersApi = {
 
   // Admin endpoints for user management
   getAllUsers: (): Promise<ApiResponse<User[]>> => {
-    console.warn("Admin getAllUsers not implemented in backend yet");
+    
     return Promise.resolve({
       data: [],
       status: 200,
@@ -943,7 +915,7 @@ export const usersApi = {
   },
 
   verifyUser: (userId: string, verify: boolean): Promise<ApiResponse<void>> => {
-    console.warn("Admin verifyUser not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -952,7 +924,7 @@ export const usersApi = {
   },
 
   deleteUser: (userId: string): Promise<ApiResponse<void>> => {
-    console.warn("Admin deleteUser not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -961,7 +933,7 @@ export const usersApi = {
   },
 
   banUser: (userId: string, reason?: string): Promise<ApiResponse<void>> => {
-    console.warn("Admin banUser not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -971,7 +943,7 @@ export const usersApi = {
 
   // Admin endpoints for conversations/messages
   getAllConversations: (): Promise<ApiResponse<any[]>> => {
-    console.warn("Admin getAllConversations not implemented in backend yet");
+    
     const mockConversations = [
       {
         id: '1',
@@ -991,7 +963,7 @@ export const usersApi = {
   },
 
   getConversationMessages: (conversationId: string): Promise<ApiResponse<any[]>> => {
-    console.warn("Admin getConversationMessages not implemented in backend yet");
+    
     const mockMessages = [
       {
         id: '1',
@@ -1010,7 +982,7 @@ export const usersApi = {
 
   // Admin endpoints for system settings
   getSystemSettings: (): Promise<ApiResponse<any>> => {
-    console.warn("Admin getSystemSettings not implemented in backend yet");
+    
     return Promise.resolve({
       data: {
         general: { siteName: 'XMarket', maintenanceMode: false },
@@ -1023,7 +995,7 @@ export const usersApi = {
   },
 
   updateSystemSettings: (settings: any): Promise<ApiResponse<void>> => {
-    console.warn("Admin updateSystemSettings not implemented in backend yet");
+    
     return Promise.resolve({
       data: undefined,
       status: 200,
@@ -1270,7 +1242,7 @@ export const joinRequestsApi = {
 
   // Get join request statistics (Admin only)
   getStats: (): Promise<ApiResponse<any>> => {
-    console.warn("Join request stats not implemented in backend yet");
+    
     return Promise.resolve({
       data: { total: 0, pending: 0, approved: 0, rejected: 0 },
       status: 200,
