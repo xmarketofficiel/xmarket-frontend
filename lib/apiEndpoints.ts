@@ -212,7 +212,7 @@ export const authApi = {
     }
 
     // Get the base URL from environment or default
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
     
     // Use fetch directly for the refresh token request with Authorization header
     const response = await fetch(`${baseUrl}/auth/refresh`, {

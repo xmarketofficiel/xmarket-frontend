@@ -36,7 +36,8 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                    const url = img.imageUrl;
                    // Add full URL prefix if it's a relative path and not 'undefined'
                    if (url && !url.includes('undefined') && url.startsWith('/')) {
-                     return `http://localhost:3001${url}`;
+                     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
+                     return `${baseUrl}${url}`;
                    }
                    return url;
                  }).filter(Boolean) || []; // Filter out empty/falsy values
