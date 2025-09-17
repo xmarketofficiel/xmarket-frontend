@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+import { BACKEND_URL, createServerFetchOptions } from '../../../lib/server-config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,13 +8,10 @@ export async function GET(request: NextRequest) {
     
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${BACKEND_URL}/items${queryString ? `?${queryString}` : ''}`, {
+    const response = await fetch(`${BACKEND_URL}/items${queryString ? `?${queryString}` : ''}`, createServerFetchOptions({
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(authHeader && { 'Authorization': authHeader }),
-      },
-    });
+      ...(authHeader && { headers: { 'Authorization': authHeader } }),
+    }));
 
     const data = await response.json();
 
@@ -41,14 +37,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const authHeader = request.headers.get('authorization');
     
-    const response = await fetch(`${BACKEND_URL}/items`, {
+    const response = await fetch(`${BACKEND_URL}/items`, createServerFetchOptions({
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(authHeader && { 'Authorization': authHeader }),
-      },
       body: JSON.stringify(body),
-    });
+      ...(authHeader && { headers: { 'Authorization': authHeader } }),
+    }));
 
     const data = await response.json();
 

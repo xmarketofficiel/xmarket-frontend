@@ -1,41 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+import { BACKEND_URL, createServerFetchOptions } from '../../../lib/server-config';
 
 // Generic proxy for all backend routes
 export async function GET(
   request: NextRequest,
-  { params }: { params: { proxy: string[] } }
+  { params }: { params: Promise<{ proxy: string[] }> }
 ) {
-  return handleRequest(request, params.proxy, 'GET');
+  const { proxy } = await params;
+  return handleRequest(request, proxy, 'GET');
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { proxy: string[] } }
+  { params }: { params: Promise<{ proxy: string[] }> }
 ) {
-  return handleRequest(request, params.proxy, 'POST');
+  const { proxy } = await params;
+  return handleRequest(request, proxy, 'POST');
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { proxy: string[] } }
+  { params }: { params: Promise<{ proxy: string[] }> }
 ) {
-  return handleRequest(request, params.proxy, 'PUT');
+  const { proxy } = await params;
+  return handleRequest(request, proxy, 'PUT');
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { proxy: string[] } }
+  { params }: { params: Promise<{ proxy: string[] }> }
 ) {
-  return handleRequest(request, params.proxy, 'PATCH');
+  const { proxy } = await params;
+  return handleRequest(request, proxy, 'PATCH');
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { proxy: string[] } }
+  { params }: { params: Promise<{ proxy: string[] }> }
 ) {
-  return handleRequest(request, params.proxy, 'DELETE');
+  const { proxy } = await params;
+  return handleRequest(request, proxy, 'DELETE');
 }
 
 async function handleRequest(
@@ -62,23 +66,22 @@ async function handleRequest(
       }
     }
 
-    const headers: HeadersInit = {
-      ...(contentType && { 'Content-Type': contentType }),
-      ...(authHeader && { 'Authorization': authHeader }),
-    };
-
-    // Remove Content-Type for FormData (let fetch set it with boundary)
-    if (body instanceof FormData) {
-      delete headers['Content-Type'];
+    // Create headers object for server fetch options
+    const customHeaders: HeadersInit = {};
+    if (contentType && !(body instanceof FormData)) {
+      customHeaders['Content-Type'] = contentType;
+    }
+    if (authHeader) {
+      customHeaders['Authorization'] = authHeader;
     }
     
     const response = await fetch(
       `${BACKEND_URL}/${path}${queryString ? `?${queryString}` : ''}`,
-      {
+      createServerFetchOptions({
         method,
-        headers,
+        headers: customHeaders,
         ...(body && { body }),
-      }
+      })
     );
 
     let data;
