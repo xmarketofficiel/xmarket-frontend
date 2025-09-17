@@ -174,7 +174,7 @@ export default function MyPurchasesPage() {
                     {purchase.item.images?.[0]?.imageUrl ? (
                       <img
                         src={purchase.item.images[0].imageUrl.startsWith('/') 
-                          ? `http://localhost:3001${purchase.item.images[0].imageUrl}`
+                          ? `${process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001')}${purchase.item.images[0].imageUrl}`
                           : purchase.item.images[0].imageUrl
                         }
                         alt={purchase.item.title}

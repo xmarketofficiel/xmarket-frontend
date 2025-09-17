@@ -57,7 +57,8 @@ export default function OptimizedItemDetail({
         ?.map((img) => {
           const url = img.imageUrl;
           if (url && !url.includes("undefined") && url.startsWith("/")) {
-            return `http://localhost:3001${url}`;
+            const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
+            return `${baseUrl}${url}`;
           }
           return url;
         })
@@ -259,6 +260,7 @@ export default function OptimizedItemDetail({
         onInterestClick={handleInterestClick}
         onFavoriteClick={handleFavoriteClick}
         onShareClick={handleShareClick}
+        onMessageClick={openWhatsApp}
         isLoading={{
           interest: state.loading.interest,
           favorite: state.loading.favorite,

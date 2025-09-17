@@ -9,6 +9,7 @@ interface ItemActionsProps {
   onInterestClick: () => void;
   onFavoriteClick: () => void;
   onShareClick: () => void;
+  onMessageClick: () => void; // Add direct WhatsApp message function
   isLoading?: {
     interest?: boolean;
     favorite?: boolean;
@@ -22,6 +23,7 @@ export default function ItemActions({
   onInterestClick,
   onFavoriteClick,
   onShareClick,
+  onMessageClick,
   isLoading = {},
   className = ''
 }: ItemActionsProps) {
@@ -65,7 +67,7 @@ export default function ItemActions({
         <div className="flex space-x-3 mb-3">
           {/* Interest Button */}
           <button
-            onClick={handleInterestClick}
+            onClick={onMessageClick}
             disabled={isLoading.interest}
             className={`flex-1 ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
               isLoading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-lg hover:scale-[1.02]'

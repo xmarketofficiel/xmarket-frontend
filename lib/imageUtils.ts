@@ -2,6 +2,18 @@
 import { Item } from '../types';
 
 /**
+ * Gets the API base URL from environment variables
+ */
+const getApiBaseUrl = (): string => {
+  // In production, use the SSR API routes
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+  }
+  // In development, use the environment variable or fallback
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+};
+
+/**
  * Validates if a string is a valid URL
  */
 export const isValidUrl = (url: string): boolean => {
@@ -35,7 +47,7 @@ export const getItemImageUrl = (item: Item): string => {
         return isValidUrl(trimmedPhoto) ? trimmedPhoto : fallbackImage;
       } else {
         // If it's a relative path, construct full URL
-        const fullUrl = `http://localhost:3001${trimmedPhoto}`;
+        const fullUrl = `${getApiBaseUrl()}${trimmedPhoto}`;
         return isValidUrl(fullUrl) ? fullUrl : fallbackImage;
       }
     }
@@ -57,7 +69,7 @@ export const getItemImageUrl = (item: Item): string => {
         return isValidUrl(imageUrl) ? imageUrl : fallbackImage;
       } else {
         // If it's a relative path, construct full URL
-        const fullUrl = `http://localhost:3001${imageUrl}`;
+        const fullUrl = `${getApiBaseUrl()}${imageUrl}`;
         return isValidUrl(fullUrl) ? fullUrl : fallbackImage;
       }
     }
@@ -83,7 +95,7 @@ export const getItemImageUrls = (item: Item): string[] => {
             validUrls.push(trimmedPhoto);
           }
         } else {
-          const fullUrl = `http://localhost:3001${trimmedPhoto}`;
+          const fullUrl = `${getApiBaseUrl()}${trimmedPhoto}`;
           if (isValidUrl(fullUrl)) {
             validUrls.push(fullUrl);
           }
@@ -107,7 +119,7 @@ export const getItemImageUrls = (item: Item): string[] => {
             validUrls.push(imageUrl);
           }
         } else {
-          const fullUrl = `http://localhost:3001${imageUrl}`;
+          const fullUrl = `${getApiBaseUrl()}${imageUrl}`;
           if (isValidUrl(fullUrl)) {
             validUrls.push(fullUrl);
           }
