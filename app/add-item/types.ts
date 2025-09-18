@@ -15,7 +15,6 @@ export interface AddItemFormData {
   condition: ItemCondition;
   photos: File[];
   showIdentity: boolean;
-  allowMessages?: boolean;
 }
 
 export interface AddItemApiData {
@@ -266,7 +265,6 @@ export interface StepConfig {
 // Privacy settings types
 export interface PrivacySettings {
   showIdentity: boolean;
-  allowMessages: boolean;
 }
 
 // Form analytics types

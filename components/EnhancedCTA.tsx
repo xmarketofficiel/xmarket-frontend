@@ -208,28 +208,6 @@ export function EnhancedCTA({
           </motion.button>
         </motion.div>
 
-        {/* Trust indicators */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <p className="text-white/80 mb-6 font-medium">Trusted by students at:</p>
-          <div className="flex flex-wrap justify-center gap-8 opacity-80">
-            {["🏛️ Harvard", "🎓 MIT", "📚 Stanford", "🔬 Berkeley", "🎨 NYU", "🚀 CMU"].map((uni, index) => (
-              <motion.span
-                key={index}
-                whileHover={{ scale: 1.1, opacity: 1 }}
-                className="text-white font-semibold hover:scale-110 transition-all duration-300 cursor-default"
-              >
-                {uni}
-              </motion.span>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Statistics */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

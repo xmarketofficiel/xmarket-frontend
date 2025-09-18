@@ -135,3 +135,102 @@ export const getItemImageUrls = (item: Item): string[] => {
  * Default placeholder image data URL
  */
 export const PLACEHOLDER_IMAGE = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=";
+
+/**
+ * Gets the appropriate image variant URL from an item image
+ * @param image - Item image object
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'
+ * @returns URL for the requested size or fallback
+ */
+export const getImageVariantUrl = (
+  image: any, 
+  preferredSize: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'
+): string => {
+  if (!image) return PLACEHOLDER_IMAGE;
+
+  // Check for variants first (new structure)
+  if (image.imageVariants && typeof image.imageVariants === 'object') {
+    const variantUrl = image.imageVariants[preferredSize];
+    if (variantUrl && isValidUrl(variantUrl)) {
+      return variantUrl;
+    }
+    
+    // Fallback to other available variants if preferred size not found
+    const fallbackSizes = ['large', 'medium', 'small', 'thumbnail'];
+    for (const size of fallbackSizes) {
+      if (size !== preferredSize && image.imageVariants[size]) {
+        const fallbackUrl = image.imageVariants[size];
+        if (isValidUrl(fallbackUrl)) {
+          return fallbackUrl;
+        }
+      }
+    }
+  }
+
+  // Fallback to original URLs
+  const fallbackUrl = image.cloudinaryUrl || image.spacesUrl || image.imageUrl;
+  if (fallbackUrl && isValidUrl(fallbackUrl)) {
+    return fallbackUrl;
+  }
+
+  return PLACEHOLDER_IMAGE;
+};
+
+/**
+ * Gets item image URL with preferred size
+ * @param item - Item object (supports both Item and ProfileItem types)
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'  
+ * @returns URL for the requested size or fallback
+ */
+export const getItemImageUrlWithSize = (
+  item: any, // Made flexible to support both Item and ProfileItem types
+  preferredSize: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'
+): string => {
+  if (!item) return PLACEHOLDER_IMAGE;
+
+  // Check for images array first
+  if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+    return getImageVariantUrl(item.images[0], preferredSize);
+  }
+
+  // Fallback to legacy method for Item type
+  if (typeof getItemImageUrl === 'function') {
+    try {
+      return getItemImageUrl(item);
+    } catch {
+      // If getItemImageUrl fails, return placeholder
+      return PLACEHOLDER_IMAGE;
+    }
+  }
+
+  return PLACEHOLDER_IMAGE;
+};
+
+/**
+ * Gets all image URLs from an item with preferred size
+ * @param item - Item object
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'
+ * @returns Array of URLs for the requested size
+ */
+export const getItemImageUrlsWithSize = (
+  item: Item,
+  preferredSize: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'  
+): string[] => {
+  if (!item) return [];
+
+  const validUrls: string[] = [];
+
+  // Check for images array
+  if (item.images && Array.isArray(item.images)) {
+    item.images.forEach(image => {
+      const variantUrl = getImageVariantUrl(image, preferredSize);
+      if (variantUrl !== PLACEHOLDER_IMAGE) {
+        validUrls.push(variantUrl);
+      }
+    });
+  }
+
+  return validUrls;
+};
+
+

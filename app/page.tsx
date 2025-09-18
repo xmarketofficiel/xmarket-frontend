@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../contexts/UserContext";
 import { ArrowRight, Sparkles, Users, Shield, TrendingUp, Heart } from "lucide-react";
@@ -18,6 +18,18 @@ const BRAND_COLOR = '#009F9C';
 export default function HomePage() {
   const router = useRouter();
   const { user, loading } = useUser();
+
+  // Clear add-item draft when successfully reaching home page
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      const draftExists = localStorage.getItem('add_item_draft');
+      if (draftExists) {
+        console.log('🧹 Cleaning up add-item draft from localStorage on home page...');
+        localStorage.removeItem('add_item_draft');
+        console.log('✅ Add-item draft cleared from localStorage');
+      }
+    }
+  }, [user]);
 
   // Show loading state while determining auth status
   if (loading) {
@@ -121,21 +133,6 @@ function LandingPageContent() {
             >
               I'm Already In! 🎉
             </button>
-          </div>
-
-          {/* Trust indicators */}
-          <div className="mt-16 text-sm text-gray-500">
-            <p className="mb-4 font-medium">Trusted by students at:</p>
-            <div className="flex flex-wrap justify-center gap-8 opacity-60">
-              {["🏛️ Harvard", "🎓 MIT", "📚 Stanford", "🔬 Berkeley", "🎨 NYU"].map((uni, index) => (
-                <span
-                  key={index}
-                  className="font-semibold"
-                >
-                  {uni}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </section>

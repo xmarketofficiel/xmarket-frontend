@@ -33,7 +33,6 @@ export function useAddItemForm({
       condition: ADD_ITEM_CONFIG.DEFAULT_CONDITION,
       photos: [],
       showIdentity: true,
-      allowMessages: true,
     },
     validation: {
       isValid: false,
@@ -105,13 +104,17 @@ export function useAddItemForm({
       },
     ],
     showIdentity: [],
-    allowMessages: [],
   };
 
   // Validate a single field
   const validateField = useCallback(
     (field: keyof AddItemFormData, value: any): string | null => {
       const rules = validationRules[field];
+
+      // Safety check: ensure rules exists and is an array
+      if (!rules || !Array.isArray(rules)) {
+        return null;
+      }
 
       for (const rule of rules) {
         if (
@@ -393,7 +396,6 @@ export function useAddItemForm({
         condition: ADD_ITEM_CONFIG.DEFAULT_CONDITION,
         photos: [],
         showIdentity: true,
-        allowMessages: true,
       },
       validation: {
         isValid: false,

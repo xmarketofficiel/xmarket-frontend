@@ -5,11 +5,11 @@
 /**
  * Validates and returns a safe image URL
  * @param url - The image URL to validate
- * @returns A safe URL or empty string if invalid
+ * @returns A safe URL or null if invalid (prevents React console errors)
  */
-export function getSafeImageUrl(url: string | null | undefined): string {
+export function getSafeImageUrl(url: string | null | undefined): string | null {
   if (!url || typeof url !== 'string' || url === 'undefined' || url === 'null' || url.trim() === '') {
-    return '';
+    return null;
   }
   
   try {
@@ -17,8 +17,8 @@ export function getSafeImageUrl(url: string | null | undefined): string {
     new URL(url);
     return url;
   } catch {
-    // If it's not a valid URL, return empty string
-    return '';
+    // If it's not a valid URL, return null instead of empty string
+    return null;
   }
 }
 

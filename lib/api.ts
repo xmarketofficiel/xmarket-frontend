@@ -108,7 +108,7 @@ class ApiClient {
             details: errorData,
           });
           
-          // Enhanced error handling - suppress console logs for expected user errors
+                    // Enhanced error handling - suppress console logs for expected user errors
           if (response.status === 401) {
             // Authentication errors are expected, handle silently
             apiError.name = 'AuthenticationError';
@@ -118,7 +118,7 @@ class ApiClient {
             const isEmailAuthorizationError = errorData.message?.includes('not authorized to register');
             const isSignupRelated = endpoint.includes('/auth/send-otp') || 
                                   endpoint.includes('/auth/verify-otp') || 
-                                  endpoint.includes('/auth/complete-registration');
+                                  endpoint.includes('/auth/signup');
             
             if (!isEmailAuthorizationError && !isSignupRelated && this.onAuthError) {
               this.onAuthError();
@@ -340,9 +340,9 @@ class ApiClient {
   }
 }
 
-// Always use SSR API routes to hide backend URLs
+// For development, bypass proxy and call backend directly to avoid proxy issues
 const apiClient = new ApiClient({
-  baseUrl: '/api',
+  baseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '/api',
   timeout: 10000,
   retries: 3,
 });

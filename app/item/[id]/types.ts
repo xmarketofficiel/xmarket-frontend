@@ -203,6 +203,7 @@ export interface ItemDetailState {
     report: boolean;
     imageViewer: boolean;
     imageViewerIndex: number;
+    purchase: boolean;
   };
   error: string | null;
 }

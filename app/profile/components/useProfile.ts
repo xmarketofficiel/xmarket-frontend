@@ -92,6 +92,28 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       if (userResponse.data) {
         const userData = (userResponse.data as any).user || userResponse.data;
         const statsData = (userResponse.data as any).stats || {};
+        
+        // Fetch pending confirmations and sales counts if this is the current user
+        let pendingConfirmationsCount = 0;
+        let pendingSalesCount = 0;
+        
+        if (isOwner && currentUser) {
+          try {
+            // Fetch pending confirmations (buyer's pending purchases)
+            const confirmationsResponse = await api.items.getPendingConfirmations();
+            const confirmationsData = (confirmationsResponse.data as any)?.data || confirmationsResponse.data || [];
+            pendingConfirmationsCount = Array.isArray(confirmationsData) ? confirmationsData.length : 0;
+            
+            // Fetch pending sales (seller's items needing confirmation) - use the same API as pending-sales page
+            const salesResponse = await api.items.getPendingSales();
+            const salesData = (salesResponse.data as any)?.data || salesResponse.data || [];
+            pendingSalesCount = Array.isArray(salesData) ? salesData.length : 0;
+            
+          } catch (error) {
+            console.warn('Failed to fetch pending counts:', error);
+          }
+        }
+        
         // Don't pre-populate items - let loadTabItems handle fetching active items
 
         const newProfileData: ProfileData = {
@@ -108,7 +130,8 @@ export const useProfile = (userId?: string): UseProfileReturn => {
             purchaseHistoryCount:
               (statsData as any).purchaseHistoryCount || statsData.totalBought || 0,
             savedItemsCount: (statsData as any).savedItemsCount || 0,
-            pendingSalesCount: (statsData as any).pendingSalesCount || 0,
+            pendingSalesCount: pendingSalesCount,
+            pendingConfirmationsCount: pendingConfirmationsCount,
             viewedItemsCount: (statsData as any).viewedItemsCount || 0,
             notificationsCount: (statsData as any).notificationsCount || 0,
             totalEarnings:

@@ -112,6 +112,7 @@ export interface ProfileStats {
   purchaseHistoryCount: number;
   savedItemsCount: number;
   pendingSalesCount: number;
+  pendingConfirmationsCount: number;
   viewedItemsCount: number;
   notificationsCount: number;
   totalEarnings: number;

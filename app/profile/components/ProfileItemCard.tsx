@@ -14,6 +14,8 @@ import {
   Calendar
 } from 'lucide-react';
 import { getSafeImageUrl } from '../../../utils/imageUtils';
+import { getItemImageUrlWithSize } from '../../../lib/imageUtils';
+import { useToast } from '../../../contexts/ToastContext';
 import { PROFILE_CONSTANTS } from './constants';
 import type { ProfileItemCardProps } from './types';
 
@@ -24,6 +26,30 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
   showActions = true,
   compact = false
 }) => {
+  const { addToast } = useToast();
+
+  // Check if item has pending confirmations (buyers interested but not confirmed)
+  const hasPendingConfirmations = (): boolean => {
+    // Check if there are interested buyers (pending confirmations)
+    return (item.interestedBuyers && item.interestedBuyers > 0) || false;
+  };
+
+  // Check if item can be edited
+  const canEditItem = (): boolean => {
+    return !(item.isSold || item.status === 'sold' || hasPendingConfirmations());
+  };
+
+  // Get edit restriction message
+  const getEditRestrictionMessage = (): string => {
+    if (item.isSold || item.status === 'sold') {
+      return 'Cannot edit sold items';
+    }
+    if (hasPendingConfirmations()) {
+      return 'Cannot edit - item has pending buyer confirmations. Please wait for all transactions to complete or cancel pending sales before editing.';
+    }
+    return 'Edit item';
+  };
+
   const formatPrice = (price: number): string => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
@@ -65,6 +91,21 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
 
   const handleAction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
+    
+    // Check if it's an edit action and item has restrictions
+    if (action === 'edit' && !canEditItem()) {
+      if (hasPendingConfirmations()) {
+        addToast(
+          'This item has pending buyer confirmations. You cannot edit the price, quantity, or title until all transactions are completed or cancelled.',
+          'warning',
+          6000
+        );
+      } else if (item.isSold || item.status === 'sold') {
+        addToast('Sold items cannot be edited to maintain transaction integrity.', 'error');
+      }
+      return;
+    }
+    
     onAction?.(action, item);
   };
 
@@ -83,21 +124,30 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
     >
       {/* Image Section */}
       <div className={`relative ${compact ? 'h-32' : 'h-48'} bg-gray-100 rounded-lg overflow-hidden mb-3`}>
-        {item.images && item.images.length > 0 ? (
-          <img
-            src={getSafeImageUrl(item.images[0].imageUrl || item.images[0].cloudinaryUrl || item.images[0].spacesUrl)}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-200"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM;
-            }}
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-            <Tag className="w-8 h-8 text-gray-400" />
-          </div>
-        )}
+        {(() => {
+          // Get the appropriate sized image URL (small for profile cards)
+          const imageUrl = getItemImageUrlWithSize(item, compact ? 'small' : 'medium');
+
+          if (imageUrl !== PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM) {
+            return (
+              <img
+                src={imageUrl}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-200"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM;
+                }}
+              />
+            );
+          } else {
+            return (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <Tag className="w-8 h-8 text-gray-400" />
+              </div>
+            );
+          }
+        })()}
 
         {/* Status Badge */}
         <div className="absolute top-2 left-2">
@@ -128,29 +178,29 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
               {item.savesCount}
             </div>
           )}
+          {hasPendingConfirmations() && (
+            <div className="bg-orange-500/90 backdrop-blur-sm text-white px-2 py-1 text-xs rounded-full flex items-center gap-1" title="Pending buyer confirmations">
+              <Clock className="w-3 h-3" />
+              {item.interestedBuyers}
+            </div>
+          )}
         </div>
 
         {/* Action Buttons Overlay */}
         {showActions && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
             <button
-              onClick={(e: React.MouseEvent) => {
-                if (item.isSold || item.status === 'sold') {
-                  e.stopPropagation();
-                  return;
-                }
-                handleAction(e, 'edit');
-              }}
-              disabled={item.isSold || item.status === 'sold'}
+              onClick={(e: React.MouseEvent) => handleAction(e, 'edit')}
+              disabled={!canEditItem()}
               className={`w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-colors ${
-                item.isSold || item.status === 'sold'
-                  ? 'bg-gray-500/50 cursor-not-allowed'
+                !canEditItem()
+                  ? 'bg-gray-500/50 cursor-not-allowed opacity-75'
                   : 'bg-white/20 hover:bg-white/30 hover:scale-110'
               }`}
-              title={item.isSold || item.status === 'sold' ? 'Cannot edit sold items' : 'Edit item'}
+              title={getEditRestrictionMessage()}
             >
               <Edit className="w-4 h-4" />
-              {(item.isSold || item.status === 'sold') && (
+              {!canEditItem() && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs">🔒</span>
                 </div>

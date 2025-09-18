@@ -41,10 +41,13 @@ export default function PurchaseConfirmationsPage() {
     try {
       setLoading(true);
       const response = await api.items.getPendingConfirmations();
-      setPendingPurchases(response.data || []);
+      // Handle the nested data structure: response.data.data contains the array
+      const purchases = (response.data as any)?.data || response.data || [];
+      setPendingPurchases(Array.isArray(purchases) ? purchases : []);
     } catch (error: any) {
       console.error('Failed to fetch pending confirmations:', error);
       addToast(error.message || 'Failed to load pending confirmations', 'error');
+      setPendingPurchases([]); // Ensure it's always an array
     } finally {
       setLoading(false);
     }
@@ -105,9 +108,17 @@ export default function PurchaseConfirmationsPage() {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Clock className="w-6 h-6 text-[#006666]" />
             Purchase Confirmations
+            {pendingPurchases.length > 0 && (
+              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-red-500 rounded-full">
+                {pendingPurchases.length > 9 ? '9+' : pendingPurchases.length}
+              </span>
+            )}
           </h1>
           <p className="text-gray-600 mt-2">
             Confirm or decline your interest in these items
+            {pendingPurchases.length > 0 && (
+              <span className="font-medium text-red-600"> • {pendingPurchases.length} pending</span>
+            )}
           </p>
         </div>
 
@@ -122,7 +133,7 @@ export default function PurchaseConfirmationsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {pendingPurchases.map((purchase) => (
+            {Array.isArray(pendingPurchases) && pendingPurchases.map((purchase) => (
               <div key={purchase.id} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Item Image */}

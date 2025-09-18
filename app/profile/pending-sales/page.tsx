@@ -196,6 +196,7 @@ export default function PendingConfirmationsPage() {
     // Determine the contact based on user role
     const isSeller = (purchase.item?.sellerId === user?.id) || (purchase.item?.seller?.id === user?.id);
     const contact = isSeller ? purchase.buyer : purchase.item?.seller;
+
     
     if (!contact || !contact.whatsappNumber) {
       addToast('Contact has no WhatsApp number available', 'error');
@@ -278,8 +279,20 @@ export default function PendingConfirmationsPage() {
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Pending Confirmations</h1>
-                <p className="text-gray-600">Manage purchase confirmations</p>
+                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  Pending Confirmations
+                  {pendingPurchases.length > 0 && (
+                    <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-red-500 rounded-full">
+                      {pendingPurchases.length > 9 ? '9+' : pendingPurchases.length}
+                    </span>
+                  )}
+                </h1>
+                <p className="text-gray-600">
+                  Manage purchase confirmations
+                  {pendingPurchases.length > 0 && (
+                    <span className="font-medium text-red-600"> • {pendingPurchases.length} pending</span>
+                  )}
+                </p>
               </div>
             </div>
           </div>
@@ -331,7 +344,7 @@ export default function PendingConfirmationsPage() {
             </div>
           ) : (
             <div className="space-y-4 pb-6">
-              {filteredPurchases.map((purchase) => {
+              {Array.isArray(filteredPurchases) && filteredPurchases.map((purchase) => {
                 const isBuyer = purchase.buyerId === user?.id;
                 const isSeller = (purchase.item?.sellerId === user?.id) || (purchase.item?.seller?.id === user?.id);
                 

@@ -9,6 +9,7 @@ import { useFavorites } from '../contexts/FavoritesContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import ReportModal from './ReportModal';
+import PurchaseConfirmationModal from './PurchaseConfirmationModal';
 import { api } from '../lib/apiEndpoints';
 
 interface ItemDetailProps {
@@ -22,6 +23,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
   const { addToast } = useToast();
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [isAddingInterest, setIsAddingInterest] = useState(false);
   const isItemFavorite = isFavorite(String(item.id));
   
@@ -77,12 +79,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleExpressInterest = async () => {
-    // Prevent multiple rapid clicks
-    if (isAddingInterest) {
-      return;
-    }
-
+  const handleExpressInterest = () => {
     if (!user) {
       addToast('Please log in to express interest', 'error');
       return;
@@ -93,27 +90,34 @@ export default function ItemDetail({ item }: ItemDetailProps) {
       return;
     }
 
-    setIsAddingInterest(true);
-    
+    // Show the purchase confirmation modal
+    setShowPurchaseModal(true);
+  };
+
+  const handlePurchaseConfirmed = async () => {
     try {
-      await api.items.expressInterest(String(item.id));
-      addToast('Interest added! Contact the seller on WhatsApp to negotiate.', 'success', 5000);
-      
-      // Open WhatsApp automatically after expressing interest
-      openWhatsApp();
-    } catch (error: any) {
-      // Check for duplicate interest error
-      if (error.name === 'DuplicateInterestError' || 
-          error.message?.includes('already shown interest') ||
-          error.message?.includes('already expressed interest')) {
-        addToast('You have already shown interest in this item. Opening WhatsApp...', 'info');
-        // Still open WhatsApp for users who already expressed interest
-        openWhatsApp();
-      } else {
-        addToast(error.message || 'Failed to express interest', 'error');
+      // Call the backend API to express interest
+      const response = await api.items.expressInterest(
+        String(item.id), 
+        "I am interested in purchasing this item!"
+      );
+
+      if (response.data) {
+        addToast('Interest expressed! You will receive a confirmation request in your profile.', 'success', 5000);
+        
+        // Optionally open WhatsApp after expressing interest
+        if (item.seller?.whatsappNumber) {
+          setTimeout(() => {
+            openWhatsApp();
+          }, 1000);
+        }
       }
-    } finally {
-      setIsAddingInterest(false);
+    } catch (error: any) {
+      console.error('Error expressing interest:', error);
+      addToast(
+        error.message || "Failed to express interest. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -351,20 +355,10 @@ export default function ItemDetail({ item }: ItemDetailProps) {
             {/* Main Interest Button */}
             <button
               onClick={handleExpressInterest}
-              disabled={isAddingInterest}
-              className="w-full bg-[#006666] text-white py-4 px-4 rounded-xl font-semibold hover:bg-[#005555] transition-colors flex items-center justify-center space-x-2 mb-3 disabled:opacity-50"
+              className="w-full bg-[#006666] text-white py-4 px-4 rounded-xl font-semibold hover:bg-[#005555] transition-colors flex items-center justify-center space-x-2 mb-3"
             >
-              {isAddingInterest ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Adding Interest...</span>
-                </>
-              ) : (
-                <>
-                  <MessageCircle size={20} />
-                  <span>I Want This - Chat Now</span>
-                </>
-              )}
+              <MessageCircle size={20} />
+              <span>I Want This - Chat Now</span>
             </button>
             
             {/* Secondary Actions */}
@@ -399,6 +393,22 @@ export default function ItemDetail({ item }: ItemDetailProps) {
         onClose={() => setShowReportModal(false)}
         itemId={String(item.id)}
         itemTitle={item.title}
+      />
+
+      {/* Purchase Confirmation Modal */}
+      <PurchaseConfirmationModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        item={{
+          id: String(item.id),
+          title: item.title,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+          seller: {
+            fullName: item.seller?.fullName || item.seller?.name || 'Unknown Seller',
+            whatsappNumber: item.seller?.whatsappNumber
+          }
+        }}
+        onConfirmed={handlePurchaseConfirmed}
       />
     </div>
   );

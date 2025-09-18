@@ -1,7 +1,5 @@
 // Login page constants and configuration
 export const LOGIN_CONFIG = {
-  DEFAULT_EMAIL: 'test@example.com',
-  DEFAULT_PASSWORD: 'password123',
   ANIMATION_DURATION: 0.6,
   REDIRECT_DELAY: 1000,
   FLOATING_ELEMENTS_COUNT: 12

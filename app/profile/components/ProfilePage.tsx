@@ -22,7 +22,6 @@ import {
   Clock,
   CheckCircle,
   Eye,
-  Camera,
   LogOut,
 } from "lucide-react";
 import ProfileHeader from "./ProfileHeader";
@@ -78,6 +77,13 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       description: "Items you've saved for later",
       icon: Heart,
       count: profileData?.stats?.savedItemsCount || 0,
+    },
+    {
+      id: "purchase-confirmations",
+      title: "Purchase Confirmations",
+      description: "Confirm or decline purchases",
+      icon: Bell,
+      count: profileData?.stats?.pendingConfirmationsCount || 0,
     },
     {
       id: "purchase-history",
@@ -268,7 +274,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
     }
 
     // Route to separate pages for profile sections
-    if (["purchase-history", "sold-items", "pending-sales"].includes(itemId)) {
+    if (["purchase-history", "sold-items", "pending-sales", "purchase-confirmations"].includes(itemId)) {
       router.push(`/profile/${itemId}`);
       return;
     }
@@ -301,23 +307,6 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   const handleBackToProfile = () => {
     setCurrentView("main");
-  };
-
-  const handlePhotoUpload = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        try {
-          addToast("Photo upload functionality coming soon!", "info");
-        } catch (error) {
-          addToast("Failed to upload photo. Please try again.", "error");
-        }
-      }
-    };
-    input.click();
   };
 
   const handleLogout = () => {
@@ -436,15 +425,6 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
                     </div>
                   )}
                 </div>
-                {isOwner && (
-                  <button
-                    onClick={handlePhotoUpload}
-                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#009F9C] hover:bg-[#007A77] text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
-                    title="Upload photo"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
-                )}
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -509,7 +489,11 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
                       </span>
                     )}
                     {item.count > 0 && !isDisabled && (
-                      <span className="px-2 py-1 text-xs font-medium bg-[#009F9C]/10 text-[#009F9C] rounded-full">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        item.id === 'pending-sales' || item.id === 'purchase-confirmations'
+                          ? 'bg-red-100 text-red-600'
+                          : 'bg-[#009F9C]/10 text-[#009F9C]'
+                      }`}>
                         {item.count}
                       </span>
                     )}

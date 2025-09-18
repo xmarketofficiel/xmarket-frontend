@@ -75,8 +75,11 @@ async function handleRequest(
       customHeaders['Authorization'] = authHeader;
     }
     
+    const fullUrl = `${BACKEND_URL}/${path}${queryString ? `?${queryString}` : ''}`;
+    console.log(`[Proxy] ${method} ${fullUrl}`, { authHeader: !!authHeader });
+    
     const response = await fetch(
-      `${BACKEND_URL}/${path}${queryString ? `?${queryString}` : ''}`,
+      fullUrl,
       createServerFetchOptions({
         method,
         headers: customHeaders,
@@ -87,11 +90,18 @@ async function handleRequest(
     let data;
     const responseContentType = response.headers.get('content-type');
     
-    if (responseContentType?.includes('application/json')) {
-      data = await response.json();
-    } else {
-      data = await response.text();
+    try {
+      if (responseContentType?.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+    } catch (parseError) {
+      console.error('[Proxy] Failed to parse response:', parseError);
+      data = { error: 'Failed to parse backend response' };
     }
+
+    console.log(`[Proxy] Response: ${response.status}`, data);
 
     return new NextResponse(
       typeof data === 'string' ? data : JSON.stringify(data),
@@ -106,9 +116,18 @@ async function handleRequest(
       }
     );
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error('[Proxy] Error:', error);
+    
+    // If it's a fetch error, it might be a connection issue
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      return NextResponse.json(
+        { error: 'Backend service unavailable' },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

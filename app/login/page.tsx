@@ -41,8 +41,8 @@ export default function LoginPage() {
   
   // Consolidated state management
   const [state, setState] = useState<LoginState>({
-    email: LOGIN_CONFIG.DEFAULT_EMAIL,
-    password: LOGIN_CONFIG.DEFAULT_PASSWORD,
+    email: '',
+    password: '',
     isLoading: false,
     message: '',
     messageType: 'error',

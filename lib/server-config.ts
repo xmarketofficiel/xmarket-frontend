@@ -6,7 +6,7 @@
 // Backend URL - only accessible on server-side
 export const BACKEND_URL = process.env.BACKEND_URL || 
                           process.env.NEXT_PUBLIC_API_BASE_URL || 
-                          'https://xmarket-backend-production-v1.up.railway.app';
+                          'http://localhost:3001';
 
 // Validate that we're running on server-side
 if (typeof window !== 'undefined') {

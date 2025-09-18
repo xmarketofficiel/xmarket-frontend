@@ -1,18 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Bell, ShoppingBag, User, Search, X, Filter } from 'lucide-react';
+import { ShoppingBag, User, Search, X, Filter } from 'lucide-react';
 import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import type { MarketplaceHeaderProps } from '../types';
 import { useState, useRef, useEffect } from 'react';
 
 /**
  * Marketplace Header Component
- * Top navigation with search, notifications and actions
+ * Top navigation with search and actions
  */
 export function MarketplaceHeader({ 
   user, 
-  pendingSalesCount, 
-  onNotificationClick,
   searchQuery,
   onSearchChange,
   onSearch,
@@ -72,25 +70,6 @@ export function MarketplaceHeader({
 
               {/* Action Buttons */}
               <div className="flex items-center space-x-3">
-                {/* Notifications */}
-                {user && (
-                  <motion.button
-                    onClick={onNotificationClick}
-                    className="relative p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Bell className="w-5 h-5 text-gray-600" />
-                    {pendingSalesCount > 0 && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-white">
-                          {pendingSalesCount > 9 ? '9+' : pendingSalesCount}
-                        </span>
-                      </div>
-                    )}
-                  </motion.button>
-                )}
-
                 {/* Search Icon */}
                 <motion.button
                   onClick={() => setIsSearchExpanded(true)}

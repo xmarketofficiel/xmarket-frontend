@@ -67,7 +67,7 @@ export default function ItemActions({
         <div className="flex space-x-3 mb-3">
           {/* Interest Button */}
           <button
-            onClick={onMessageClick}
+            onClick={handleInterestClick}
             disabled={isLoading.interest}
             className={`flex-1 ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
               isLoading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-lg hover:scale-[1.02]'

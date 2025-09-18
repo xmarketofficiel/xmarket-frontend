@@ -15,6 +15,7 @@ export default function AddItemForm() {
   const router = useRouter();
   const { addToast } = useToast();
   const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Use form hook for validation and state management
   const form = useForm<AddItemFormData>({
@@ -84,7 +85,15 @@ export default function AddItemForm() {
 
   // Create submission handler
   const handleSubmit = async (values: AddItemFormData) => {
+    // Prevent double submissions
+    if (isSubmitting) {
+      console.warn('Form submission already in progress, ignoring duplicate request');
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
+      
       const itemData = {
         title: values.title,
         description: values.description,
@@ -101,6 +110,7 @@ export default function AddItemForm() {
 
       // Upload photos if item creation succeeded
       if (values.photos.length > 0) {
+        console.log(`Uploading ${values.photos.length} images for item ${newItem.id}`);
         await api.items.uploadItemImages(String(newItem.id), values.photos);
       }
 
@@ -110,6 +120,8 @@ export default function AddItemForm() {
     } catch (error) {
       console.error('Error creating item:', error);
       throw error; // Re-throw for form handling
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

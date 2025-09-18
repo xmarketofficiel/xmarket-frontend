@@ -20,7 +20,6 @@ export function LoginFooter() {
       }}
     >
       <SignupLink />
-      <TestAccountInfo />
     </motion.div>
   );
 }
@@ -66,70 +65,4 @@ function SignupLink() {
   );
 }
 
-/**
- * Test account information panel
- */
-function TestAccountInfo() {
-  return (
-    <motion.div 
-      className="design-card bg-gradient-to-r from-cyan-50 to-teal-50 border border-cyan-200/50 rounded-xl p-4 backdrop-blur-sm hover:shadow-md transition-all"
-      style={{
-        transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-        transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-      }}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ 
-        duration: ANIMATION_SYSTEM.duration.normal / 1000,
-        delay: 0.2,
-        ease: ANIMATION_SYSTEM.framerEasing.easeOut 
-      }}
-    >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition-all"
-             style={{
-               transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-             }}>
-          <AlertCircle className="w-5 h-5 text-cyan-600 transition-colors"
-                       style={{
-                         transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                         transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                       }} />
-        </div>
-        <div>
-          <h4 className="text-sm font-semibold text-gray-900 mb-1 transition-colors"
-              style={{
-                transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-                transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-              }}>
-            Test Account
-          </h4>
-          <p className="text-xs text-gray-600 mb-2 transition-colors"
-             style={{
-               transitionDuration: ANIMATION_SYSTEM.durationString.fast,
-               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-             }}>
-            Pre-filled credentials for testing:
-          </p>
-          <div className="text-xs text-gray-700 space-y-1">
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
-            >
-              <strong>Email:</strong> {LOGIN_CONFIG.DEFAULT_EMAIL}
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
-            >
-              <strong>Password:</strong> {LOGIN_CONFIG.DEFAULT_PASSWORD}
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+

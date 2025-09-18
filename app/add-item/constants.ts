@@ -34,10 +34,10 @@ export const ADD_ITEM_CONFIG = {
   SUCCESS_ANIMATION_DURATION: 0.5
 };
 
-// Category configuration with icons
+// Category configuration with icons - matches backend seed data
 export const CATEGORY_CONFIG = {
   'Electronics': {
-    icon: '📱',
+    icon: '�',
     description: 'Phones, laptops, gadgets, accessories',
     subcategories: ['Phones', 'Laptops', 'Tablets', 'Audio', 'Gaming', 'Accessories']
   },
@@ -46,45 +46,75 @@ export const CATEGORY_CONFIG = {
     description: 'Textbooks, novels, academic materials',
     subcategories: ['Textbooks', 'Fiction', 'Academic', 'Reference', 'Magazines']
   },
+  'Clothing': {
+    icon: '👕',
+    description: 'Shirts, pants, shoes, accessories',
+    subcategories: ['Shirts', 'Pants', 'Shoes', 'Accessories', 'Formal', 'Casual']
+  },
   'Furniture': {
     icon: '🪑',
     description: 'Desks, chairs, storage, decorations',
     subcategories: ['Desks', 'Chairs', 'Storage', 'Beds', 'Decorations']
-  },
-  'Clothing': {
-    icon: '👕',
-    description: 'Clothes, shoes, accessories',
-    subcategories: ['Shirts', 'Pants', 'Shoes', 'Accessories', 'Formal', 'Casual']
   },
   'Sports': {
     icon: '⚽',
     description: 'Sports equipment, fitness gear',
     subcategories: ['Fitness', 'Ball Sports', 'Water Sports', 'Outdoor', 'Gym Equipment']
   },
-  'Vehicles': {
+  'Transportation': {
     icon: '🚗',
     description: 'Cars, bikes, scooters, parts',
     subcategories: ['Cars', 'Motorcycles', 'Bicycles', 'Scooters', 'Parts']
   },
+  'Health & Beauty': {
+    icon: '💄',
+    description: 'Cosmetics, skincare, health products',
+    subcategories: ['Skincare', 'Makeup', 'Health Supplements', 'Personal Care']
+  },
+  'Art & Crafts': {
+    icon: '🎨',
+    description: 'Art supplies, handmade items, crafts',
+    subcategories: ['Painting', 'Drawing', 'Crafting', 'Handmade', 'Supplies']
+  },
+  'Music & Instruments': {
+    icon: '🎵',
+    description: 'Instruments, audio equipment, music',
+    subcategories: ['Guitars', 'Keyboards', 'Audio Equipment', 'Sheet Music']
+  },
   'Home & Garden': {
-    icon: '🏡',
+    icon: '�',
     description: 'Home appliances, garden tools',
     subcategories: ['Appliances', 'Tools', 'Garden', 'Kitchen', 'Cleaning']
   },
-  'Lab Equipment': {
-    icon: '🔬',
-    description: 'Scientific instruments, lab supplies',
-    subcategories: ['Instruments', 'Glassware', 'Chemicals', 'Safety Equipment']
+  'Toys & Games': {
+    icon: '🎮',
+    description: 'Video games, board games, toys',
+    subcategories: ['Video Games', 'Board Games', 'Toys', 'Puzzles', 'Collectibles']
   },
-  'Trotinette': {
-    icon: '🛴',
-    description: 'Scooters and related accessories',
-    subcategories: ['Electric', 'Manual', 'Parts', 'Accessories']
+  'Pet Supplies': {
+    icon: '🐕',
+    description: 'Pet food, accessories, toys',
+    subcategories: ['Pet Food', 'Toys', 'Accessories', 'Health', 'Grooming']
+  },
+  'Office Supplies': {
+    icon: '📎',
+    description: 'Stationery, office equipment, supplies',
+    subcategories: ['Stationery', 'Equipment', 'Software', 'Furniture', 'Supplies']
+  },
+  'Food & Beverages': {
+    icon: '🍕',
+    description: 'Snacks, drinks, food items',
+    subcategories: ['Snacks', 'Beverages', 'Ingredients', 'Specialty Foods']
+  },
+  'Services': {
+    icon: '🔧',
+    description: 'Tutoring, repairs, services',
+    subcategories: ['Tutoring', 'Repairs', 'Consulting', 'Personal Services']
   },
   'Other': {
-    icon: '🔖',
+    icon: '�',
     description: 'Items that don\'t fit other categories',
-    subcategories: ['Miscellaneous', 'Collectibles', 'Art', 'Crafts']
+    subcategories: ['Miscellaneous', 'Collectibles', 'Art', 'Crafts', 'Unique Items']
   }
 };
 
@@ -156,8 +186,7 @@ export const VALIDATION_MESSAGES = {
     maxSize: `Each photo must be smaller than ${ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB`,
     invalidFormat: `Supported formats: ${ADD_ITEM_CONFIG.SUPPORTED_FORMATS.join(', ')}`
   },
-  showIdentity: {},
-  allowMessages: {}
+  showIdentity: {}
 };
 
 // Success messages
@@ -243,12 +272,6 @@ export const PRIVACY_CONFIG = {
     description: 'Let buyers see your name and verification status',
     defaultValue: true,
     icon: '👤'
-  },
-  allowMessages: {
-    title: 'Allow messages',
-    description: 'Let buyers contact you directly',
-    defaultValue: true,
-    icon: '💬'
   }
 };
 

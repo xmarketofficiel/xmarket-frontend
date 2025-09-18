@@ -3,6 +3,96 @@ import { CATEGORY_CONFIG } from '../constants';
 import type { CategoryFilterProps } from '../types';
 
 /**
+ * Get appropriate icon for a category based on its name
+ */
+function getCategoryIcon(category: string): string {
+  const lowerCategory = category.toLowerCase();
+  
+  // Map common category names to appropriate icons
+  const iconMap: Record<string, string> = {
+    // Technology & Electronics
+    'electronics': '💻',
+    'technology': '💻',
+    'computers': '🖥️',
+    'phones': '📱',
+    'gadgets': '⌚',
+    
+    // Books & Education
+    'books': '📚',
+    'textbooks': '📖',
+    'education': '🎓',
+    'academic': '🎒',
+    
+    // Clothing & Fashion
+    'clothing': '👕',
+    'fashion': '👗',
+    'accessories': '👜',
+    'shoes': '👟',
+    
+    // Furniture & Home
+    'furniture': '🪑',
+    'home': '🏠',
+    'decor': '🖼️',
+    'kitchen': '🍽️',
+    
+    // Sports & Recreation
+    'sports': '⚽',
+    'fitness': '🏋️',
+    'outdoor': '🏕️',
+    'recreation': '🎾',
+    
+    // Transportation
+    'transportation': '🚗',
+    'vehicles': '🚙',
+    'bikes': '🚲',
+    'automotive': '🚗',
+    
+    // Services
+    'services': '🔧',
+    'repair': '🛠️',
+    'tutoring': '📝',
+    'cleaning': '🧹',
+    
+    // Beauty & Health
+    'beauty': '💄',
+    'health': '🏥',
+    'cosmetics': '💋',
+    'wellness': '🧘',
+    
+    // Art & Crafts
+    'art': '🎨',
+    'crafts': '✂️',
+    'music': '🎵',
+    'instruments': '🎸',
+    
+    // Food & Dining
+    'food': '🍕',
+    'dining': '🍽️',
+    'cooking': '👨‍🍳',
+    
+    // Default categories
+    'other': '📦',
+    'miscellaneous': '📦',
+    'general': '📦'
+  };
+  
+  // Try to find an exact match first
+  if (iconMap[lowerCategory]) {
+    return iconMap[lowerCategory];
+  }
+  
+  // Try partial matches for compound category names
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (lowerCategory.includes(key) || key.includes(lowerCategory)) {
+      return icon;
+    }
+  }
+  
+  // Default icon for unknown categories
+  return '📦';
+}
+
+/**
  * Category Filter Component
  * Horizontal scrollable category selector with icons and brief sticky behavior
  */
@@ -77,7 +167,19 @@ export function CategoryFilter({
     >
       <div className="flex space-x-3 overflow-x-auto scrollbar-thin pb-1">
         {orderedCategories.map((category) => {
-          const config = CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG] || CATEGORY_CONFIG.other;
+          // Get config for known categories, or create dynamic config for unknown ones
+          let config = CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG];
+          
+          // If category is not in predefined config, create a dynamic config
+          if (!config) {
+            config = {
+              name: category.charAt(0).toUpperCase() + category.slice(1), // Capitalize first letter
+              icon: getCategoryIcon(category), // Get appropriate icon
+              color: '#6B7280',
+              description: `${category.charAt(0).toUpperCase() + category.slice(1)} items`
+            };
+          }
+          
           const isSelected = selectedCategory === category;
 
           return (

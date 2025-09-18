@@ -18,6 +18,7 @@ import ItemActions from "./ItemActions";
 import ShareModal from "./ShareModal";
 import LoadingSpinner from "./LoadingSpinner";
 import ReportModal from "../../../../components/ReportModal";
+import PurchaseConfirmationModal from "../../../../components/PurchaseConfirmationModal";
 
 // Hooks and utilities
 import { useItemDetail } from "../hooks/useItemDetail";
@@ -113,7 +114,7 @@ export default function OptimizedItemDetail({
     }
   };
 
-  const handleInterestClick = async () => {
+  const handleInterestClick = () => {
     if (!user) {
       addToast(STATUS_MESSAGES.error.unauthorized, "error");
       return;
@@ -124,37 +125,43 @@ export default function OptimizedItemDetail({
       return;
     }
 
+    // Show the purchase confirmation modal
+    actions.openModal("purchase");
+  };
+
+  const handlePurchaseConfirmed = async () => {
     try {
-      await api.items.expressInterest(String(item.id));
-      addToast(
-        "Interest added! Contact the seller on WhatsApp to negotiate.",
-        "success",
-        5000
+      // Call the backend API to express interest
+      const response = await api.items.expressInterest(
+        String(item.id), 
+        "I am interested in purchasing this item!"
       );
 
-      // Open WhatsApp automatically
-      openWhatsApp();
+      if (response.data) {
+        addToast(
+          "Interest expressed! You will receive a confirmation request in your profile.",
+          "success",
+          5000
+        );
 
-      // Analytics
-      if (typeof window !== "undefined" && window.gtag) {
-        window.gtag("event", ANALYTICS_EVENTS.INTEREST_ADDED, {
-          item_id: item.id,
-        });
+        // Open WhatsApp automatically after expressing interest
+        setTimeout(() => {
+          openWhatsApp();
+        }, 1000);
+
+        // Analytics
+        if (typeof window !== "undefined" && window.gtag) {
+          window.gtag("event", ANALYTICS_EVENTS.INTEREST_ADDED, {
+            item_id: item.id,
+          });
+        }
       }
     } catch (error: any) {
-      if (
-        error.name === "DuplicateInterestError" ||
-        error.message?.includes("already shown interest") ||
-        error.message?.includes("already expressed interest")
-      ) {
-        addToast(
-          "You have already shown interest in this item. Opening WhatsApp...",
-          "info"
-        );
-        openWhatsApp();
-      } else {
-        addToast(error.message || STATUS_MESSAGES.error.interest, "error");
-      }
+      console.error('Error expressing interest:', error);
+      addToast(
+        error.message || "Failed to express interest. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -276,6 +283,21 @@ export default function OptimizedItemDetail({
         onClose={() => actions.closeModal("report")}
         itemId={String(item.id)}
         itemTitle={item.title}
+      />
+
+      <PurchaseConfirmationModal
+        isOpen={state.modals.purchase}
+        onClose={() => actions.closeModal("purchase")}
+        item={{
+          id: String(item.id),
+          title: item.title,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+          seller: {
+            fullName: item.seller?.fullName || item.seller?.name || 'Unknown Seller',
+            whatsappNumber: item.seller?.whatsappNumber
+          }
+        }}
+        onConfirmed={handlePurchaseConfirmed}
       />
     </div>
   );

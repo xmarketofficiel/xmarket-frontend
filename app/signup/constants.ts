@@ -98,7 +98,7 @@ export const ERROR_MESSAGES = {
 
 // Success messages
 export const SUCCESS_MESSAGES = {
-  OTP_SENT: "Verification code sent to your email!",
+  OTP_SENT: "Verification code sent to your email! Please check your Junk/Spam folder if you don't see it.",
   OTP_VERIFIED: "Email verified successfully!",
   SIGNUP_SUCCESS: "Welcome to XMarket! Redirecting to marketplace...",
   REQUEST_SUBMITTED: "Access request submitted! We'll notify you when your account is ready.",

@@ -25,18 +25,7 @@ export function NavigationFooter({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.6 }}
     >
-      {/* Mode switching */}
-      {!isRequestAccess && onSwitchToRequestAccess && (
-        <motion.div className="text-center">
-          <p className="text-gray-600 mb-2">Don't have authorized email?</p>
-          <button
-            onClick={onSwitchToRequestAccess}
-            className="text-[#009F9C] hover:text-[#008A87] font-medium underline transition-colors duration-200"
-          >
-            Request Access Instead
-          </button>
-        </motion.div>
-      )}
+      {/* Mode switching - Removed duplicate message, kept in EmailStep only */}
 
       {isRequestAccess && onSwitchToSignup && (
         <motion.div className="text-center">

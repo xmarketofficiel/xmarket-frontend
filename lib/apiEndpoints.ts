@@ -408,10 +408,10 @@ export const itemsApi = {
   ): Promise<ApiResponse<{ message: string }>> =>
     apiClient.delete(`/images/${imageId}`),
 
-  // Categories (Backend endpoint: GET /items/categories)
+  // Categories (Backend endpoint: GET /categories)
   getCategories: (): Promise<
     ApiResponse<Array<{id: string; name: string; icon?: string; description?: string}>>
-  > => apiClient.get("/items/categories"),
+  > => apiClient.get("/categories"),
 
   // Favorites functionality using the proper item_favorites table
   toggleFavorite: async (
