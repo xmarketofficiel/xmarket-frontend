@@ -90,8 +90,8 @@ export const useProfile = (userId?: string): UseProfileReturn => {
       }
 
       if (userResponse.data) {
-        const userData = userResponse.data.user || userResponse.data;
-        const statsData = userResponse.data.stats || {};
+        const userData = (userResponse.data as any).user || userResponse.data;
+        const statsData = (userResponse.data as any).stats || {};
         // Don't pre-populate items - let loadTabItems handle fetching active items
 
         const newProfileData: ProfileData = {

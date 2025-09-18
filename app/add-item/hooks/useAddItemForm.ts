@@ -429,13 +429,18 @@ export function useAddItemForm({
         anonymous: !state.data.showIdentity,
       };
 
-      // Simulate API call
+      // For now, simulate API call - replace with actual API call when ready
+      const mockResponse = {
+        data: {
+          id: Math.random().toString(36).substr(2, 9), // Generate mock ID
+        }
+      };
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Clear draft and reset form
       clearDraft();
 
-      onSuccess?.(response.data.id);
+      onSuccess?.(mockResponse.data.id);
     } catch (error: any) {
       onError?.(error.message || "Failed to create item");
     } finally {

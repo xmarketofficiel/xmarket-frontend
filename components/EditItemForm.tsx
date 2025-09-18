@@ -82,10 +82,10 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
           // Additional fallback for different response formats
           if (!Array.isArray(categoriesData) && categoriesResponse.data) {
             // Try to extract from different possible structures
-            if (categoriesResponse.data.categories) {
-              categoriesData = categoriesResponse.data.categories;
-            } else if (categoriesResponse.data.items) {
-              categoriesData = categoriesResponse.data.items;
+            if ((categoriesResponse.data as any).categories) {
+              categoriesData = (categoriesResponse.data as any).categories;
+            } else if ((categoriesResponse.data as any).items) {
+              categoriesData = (categoriesResponse.data as any).items;
             }
           }
           

@@ -257,6 +257,7 @@ export default function OptimizedItemDetail({
         onInterestClick={handleInterestClick}
         onFavoriteClick={handleFavoriteClick}
         onShareClick={handleShareClick}
+        onMessageClick={openWhatsApp}
         isLoading={{
           interest: state.loading.interest,
           favorite: state.loading.favorite,

@@ -52,6 +52,7 @@ export interface ProfileItem {
   category: string;
   condition: string;
   status: 'active' | 'sold' | 'pending' | 'draft' | 'expired';
+  isSold?: boolean;
   createdAt: string;
   updatedAt: string;
   viewsCount?: number;
