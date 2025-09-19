@@ -92,14 +92,30 @@ async function handleRequest(
       bodyType: body instanceof FormData ? 'FormData' : typeof body
     });
     
-    const fetchOptions: RequestInit = createServerFetchOptions({
-      method,
-      headers: customHeaders,
-    });
+    let fetchOptions: RequestInit;
     
-    // Only add body if it exists
-    if (body !== undefined) {
-      fetchOptions.body = body;
+    if (body instanceof FormData) {
+      // For FormData, don't use createServerFetchOptions to avoid Content-Type conflicts
+      fetchOptions = {
+        method,
+        headers: {
+          // Only include non-Content-Type headers for FormData
+          'User-Agent': 'XMarket-Frontend/1.0',
+          ...(authHeader && { 'Authorization': authHeader }),
+        },
+        body,
+      };
+    } else {
+      // For other requests, use the standard server fetch options
+      fetchOptions = createServerFetchOptions({
+        method,
+        headers: customHeaders,
+      });
+      
+      // Only add body if it exists
+      if (body !== undefined) {
+        fetchOptions.body = body;
+      }
     }
     
     const response = await fetch(fullUrl, fetchOptions);
