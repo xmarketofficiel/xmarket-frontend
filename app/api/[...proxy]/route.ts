@@ -58,7 +58,14 @@ async function handleRequest(
     let body;
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
       if (contentType?.includes('application/json')) {
-        body = JSON.stringify(await request.json());
+        try {
+          const jsonData = await request.json();
+          body = JSON.stringify(jsonData);
+        } catch (error) {
+          // Handle empty JSON body (e.g., for favorite/unfavorite requests)
+          console.log(`[Proxy] Empty JSON body for ${method} ${path}`);
+          body = undefined;
+        }
       } else if (contentType?.includes('multipart/form-data')) {
         body = await request.formData();
       } else {
@@ -68,7 +75,7 @@ async function handleRequest(
 
     // Create headers object for server fetch options
     const customHeaders: HeadersInit = {};
-    if (contentType && !(body instanceof FormData)) {
+    if (contentType && !(body instanceof FormData) && body !== undefined) {
       customHeaders['Content-Type'] = contentType;
     }
     if (authHeader) {
