@@ -75,6 +75,8 @@ async function handleRequest(
 
     // Create headers object for server fetch options
     const customHeaders: HeadersInit = {};
+    // Don't set Content-Type for FormData (fetch will set it with proper boundary)
+    // Don't set Content-Type if there's no body
     if (contentType && !(body instanceof FormData) && body !== undefined) {
       customHeaders['Content-Type'] = contentType;
     }
@@ -83,16 +85,24 @@ async function handleRequest(
     }
     
     const fullUrl = `${BACKEND_URL}/${path}${queryString ? `?${queryString}` : ''}`;
-    console.log(`[Proxy] ${method} ${fullUrl}`, { authHeader: !!authHeader });
+    console.log(`[Proxy] ${method} ${fullUrl}`, { 
+      authHeader: !!authHeader, 
+      contentType,
+      hasBody: !!body,
+      bodyType: body instanceof FormData ? 'FormData' : typeof body
+    });
     
-    const response = await fetch(
-      fullUrl,
-      createServerFetchOptions({
-        method,
-        headers: customHeaders,
-        ...(body && { body }),
-      })
-    );
+    const fetchOptions: RequestInit = createServerFetchOptions({
+      method,
+      headers: customHeaders,
+    });
+    
+    // Only add body if it exists
+    if (body !== undefined) {
+      fetchOptions.body = body;
+    }
+    
+    const response = await fetch(fullUrl, fetchOptions);
 
     let data;
     const responseContentType = response.headers.get('content-type');
