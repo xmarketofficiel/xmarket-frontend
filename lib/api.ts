@@ -340,12 +340,48 @@ class ApiClient {
   }
 }
 
-// For development, bypass proxy and call backend directly to avoid proxy issues
+// Use environment variable for API base URL with fallback
+const getApiBaseUrl = () => {
+  // Priority: environment variable > fallback based on NODE_ENV
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL;
+  }
+  
+  // Fallback for when env var is not set
+  return process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '/api';
+};
+
 const apiClient = new ApiClient({
-  baseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '/api',
+  baseUrl: getApiBaseUrl(),
   timeout: 10000,
   retries: 3,
 });
 
-export { apiClient, ApiClient };
+// Debug function to test backend connectivity
+export const testBackendConnection = async () => {
+  const baseUrl = getApiBaseUrl();
+  console.log('🔍 Testing backend connection...');
+  console.log('📡 API Base URL:', baseUrl);
+  
+  try {
+    // Test basic connectivity
+    const response = await fetch(`${baseUrl}/health`);
+    console.log('✅ Backend response status:', response.status);
+    
+    if (response.ok) {
+      const data = await response.text();
+      console.log('✅ Backend is reachable. Response:', data);
+      return true;
+    } else {
+      console.warn('⚠️ Backend returned non-200 status:', response.status);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Backend connection failed:', error);
+    console.error('💡 Make sure the backend URL is correct and accessible');
+    return false;
+  }
+};
+
+export { apiClient, ApiClient, getApiBaseUrl };
 export default apiClient;

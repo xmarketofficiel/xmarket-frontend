@@ -24,7 +24,36 @@ export function RequestAccessStep({
 }: RequestAccessStepProps) {
   const config = STEP_CONFIG.REQUEST_ACCESS;
 
-  const isFormValid = requestData.fullName && requestData.email && requestData.whatsappNumber && requestData.reason;
+  // Validation functions
+  const isValidPhoneNumber = (phone: string) => {
+    if (!phone) return false;
+    // Remove all spaces, dashes, and other non-digit characters except +
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    
+    // Case 1: Numbers starting with 06 or 07 (local format)
+    if (cleanPhone.startsWith('06') || cleanPhone.startsWith('07')) {
+      return cleanPhone.length === 10; // Exactly 10 digits including 06/07
+    }
+    
+    // Case 2: Numbers starting with +212 (international format)
+    if (cleanPhone.startsWith('+212')) {
+      const afterCode = cleanPhone.substring(4); // Remove +212
+      return afterCode.length === 9; // Exactly 9 digits after +212
+    }
+    
+    // All other cases are invalid
+    return false;
+  };
+
+  const isPhoneValid = isValidPhoneNumber(requestData.whatsappNumber);
+  const isFormValid = requestData.fullName && requestData.email && isPhoneValid && requestData.reason;
+
+  // Error messages
+  const getPhoneError = () => {
+    if (!requestData.whatsappNumber) return '';
+    if (!isPhoneValid) return 'Enter a valid Moroccan number: 06/07 (10 digits) or +212 (9 digits after)';
+    return '';
+  };
 
   return (
     <motion.form
@@ -80,10 +109,12 @@ export function RequestAccessStep({
           onFocus={() => onFieldFocus('whatsappNumber')}
           onBlur={onFieldBlur}
           focused={focusedField === 'whatsappNumber'}
-          placeholder="+1 (555) 123-4567"
+          placeholder="0612345678 or +212612345678"
           label="WhatsApp Number"
           required
           icon={<Phone className="w-5 h-5" />}
+          error={requestData.whatsappNumber && !isPhoneValid ? getPhoneError() : ''}
+          isValid={requestData.whatsappNumber ? isPhoneValid : undefined}
         />
       </div>
 

@@ -11,6 +11,9 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
   
   // Get step configuration
   const getStepConfig = () => {
+    if (step === 'request-success') {
+      return STEP_CONFIG.REQUEST_SUCCESS;
+    }
     if (isRequestAccess) {
       return STEP_CONFIG.REQUEST_ACCESS;
     }

@@ -16,6 +16,7 @@ import { OtpStep } from './components/OtpStep';
 import { DetailsStep } from './components/DetailsStep';
 import { CompleteStep } from './components/CompleteStep';
 import { RequestAccessStep } from './components/RequestAccessStep';
+import { RequestSuccessStep } from './components/RequestSuccessStep';
 import { NavigationFooter } from './components/NavigationFooter';
 
 // Constants and Types
@@ -65,7 +66,8 @@ export default function SignupPage() {
     otpSent: false,
     focusedField: '',
     showPassword: false,
-    showConfirmPassword: false
+    showConfirmPassword: false,
+    requestSubmitted: false
   });
 
   /**
@@ -116,6 +118,28 @@ export default function SignupPage() {
       resendTimer: SIGNUP_CONFIG.RESEND_TIMER, 
       canResend: false 
     });
+  };
+
+  /**
+   * Validate phone number format (Moroccan numbers)
+   */
+  const isValidPhoneNumber = (phone: string) => {
+    // Remove all spaces, dashes, and other non-digit characters except +
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    
+    // Case 1: Numbers starting with 06 or 07 (local format)
+    if (cleanPhone.startsWith('06') || cleanPhone.startsWith('07')) {
+      return cleanPhone.length === 10; // Exactly 10 digits including 06/07
+    }
+    
+    // Case 2: Numbers starting with +212 (international format)
+    if (cleanPhone.startsWith('+212')) {
+      const afterCode = cleanPhone.substring(4); // Remove +212
+      return afterCode.length === 9; // Exactly 9 digits after +212
+    }
+    
+    // All other cases are invalid
+    return false;
   };
 
   /**
@@ -255,6 +279,11 @@ export default function SignupPage() {
       return;
     }
     
+    if (!isValidPhoneNumber(whatsappNumber)) {
+      updateState({ message: ERROR_MESSAGES.PHONE_INVALID, isLoading: false });
+      return;
+    }
+    
     if (password.length < SIGNUP_CONFIG.PASSWORD_MIN_LENGTH) {
       updateState({ message: ERROR_MESSAGES.PASSWORD_TOO_SHORT, isLoading: false });
       return;
@@ -314,6 +343,11 @@ export default function SignupPage() {
       return;
     }
 
+    if (!isValidPhoneNumber(whatsappNumber)) {
+      updateState({ message: ERROR_MESSAGES.PHONE_INVALID, isLoading: false });
+      return;
+    }
+
     if (!SIGNUP_CONFIG.EMAIL_REGEX.test(email)) {
       updateState({ 
         message: ERROR_MESSAGES.INVALID_EMAIL,
@@ -332,7 +366,8 @@ export default function SignupPage() {
       updateState({
         message: SUCCESS_MESSAGES.REQUEST_SUBMITTED,
         messageType: 'success',
-        formData: { ...state.formData, step: 'complete' }
+        formData: { ...state.formData, step: 'request-success' },
+        requestSubmitted: true
       });
     } catch (error: any) {
       const errorMessage = getErrorMessage(error);
@@ -340,6 +375,13 @@ export default function SignupPage() {
     } finally {
       updateState({ isLoading: false });
     }
+  };
+
+  /**
+   * Handle go to landing page
+   */
+  const handleGoToLanding = () => {
+    router.push('/');
   };
 
   /**
@@ -399,7 +441,7 @@ export default function SignupPage() {
             >
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 relative">
                 <StepHeader 
-                  step={state.formData.step} 
+                  step={state.requestSubmitted ? 'request-success' : state.formData.step} 
                   signupMode={state.signupMode}
                 />
                 
@@ -468,7 +510,7 @@ export default function SignupPage() {
                   )}
 
                   {/* Request Access Step */}
-                  {state.signupMode === 'request-access' && (
+                  {state.signupMode === 'request-access' && !state.requestSubmitted && (
                     <RequestAccessStep
                       key="request-access"
                       requestData={state.requestAccessData}
@@ -483,14 +525,25 @@ export default function SignupPage() {
                       onSwitchToSignup={handlers.switchToSignup}
                     />
                   )}
+
+                  {/* Request Success Step */}
+                  {state.signupMode === 'request-access' && state.requestSubmitted && (
+                    <RequestSuccessStep
+                      key="request-success"
+                      requestData={state.requestAccessData}
+                      onGoToLanding={handleGoToLanding}
+                    />
+                  )}
                 </AnimatePresence>
 
-                <NavigationFooter
-                  currentStep={state.formData.step}
-                  signupMode={state.signupMode}
-                  onSwitchToSignup={handlers.switchToSignup}
-                  onSwitchToRequestAccess={handlers.switchToRequestAccess}
-                />
+                {!state.requestSubmitted && (
+                  <NavigationFooter
+                    currentStep={state.formData.step}
+                    signupMode={state.signupMode}
+                    onSwitchToSignup={handlers.switchToSignup}
+                    onSwitchToRequestAccess={handlers.switchToRequestAccess}
+                  />
+                )}
               </div>
             </motion.div>
           </div>

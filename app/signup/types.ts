@@ -2,7 +2,7 @@
 
 export type SignupMode = 'signup' | 'request-access';
 
-export type SignupStepType = 'email' | 'otp' | 'details' | 'complete' | 'request-access';
+export type SignupStepType = 'email' | 'otp' | 'details' | 'complete' | 'request-access' | 'request-success';
 
 export interface SignupFormData {
   step: SignupStepType;
@@ -34,6 +34,7 @@ export interface SignupState {
   focusedField: string;
   showPassword: boolean;
   showConfirmPassword: boolean;
+  requestSubmitted: boolean;
 }
 
 export interface FloatingElement {
@@ -166,6 +167,8 @@ export interface InputFieldProps {
   onTogglePassword?: () => void;
   icon?: React.ReactNode;
   maxLength?: number;
+  error?: string;
+  isValid?: boolean;
 }
 
 export interface SubmitButtonProps {
