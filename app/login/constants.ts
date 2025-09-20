@@ -12,7 +12,7 @@ export const BRAND_FEATURES = [
   },
   {
     icon: 'Heart', 
-    text: 'Trusted by thousands of students'
+    text: 'Trusted by university students'
   },
   {
     icon: 'Sparkles',
