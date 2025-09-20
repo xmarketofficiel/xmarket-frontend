@@ -67,7 +67,35 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
         // Load categories first
         try {
           const categoriesResponse = await api.items.getCategories();
-          setCategories(categoriesResponse.data || []);
+          
+          // Debug logging
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Categories API response:', categoriesResponse);
+            console.log('Categories data:', categoriesResponse.data);
+            console.log('Categories data type:', typeof categoriesResponse.data);
+            console.log('Is categories data array:', Array.isArray(categoriesResponse.data));
+          }
+          
+          // Handle nested response structure
+          let categoriesData = (categoriesResponse.data as any)?.data || categoriesResponse.data || [];
+          
+          // Additional fallback for different response formats
+          if (!Array.isArray(categoriesData) && categoriesResponse.data) {
+            // Try to extract from different possible structures
+            if ((categoriesResponse.data as any).categories) {
+              categoriesData = (categoriesResponse.data as any).categories;
+            } else if ((categoriesResponse.data as any).items) {
+              categoriesData = (categoriesResponse.data as any).items;
+            }
+          }
+          
+          // Ensure it's an array
+          if (Array.isArray(categoriesData)) {
+            setCategories(categoriesData);
+          } else {
+            console.warn('Categories data is not an array:', categoriesData);
+            throw new Error('Categories response is not an array');
+          }
         } catch (error) {
           console.error('Failed to load categories:', error);
           setCategories([
@@ -87,6 +115,13 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
         // Check ownership
         if (user && String(itemData.sellerId) !== String(user.id) && String(itemData.seller?.id) !== String(user.id)) {
           addToast('You can only edit your own items', 'error');
+          router.push('/profile');
+          return;
+        }
+
+        // Check if item is sold - prevent editing sold items
+        if (itemData.isSold) {
+          addToast('Cannot edit sold items. Sold items are locked to maintain transaction integrity.', 'error');
           router.push('/profile');
           return;
         }
@@ -287,15 +322,28 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
       }
     } catch (error: any) {
       console.error('Error updating item:', error);
+      
+      // Extract error message from different possible error structures
+      let errorMessage = 'Failed to update item';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.statusText) {
+        errorMessage = error.response.statusText;
+      }
+      
+      // Handle specific error cases
       if (error.response?.status === 403) {
         addToast('You can only edit your own items', 'error');
-      } else if (error.response?.status === 400 && error.response?.data?.message) {
-        // For validation errors (like pending purchases), show the message
-        addToast(error.response.data.message, 'error');
-      } else if (error.response?.data?.message) {
-        addToast(error.response.data.message, 'error');
+      } else if (errorMessage.includes('Cannot edit sold items') || errorMessage.includes('sold')) {
+        addToast('This item has been sold and cannot be edited. Sold items are locked to maintain transaction integrity.', 'error');
+      } else if (error.response?.status === 400) {
+        // For other validation errors, show the specific message
+        addToast(errorMessage, 'error');
       } else {
-        addToast('Failed to update item', 'error');
+        addToast(errorMessage, 'error');
       }
     } finally {
       setSubmitting(false);
@@ -347,10 +395,18 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Current Item Information */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <span className="mr-2">📝</span>
-            Currently Editing: {item.title}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">📝</span>
+              Currently Editing: {item.title}
+            </h3>
+            {item.isSold && (
+              <div className="flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                <span className="mr-1">🔒</span>
+                SOLD - Limited Editing
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="bg-gray-50 rounded-lg p-3">
               <span className="font-medium text-gray-700">Current Price:</span>
@@ -372,6 +428,25 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
             </div>
           </div>
         </div>
+
+        {/* Sold Item Warning */}
+        {item.isSold && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <span className="text-amber-600 text-xl">⚠️</span>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-amber-800">
+                  Item Sold - Editing Restrictions Apply
+                </h3>
+                <div className="mt-2 text-sm text-amber-700">
+                  <p>This item has been sold and is locked to maintain transaction integrity. Most fields cannot be modified to protect buyers and ensure accurate records.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
@@ -483,7 +558,7 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
                 }`}
               >
                 <option value="">Select category</option>
-                {categories.map((cat: any, index: number) => (
+                {Array.isArray(categories) && categories.map((cat: any, index: number) => (
                   <option key={`${cat.name || cat}-${index}`} value={cat.name || cat}>
                     {cat.icon || '🔖'} {cat.name || cat}
                   </option>

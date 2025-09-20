@@ -230,7 +230,8 @@ export default function LandingPage() {
     const checkAuthToken = async () => {
       try {
         // Try to get current user to verify token
-        const response = await fetch('http://localhost:3001/users/profile', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
+        const response = await fetch(`${apiUrl}/users/profile`, {
           credentials: 'include'
         });
         

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send to backend API
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+    const apiUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
     const backendResponse = await fetch(`${apiUrl}/auth/join-request`, {
       method: "POST",
       headers: {

@@ -187,7 +187,7 @@ export default function EditProfilePage() {
               <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100">
                 {formData.profilePicture ? (
                   <img 
-                    src={formData.profilePicture.startsWith('http') ? formData.profilePicture : `http://localhost:3001${formData.profilePicture}`}
+                    src={formData.profilePicture.startsWith('http') ? formData.profilePicture : `${process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001')}${formData.profilePicture}`}
                     alt="Profile" 
                     className="w-full h-full object-cover"
                     onError={(e) => {

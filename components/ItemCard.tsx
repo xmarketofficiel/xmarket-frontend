@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getItemImageUrlWithSize } from "../lib/imageUtils";
 import {
   Heart,
   CheckCircle,
@@ -162,28 +163,8 @@ export default function ItemCard({
   };
 
   const getImageUrl = () => {
-    if (item.images && item.images.length > 0) {
-      const firstImage = item.images[0];
-      // Handle different image URL properties
-      if (typeof firstImage === "string") {
-        return firstImage;
-      }
-      if (typeof firstImage === "object" && firstImage !== null) {
-        return (
-          firstImage.imageUrl ||
-          firstImage.cloudinaryUrl ||
-          firstImage.spacesUrl ||
-          firstImage.url
-        );
-      }
-    }
-
-    // Fallback to photos array if images doesn't work
-    if (item.photos && item.photos.length > 0) {
-      return item.photos[0];
-    }
-
-    return null;
+    // Use the new size-aware function (small size for card thumbnails)
+    return getItemImageUrlWithSize(item, 'small');
   };
 
   return (
@@ -210,18 +191,20 @@ export default function ItemCard({
               </div>
             )}
             
-            {/* Favorite Button - Top left */}
-            <button
-              onClick={handleFavoriteClick}
-              className="absolute top-2 left-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
-              aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Heart 
-                className={`w-4 h-4 transition-colors ${
-                  isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'
-                }`} 
-              />
-            </button>
+            {/* Favorite Button - Top left (only show for other users' items) */}
+            {!isOwnItem && (
+              <button
+                onClick={handleFavoriteClick}
+                className="absolute top-2 left-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
+                aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart 
+                  className={`w-4 h-4 transition-colors ${
+                    isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'
+                  }`} 
+                />
+              </button>
+            )}
 
             {/* Condition Badge - Top right */}
             <div className="absolute top-2 right-2">

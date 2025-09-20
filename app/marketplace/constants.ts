@@ -151,6 +151,55 @@ export const CATEGORY_CONFIG = {
     icon: '📦',
     color: '#6B7280',
     description: 'Everything else'
+  },
+  // Add more common categories that might come from backend
+  'Health & Beauty': {
+    name: 'Health & Beauty',
+    icon: '💄',
+    color: '#EC4899',
+    description: 'Cosmetics, skincare & wellness products'
+  },
+  'Art & Crafts': {
+    name: 'Art & Crafts',
+    icon: '🎨',
+    color: '#8B5CF6',
+    description: 'Art supplies, crafts & creative materials'
+  },
+  'Automotive': {
+    name: 'Automotive',
+    icon: '🚗',
+    color: '#6366F1',
+    description: 'Car parts, accessories & maintenance'
+  },
+  'Pet Supplies': {
+    name: 'Pet Supplies',
+    icon: '🐾',
+    color: '#F59E0B',
+    description: 'Pet food, toys & accessories'
+  },
+  'Food & Beverages': {
+    name: 'Food & Beverages',
+    icon: '🍕',
+    color: '#EF4444',
+    description: 'Food, drinks & kitchen items'
+  },
+  'Music & Instruments': {
+    name: 'Music & Instruments',
+    icon: '🎵',
+    color: '#10B981',
+    description: 'Musical instruments & audio equipment'
+  },
+  'Toys & Games': {
+    name: 'Toys & Games',
+    icon: '🎲',
+    color: '#F59E0B',
+    description: 'Toys, games & entertainment'
+  },
+  'Office Supplies': {
+    name: 'Office Supplies',
+    icon: '📋',
+    color: '#6B7280',
+    description: 'Office equipment & stationery'
   }
 };
 

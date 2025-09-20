@@ -108,27 +108,34 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
                }}>
-            {hasProfileImage ? (
-              <img
-                src={getSafeImageUrl(profileImageUrl)}
-                alt={user.fullName}
-                className="w-full h-full object-cover transition-all"
-                style={{
-                  transitionDuration: ANIMATION_SYSTEM.durationString.normal,
-                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-                }}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center">
-                <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
-              </div>
-            )}
+            {(() => {
+              const safeImageUrl = getSafeImageUrl(profileImageUrl);
+              if (hasProfileImage && safeImageUrl) {
+                return (
+                  <img
+                    src={safeImageUrl}
+                    alt={user.fullName}
+                    className="w-full h-full object-cover transition-all"
+                    style={{
+                      transitionDuration: ANIMATION_SYSTEM.durationString.normal,
+                      transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
+                    }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = target.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                );
+              } else {
+                return (
+                  <div className="w-full h-full bg-gradient-to-br from-[#009F9C] to-[#007A77] flex items-center justify-center">
+                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
+                  </div>
+                );
+              }
+            })()}
             
             {/* Fallback for broken images */}
             <div 

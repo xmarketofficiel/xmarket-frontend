@@ -47,6 +47,18 @@ export default function MarketplacePage() {
   const searchParams = useSearchParams();
   const { user } = useUser();
 
+  // Clear add-item draft when accessing marketplace
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      const draftExists = localStorage.getItem('add_item_draft');
+      if (draftExists) {
+        console.log('🧹 Cleaning up add-item draft from localStorage on marketplace page...');
+        localStorage.removeItem('add_item_draft');
+        console.log('✅ Add-item draft cleared from localStorage');
+      }
+    }
+  }, [user]);
+
   // Consolidated state management
   const [state, setState] = useState<MarketplaceState>({
     items: [],
@@ -91,7 +103,8 @@ export default function MarketplacePage() {
   }, []);
 
   /**
-   * Load pending sales count for notifications
+   * Load pending confirmations count for notifications
+   * This should match what's shown in the pending confirmations page
    */
   const loadPendingSalesCount = useCallback(async () => {
     if (!user) {
@@ -100,12 +113,33 @@ export default function MarketplacePage() {
     }
 
     try {
-      const response = await api.items.getPendingSales();
-      const pendingSales = response.data || [];
+      // Get both pending confirmations (for seller) and user's purchases (for buyer)
+      const [confirmationsResponse, purchasesResponse] = await Promise.all([
+        api.items.getPendingConfirmations(),
+        api.items.getMyPurchases()
+      ]);
+      
+      const confirmationsData = (confirmationsResponse.data as any)?.data || confirmationsResponse.data || [];
+      const purchasesData = (purchasesResponse.data as any)?.data || purchasesResponse.data || [];
+      
+      // Combine both - pending confirmations for seller role and pending purchases for buyer role
+      const allPurchases = [...confirmationsData, ...purchasesData];
+      
+      // Filter for pending items only and remove duplicates
+      const uniquePurchases = allPurchases
+        .filter((purchase: any) => 
+          purchase.status === 'pending' || 
+          purchase.status === 'buyer_confirmed'
+        )
+        .filter((purchase: any, index: number, self: any[]) => 
+          index === self.findIndex(p => p.id === purchase.id)
+        );
+      
       updateState({ 
-        pendingSalesCount: Array.isArray(pendingSales) ? pendingSales.length : 0 
+        pendingSalesCount: uniquePurchases.length
       });
     } catch (error) {
+      console.error('Error loading pending confirmations count:', error);
       updateState({ pendingSalesCount: 0 });
     }
   }, [user]); // Only depend on user, not updateState
@@ -115,10 +149,15 @@ export default function MarketplacePage() {
    */
   const loadCategories = useCallback(async () => {
     try {
+      console.log('🔍 Loading categories from backend endpoint: /categories');
       const response = await api.items.getCategories();
+      console.log('📋 Raw categories response:', response);
+      console.log('📋 Response data type:', typeof response.data);
+      console.log('📋 Response data length:', Array.isArray(response.data) ? response.data.length : 'Not an array');
       
       // Backend returns full category objects with id, name, icon, description
       const categoryList = response.data || [];
+      console.log('📦 Category list:', categoryList);
       
       if (Array.isArray(categoryList) && categoryList.length > 0) {
         // Extract just the names for the filter, but keep full objects for reference
@@ -129,17 +168,115 @@ export default function MarketplacePage() {
           }
           return cat;
         });
+        console.log(`✅ Processed ${categoryNames.length} category names:`, categoryNames);
         setCategories(categoryNames);
       } else {
-        // Minimal fallback to prevent hanging - just basic categories
-        setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
+        console.warn('⚠️ No categories returned from backend. This usually means:');
+        console.warn('   1. Backend server is not running');
+        console.warn('   2. Database has no categories');
+        console.warn('   3. API endpoint issue');
+        console.warn('   Using comprehensive fallback categories...');
+        
+        // Use a comprehensive set of fallback categories based on our backend seed data
+        const fallbackCategories = [
+          'Electronics',
+          'Books', 
+          'Clothing',
+          'Furniture',
+          'Sports',
+          'Transportation',
+          'Health & Beauty',
+          'Art & Crafts',
+          'Music & Instruments',
+          'Home & Garden',
+          'Toys & Games',
+          'Pet Supplies',
+          'Office Supplies',
+          'Food & Beverages',
+          'Services',
+          'Other'
+        ];
+        
+        console.log(`📦 Using ${fallbackCategories.length} fallback categories:`, fallbackCategories);
+        setCategories(fallbackCategories);
       }
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      console.error('❌ Failed to load categories:', error);
+      
+      // Check if it's a network error (backend not running)
+      if (error instanceof Error && (error.message.includes('fetch') || error.message.includes('Network'))) {
+        console.error('🚨 Backend server might not be running. Please start the backend server.');
+      }
+      
       // Minimal fallback to prevent hanging
       setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
     }
   }, []); // Remove all dependencies to prevent loops
+
+  // Debug functions for development
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    (window as any).seedCategories = async () => {
+      try {
+        console.log('🌱 Seeding categories...');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/categories/seed`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        console.log('✅ Categories seeded:', data);
+        // Reload categories after seeding
+        loadCategories();
+        return data;
+      } catch (error) {
+        console.error('❌ Failed to seed categories:', error);
+      }
+    };
+    
+    (window as any).refreshCategories = () => {
+      console.log('🔄 Refreshing categories...');
+      loadCategories();
+    };
+    
+    (window as any).checkCurrentCategories = () => {
+      console.log('📋 Current categories state:', categories);
+      return categories;
+    };
+    
+    (window as any).testCategoryEndpoints = async () => {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      
+      console.log('🧪 Testing category endpoints...');
+      
+      // Test /categories endpoint
+      try {
+        console.log('Testing /categories...');
+        const categoriesResponse = await fetch(`${baseUrl}/categories`);
+        const categoriesData = await categoriesResponse.json();
+        console.log('✅ /categories response:', categoriesData);
+      } catch (error) {
+        console.error('❌ /categories failed:', error);
+      }
+      
+      // Test /items/categories endpoint
+      try {
+        console.log('Testing /items/categories...');
+        const itemsCategoriesResponse = await fetch(`${baseUrl}/items/categories`);
+        const itemsCategoriesData = await itemsCategoriesResponse.json();
+        console.log('✅ /items/categories response:', itemsCategoriesData);
+      } catch (error) {
+        console.error('❌ /items/categories failed:', error);
+      }
+      
+      // Test using our API function
+      try {
+        console.log('Testing api.items.getCategories()...');
+        const apiResponse = await api.items.getCategories();
+        console.log('✅ api.items.getCategories() response:', apiResponse);
+      } catch (error) {
+        console.error('❌ api.items.getCategories() failed:', error);
+      }
+    };
+  }
 
   /**
    * Build search parameters for API call
@@ -305,10 +442,6 @@ export default function MarketplacePage() {
   /**
    * Handle notification click
    */
-  const handleNotificationClick = useCallback(() => {
-    router.push('/profile/pending-sales');
-  }, [router]);
-
   /**
    * Refresh data
    */
@@ -375,8 +508,6 @@ export default function MarketplacePage() {
       <div className="flex-shrink-0">
         <MarketplaceHeader
           user={user}
-          pendingSalesCount={state.pendingSalesCount}
-          onNotificationClick={handleNotificationClick}
           searchQuery={state.searchQuery}
           onSearchChange={handleSearchChange}
           onSearch={(query) => {
@@ -499,7 +630,7 @@ export default function MarketplacePage() {
         onFiltersChange={setAdvancedFilters}
         onApplyFilters={() => {
           // Apply advanced filters logic here
-          console.log('Applied filters:', advancedFilters);
+          
           loadItems(1, true);
         }}
         onClearFilters={() => {

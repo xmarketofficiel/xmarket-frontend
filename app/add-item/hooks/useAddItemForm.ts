@@ -33,7 +33,6 @@ export function useAddItemForm({
       condition: ADD_ITEM_CONFIG.DEFAULT_CONDITION,
       photos: [],
       showIdentity: true,
-      allowMessages: true,
     },
     validation: {
       isValid: false,
@@ -105,13 +104,17 @@ export function useAddItemForm({
       },
     ],
     showIdentity: [],
-    allowMessages: [],
   };
 
   // Validate a single field
   const validateField = useCallback(
     (field: keyof AddItemFormData, value: any): string | null => {
       const rules = validationRules[field];
+
+      // Safety check: ensure rules exists and is an array
+      if (!rules || !Array.isArray(rules)) {
+        return null;
+      }
 
       for (const rule of rules) {
         if (
@@ -342,7 +345,7 @@ export function useAddItemForm({
       localStorage.setItem(STORAGE_KEYS.DRAFT_FORM, JSON.stringify(draft));
       setState((prev) => ({ ...prev, hasUnsavedChanges: false }));
     } catch (error) {
-      console.warn("Failed to save draft:", error);
+      
     }
   }, [state.data, state.currentStep]);
 
@@ -367,7 +370,7 @@ export function useAddItemForm({
         return true;
       }
     } catch (error) {
-      console.warn("Failed to load draft:", error);
+      
     }
     return false;
   }, []);
@@ -376,7 +379,7 @@ export function useAddItemForm({
     try {
       localStorage.removeItem(STORAGE_KEYS.DRAFT_FORM);
     } catch (error) {
-      console.warn("Failed to clear draft:", error);
+      
     }
   }, []);
 
@@ -393,7 +396,6 @@ export function useAddItemForm({
         condition: ADD_ITEM_CONFIG.DEFAULT_CONDITION,
         photos: [],
         showIdentity: true,
-        allowMessages: true,
       },
       validation: {
         isValid: false,
@@ -429,13 +431,18 @@ export function useAddItemForm({
         anonymous: !state.data.showIdentity,
       };
 
-      // Simulate API call
+      // For now, simulate API call - replace with actual API call when ready
+      const mockResponse = {
+        data: {
+          id: Math.random().toString(36).substr(2, 9), // Generate mock ID
+        }
+      };
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Clear draft and reset form
       clearDraft();
 
-      onSuccess?.("mock-item-id");
+      onSuccess?.(mockResponse.data.id);
     } catch (error: any) {
       onError?.(error.message || "Failed to create item");
     } finally {

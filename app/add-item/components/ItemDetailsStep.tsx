@@ -49,10 +49,9 @@ export default function ItemDetailsStep({
   };
 
   // Debug: Log errors for troubleshooting
-  console.log('Current errors:', errors);
+  
   console.log('Error count:', Object.keys(errors).length);
-  console.log('Form data:', data);
-
+  
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -172,18 +171,7 @@ export default function ItemDetailsStep({
             onChange={(value) => onChange('showIdentity', value)}
             description={PRIVACY_CONFIG.showIdentity.description}
           />
-
-          {data.allowMessages !== undefined && (
-            <Toggle
-              label={PRIVACY_CONFIG.allowMessages.title}
-              name="allowMessages"
-              value={data.allowMessages}
-              onChange={(value) => onChange('allowMessages', value)}
-              description={PRIVACY_CONFIG.allowMessages.description}
-            />
-          )}
         </div>
-
 
         {/* Form Validation Summary */}
         {Object.keys(errors).filter(key => errors[key as keyof typeof errors]).length > 0 && (

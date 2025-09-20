@@ -9,6 +9,7 @@ interface ItemActionsProps {
   onInterestClick: () => void;
   onFavoriteClick: () => void;
   onShareClick: () => void;
+  onMessageClick: () => void; // Add direct WhatsApp message function
   isLoading?: {
     interest?: boolean;
     favorite?: boolean;
@@ -22,6 +23,7 @@ export default function ItemActions({
   onInterestClick,
   onFavoriteClick,
   onShareClick,
+  onMessageClick,
   isLoading = {},
   className = ''
 }: ItemActionsProps) {

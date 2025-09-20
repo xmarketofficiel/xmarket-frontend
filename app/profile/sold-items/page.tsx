@@ -89,7 +89,7 @@ export default function SoldItemsPage() {
             id: item.id,
             status: 'sold',
             soldAt: item.updatedAt || item.createdAt,
-            finalPrice: purchase?.agreedPrice || item.price,
+            finalPrice: Number(purchase?.agreedPrice || item.price) || 0,
             item: item,
             buyer: purchase?.buyer || {
               id: 0,
@@ -101,14 +101,17 @@ export default function SoldItemsPage() {
       
       setSoldItems(soldItemsData);
       
-      // Calculate stats
-      const totalEarnings = soldItemsData.reduce((sum: number, sold: SoldItem) => sum + sold.finalPrice, 0);
+      // Calculate stats with proper number validation
+      const totalEarnings = soldItemsData.reduce((sum: number, sold: SoldItem) => {
+        const price = Number(sold.finalPrice) || 0;
+        return sum + price;
+      }, 0);
       const averagePrice = soldItemsData.length > 0 ? totalEarnings / soldItemsData.length : 0;
       
       setStats({
         totalSold: soldItemsData.length,
-        totalEarnings,
-        averagePrice
+        totalEarnings: Number(totalEarnings) || 0,
+        averagePrice: Number(averagePrice) || 0
       });
     } catch (error: any) {
       console.error('Error loading sold items:', error);
@@ -165,21 +168,21 @@ export default function SoldItemsPage() {
 
   const LoadingState = () => (
     <div className="space-y-4">
-      {/* Stats Loading */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* Stats Loading - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+          <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 animate-pulse">
             <div className="h-4 bg-gray-100 rounded w-1/2 mb-2" />
             <div className="h-6 bg-gray-100 rounded w-3/4" />
           </div>
         ))}
       </div>
       
-      {/* Items Loading */}
+      {/* Items Loading - Responsive */}
       {Array.from({ length: 3 }).map((_, index) => (
-        <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
-          <div className="flex gap-4">
-            <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0" />
+        <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 animate-pulse">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="w-full sm:w-20 h-32 sm:h-20 bg-gray-100 rounded-lg flex-shrink-0" />
             <div className="flex-1 space-y-3">
               <div className="h-4 bg-gray-100 rounded w-3/4" />
               <div className="h-3 bg-gray-100 rounded w-1/2" />
@@ -245,10 +248,10 @@ export default function SoldItemsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Responsive */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => router.push('/profile')}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -270,8 +273,8 @@ export default function SoldItemsPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* Content - Responsive Container */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         {error ? (
           <ErrorState />
         ) : loading ? (
@@ -280,40 +283,40 @@ export default function SoldItemsPage() {
           <EmptyState />
         ) : (
           <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="flex items-center gap-2 mb-1">
+            {/* Stats Cards - Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="flex items-center gap-2 mb-2">
                   <Package className="w-4 h-4 text-[#009F9C]" />
                   <span className="text-sm text-gray-600">Total Sold</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{stats.totalSold}</div>
               </div>
               
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="w-4 h-4 text-green-500" />
                   <span className="text-sm text-gray-600">Earnings</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{stats.totalEarnings} DH</div>
+                <div className="text-2xl font-bold text-gray-900">{(stats.totalEarnings || 0).toFixed(2)} DH</div>
               </div>
               
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-4 h-4 text-blue-500" />
                   <span className="text-sm text-gray-600">Avg Price</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{Math.round(stats.averagePrice)} DH</div>
+                <div className="text-2xl font-bold text-gray-900">{(stats.averagePrice || 0).toFixed(2)} DH</div>
               </div>
             </div>
 
-            {/* Sold Items List */}
+            {/* Sold Items List - Responsive */}
             <div className="space-y-4">
               {soldItems.map((soldItem) => (
-                <div key={soldItem.id} className="bg-white rounded-xl border border-gray-200 p-6">
-                  <div className="flex gap-4">
+                <div key={soldItem.id} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     {/* Item Image */}
-                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <div className="w-full sm:w-20 h-32 sm:h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                       {soldItem.item.images?.[0]?.imageUrl ? (
                         <img
                           src={soldItem.item.images[0].imageUrl}
@@ -329,29 +332,29 @@ export default function SoldItemsPage() {
 
                     {/* Item Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900 truncate">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
+                        <h3 className="font-semibold text-gray-900 text-lg sm:text-base">
                           {soldItem.item.title}
                         </h3>
                         {getStatusBadge(soldItem.status)}
                       </div>
 
-                      <div className="space-y-1 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-green-600">
-                            Sold for {soldItem.finalPrice} DH
+                      <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <span className="font-medium text-green-600 text-lg sm:text-sm">
+                            Sold for {(Number(soldItem.finalPrice) || 0).toFixed(2)} DH
                           </span>
-                          <span className="text-gray-400">•</span>
+                          <span className="text-gray-400 hidden sm:inline">•</span>
                           <span className="capitalize">{soldItem.item.condition}</span>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <UserIcon className="w-3 h-3" />
+                        <div className="flex items-center gap-2">
+                          <UserIcon className="w-4 h-4 sm:w-3 sm:h-3" />
                           <span>Sold to {soldItem.buyer.fullName}</span>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 sm:w-3 sm:h-3" />
                           <span>
                             Sold on {new Date(soldItem.soldAt).toLocaleDateString()}
                           </span>

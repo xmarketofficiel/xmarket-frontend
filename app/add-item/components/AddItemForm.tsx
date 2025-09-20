@@ -31,6 +31,13 @@ export default function OptimizedAddItemForm({
     onSuccess: (itemId) => {
       addToast(SUCCESS_MESSAGES.ITEM_CREATED, 'success');
       
+      // Ensure draft is cleared before navigation
+      if (typeof window !== 'undefined') {
+        console.log('🧹 Explicitly clearing add-item draft before redirect...');
+        localStorage.removeItem('add_item_draft');
+        console.log('✅ Draft cleared, redirecting to home page...');
+      }
+      
       // Analytics tracking
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', ANALYTICS_EVENTS.ITEM_CREATED, {
@@ -58,17 +65,51 @@ export default function OptimizedAddItemForm({
     }
   });
 
-  // Load categories
-  const { data: categories = [], loading: loadingCategories } = useApi(
+  // Load categories with fallback
+  const { data: categoriesFromAPI = [], loading: loadingCategories } = useApi(
     api.items.getCategories,
     {
       immediate: true,
       onError: (error) => {
-        console.error('Failed to load categories:', error);
-        addToast(ERROR_MESSAGES.CATEGORIES_LOAD_FAILED, 'error');
+        console.error('💥 Add-Item Form: Failed to load categories from backend:', error);
+        console.error('🔧 This usually means the backend server is not running or /categories endpoint is unavailable');
+        console.log('📦 Using comprehensive fallback categories instead...');
+        // Don't show error toast since we have fallback
       }
     }
   );
+
+  // Comprehensive fallback categories matching backend seed data
+  const fallbackCategories = [
+    { id: '1', name: 'Electronics', icon: '💻', description: 'Phones, laptops, gadgets' },
+    { id: '2', name: 'Books', icon: '📚', description: 'Textbooks, novels, references' },
+    { id: '3', name: 'Clothing', icon: '👕', description: 'Shirts, pants, shoes, accessories' },
+    { id: '4', name: 'Furniture', icon: '🪑', description: 'Desks, chairs, storage, beds' },
+    { id: '5', name: 'Sports', icon: '⚽', description: 'Fitness, sports equipment, outdoor gear' },
+    { id: '6', name: 'Transportation', icon: '🚗', description: 'Cars, bikes, scooters, parts' },
+    { id: '7', name: 'Health & Beauty', icon: '💄', description: 'Cosmetics, skincare, health products' },
+    { id: '8', name: 'Art & Crafts', icon: '🎨', description: 'Art supplies, handmade items, crafts' },
+    { id: '9', name: 'Music & Instruments', icon: '🎵', description: 'Instruments, audio equipment, music' },
+    { id: '10', name: 'Home & Garden', icon: '🏠', description: 'Appliances, tools, garden supplies' },
+    { id: '11', name: 'Toys & Games', icon: '🎮', description: 'Video games, board games, toys' },
+    { id: '12', name: 'Pet Supplies', icon: '🐕', description: 'Pet food, accessories, toys' },
+    { id: '13', name: 'Office Supplies', icon: '📎', description: 'Stationery, office equipment, supplies' },
+    { id: '14', name: 'Food & Beverages', icon: '🍕', description: 'Snacks, drinks, food items' },
+    { id: '15', name: 'Services', icon: '🔧', description: 'Tutoring, repairs, services' },
+    { id: '16', name: 'Other', icon: '📦', description: 'Items that don\'t fit other categories' }
+  ];
+
+  // Use API categories if available, otherwise use comprehensive fallback
+  const categories = (categoriesFromAPI && categoriesFromAPI.length > 0) ? categoriesFromAPI : fallbackCategories;
+
+  // Debug logging for category loading
+  console.log('🔍 Add-Item Form Category Status:');
+  console.log('  - Backend categories loaded:', categoriesFromAPI?.length || 0);
+  console.log('  - Using fallback categories:', categories === fallbackCategories);
+  console.log('  - Total categories available:', categories.length);
+  if (categories.length > 0) {
+    console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
+  }
 
   // Handle navigation
   const handleBack = () => {
@@ -173,7 +214,14 @@ export default function OptimizedAddItemForm({
 
           // Upload photos if item creation succeeded
           if (state.data.photos.length > 0) {
-            await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+            try {
+              console.log(`Uploading ${state.data.photos.length} images for item ${newItem.id}`);
+              await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+            } catch (uploadError: any) {
+              console.error('Error uploading images:', uploadError);
+              addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
+              return; // Don't throw the error, item was created successfully
+            }
           }
 
           // Show success toast
@@ -191,6 +239,8 @@ export default function OptimizedAddItemForm({
         } catch (error: any) {
           console.error('Error creating item:', error);
           addToast('Failed to post item. Please try again.', 'error');
+          // Clear draft on error to prevent it from affecting next item creation
+          actions.clearDraft();
         }
       }, 100);
 
@@ -198,6 +248,8 @@ export default function OptimizedAddItemForm({
       console.error('Error creating item:', error);
       addToast(error.message || ERROR_MESSAGES.CREATION_FAILED, 'error');
       actions.setSubmitting(false);
+      // Clear draft on error to prevent it from affecting next item creation
+      actions.clearDraft();
     }
   };
 

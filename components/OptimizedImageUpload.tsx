@@ -98,7 +98,7 @@ export default function OptimizedImageUpload({
 
       if (usePresignedUpload) {
         // Get presigned URL from backend
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
         const presignedResponse = await fetch(`${API_BASE_URL}/uploads/generate-presigned-url`, {
           method: 'POST',
           headers: {
@@ -132,10 +132,10 @@ export default function OptimizedImageUpload({
           throw new Error('Direct upload to Spaces failed');
         }
 
-        // Create mock optimization result (in real app, you'd call the optimization endpoint)
+        // Call the optimization endpoint
         const optimizedResult: OptimizedUploadResult = {
           originalFile: file,
-          cloudinaryUrl: presignedData.publicUrl, // Using Spaces URL as fallback
+          cloudinaryUrl: presignedData.publicUrl,
           spacesUrls: {
             thumbnail: presignedData.publicUrl,
             small: presignedData.publicUrl,
@@ -175,7 +175,7 @@ export default function OptimizedImageUpload({
         formData.append('file', file);
         formData.append('category', 'item');
 
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
         const response = await fetch(`${API_BASE_URL}/uploads/upload-optimized`, {
           method: 'POST',
           body: formData,

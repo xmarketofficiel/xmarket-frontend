@@ -52,6 +52,7 @@ export interface ProfileItem {
   category: string;
   condition: string;
   status: 'active' | 'sold' | 'pending' | 'draft' | 'expired';
+  isSold?: boolean;
   createdAt: string;
   updatedAt: string;
   viewsCount?: number;
@@ -111,6 +112,7 @@ export interface ProfileStats {
   purchaseHistoryCount: number;
   savedItemsCount: number;
   pendingSalesCount: number;
+  pendingConfirmationsCount: number;
   viewedItemsCount: number;
   notificationsCount: number;
   totalEarnings: number;

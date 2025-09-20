@@ -62,7 +62,7 @@ export function EmailStep({
         className="text-center"
       >
         <p className="text-sm text-gray-500 mb-2">
-          Don't have an authorized student email?
+          Not from UM6P or don't have @um6p.ma or @emines.um6p.ma email?
         </p>
         <button
           type="button"

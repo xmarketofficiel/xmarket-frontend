@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { 
   Package,
   TrendingUp,
@@ -20,6 +21,7 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
   loading = false,
   compact = false
 }) => {
+  const router = useRouter();
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
       return `${(num / 1000000).toFixed(1)}M`;
@@ -86,6 +88,18 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       border: 'border-blue-200'
     },
     {
+      id: 'pending-sales',
+      label: 'Pending Sales',
+      value: stats.pendingSalesCount,
+      icon: 'Clock',
+      color: stats.pendingSalesCount > 0 ? 'from-red-500 to-red-600' : 'from-gray-400 to-gray-500',
+      bgColor: stats.pendingSalesCount > 0 ? 'bg-red-50' : 'bg-gray-50',
+      iconColor: stats.pendingSalesCount > 0 ? 'text-red-600' : 'text-gray-500',
+      border: stats.pendingSalesCount > 0 ? 'border-red-200' : 'border-gray-200',
+      isActionable: stats.pendingSalesCount > 0,
+      href: '/profile/pending-sales'
+    },
+    {
       id: 'sold',
       label: 'Items Sold',
       value: stats.soldItemsCount,
@@ -104,16 +118,6 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
       bgColor: 'bg-pink-50',
       iconColor: 'text-pink-600',
       border: 'border-pink-200'
-    },
-    {
-      id: 'views',
-      label: 'Total Views',
-      value: stats.totalViews || 0,
-      icon: 'Eye',
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600',
-      border: 'border-purple-200'
     }
   ];
 
@@ -190,14 +194,22 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
               scale: 1.02,
               transition: { duration: 0.2 }
             }}
+            onClick={() => {
+              if ((stat as any).isActionable && (stat as any).href) {
+                router.push((stat as any).href);
+              }
+            }}
             className={`
               ${compact ? 'p-4' : 'p-6'} 
-              border rounded-xl transition-all cursor-pointer group hover:shadow-md
+              border rounded-xl transition-all group hover:shadow-md
+              ${(stat as any).isActionable ? 'cursor-pointer' : 'cursor-default'}
               ${stat.bgColor} ${stat.border}
+              ${(stat as any).isActionable ? 'hover:scale-105' : ''}
             `}
           >
             <div className="flex items-center gap-3">
               <div className={`
+                relative
                 w-${compact ? '10' : '12'} 
                 h-${compact ? '10' : '12'} 
                 bg-white 
@@ -212,6 +224,9 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
                 ${stat.border}
               `}>
                 <IconComponent className={`w-${compact ? '5' : '6'} h-${compact ? '5' : '6'} ${stat.iconColor}`} />
+                {(stat as any).isActionable && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                )}
               </div>
               
               <div className="flex-1 min-w-0">

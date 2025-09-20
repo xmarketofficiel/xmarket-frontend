@@ -79,15 +79,21 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           addToast('Added to favorites!', 'success');
         }
       } catch (error: any) {
+        console.log('[Favorites] Error details:', error);
+        
         // Handle specific error cases
-        if (error?.message?.includes('Cannot favorite your own item')) {
+        if (error?.message?.includes('Cannot favorite your own item') || error?.message?.includes('cannot favorite your own')) {
           addToast('You cannot favorite your own items', 'error');
           return; // Don't add to local storage
-        } else if (error?.message?.includes('Please log in')) {
+        } else if (error?.status === 401 || error?.name === 'AuthenticationError' || error?.message?.includes('Please log in') || error?.message?.includes('Invalid or expired token')) {
           addToast('Please log in to favorite items', 'error');
           return;
         } else if (error?.message?.includes('Item not found')) {
           addToast('This item is no longer available', 'error');
+          return;
+        } else if (error?.status === 500) {
+          // Server error - likely authentication issue
+          addToast('Please log in to favorite items', 'error');
           return;
         } else {
           addToast('Unable to add to favorites. Saved locally instead.', 'info');
@@ -98,8 +104,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     } else {
-      // Use localStorage for non-authenticated users
-      setFavorites(prev => prev.includes(itemId) ? prev : [...prev, itemId]);
+      // User not authenticated - prompt to log in
+      addToast('Please log in to favorite items', 'error');
+      return;
     }
   };
 
@@ -130,9 +137,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     } else {
-      // Use localStorage for non-authenticated users
-      setFavorites(prev => prev.filter(id => id !== itemId));
-      addToast('Removed from favorites', 'info');
+      // User not authenticated - prompt to log in  
+      addToast('Please log in to manage favorites', 'error');
+      return;
     }
   };
 

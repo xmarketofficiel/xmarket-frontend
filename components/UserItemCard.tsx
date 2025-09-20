@@ -63,8 +63,13 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
   };
 
   const handleEditItem = () => {
+    if (item.isSold) {
+      addToast('Cannot edit sold items. Sold items are locked to maintain transaction integrity.', 'error');
+      setShowDropdown(false);
+      return;
+    }
     // Navigate to edit page
-    window.location.href = `/items/${item.id}/edit`;
+    window.location.href = `/item/${item.id}/edit`;
     setShowDropdown(false);
   };
 
@@ -97,7 +102,7 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative">
       {/* Item Image */}
       <div className="relative aspect-square">
         <Image
@@ -124,14 +129,15 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
               e.stopPropagation();
               setShowDropdown(!showDropdown);
             }}
-            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
+            className="p-2 bg-white/95 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 border border-gray-200/50"
             disabled={isDeleting}
+            title="More options"
           >
-            <MoreVertical size={16} className="text-gray-600" />
+            <MoreVertical size={18} className="text-gray-700" />
           </button>
 
           {showDropdown && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
               <div className="py-1">
                 <button
                   onClick={handleViewItem}
@@ -143,10 +149,21 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
                 
                 <button
                   onClick={handleEditItem}
-                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={item.isSold}
+                  className={`flex items-center w-full px-4 py-2 text-sm transition-colors ${
+                    item.isSold 
+                      ? 'text-gray-400 cursor-not-allowed' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  title={item.isSold ? 'Cannot edit sold items' : 'Edit item details'}
                 >
                   <Edit size={16} className="mr-3" />
                   Edit Item
+                  {item.isSold && (
+                    <span className="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                      Locked
+                    </span>
+                  )}
                 </button>
                 
                 <hr className="my-1" />

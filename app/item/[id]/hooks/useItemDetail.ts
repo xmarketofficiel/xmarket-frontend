@@ -29,7 +29,8 @@ export function useItemDetail({ initialItem, onToast }: UseItemDetailProps) {
       share: false,
       report: false,
       imageViewer: false,
-      imageViewerIndex: 0
+      imageViewerIndex: 0,
+      purchase: false
     },
     error: null
   });
