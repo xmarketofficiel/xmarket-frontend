@@ -139,6 +139,11 @@ export const STEP_CONFIG = {
     subtitle: "Get notified when we launch",
     buttonText: "Submit Request",
     loadingText: "Submitting..."
+  },
+
+  REQUEST_SUCCESS: {
+    title: "Request Submitted!",
+    subtitle: "We'll notify you once your access is approved"
   }
 };
 

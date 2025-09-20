@@ -14,20 +14,20 @@ interface CTAFeature {
 const CTA_FEATURES: CTAFeature[] = [
   {
     icon: Users,
-    title: "Connect with 10K+ Students",
-    description: "Join verified students from top universities",
+    title: "Connect with Students",
+    description: "Join verified students from your university",
     color: "from-blue-500 to-blue-600"
   },
   {
     icon: Shield,
-    title: "100% Secure Trading",
+    title: "Safe & Secure Trading",
     description: "University verification & secure transactions",
     color: "from-green-500 to-green-600"
   },
   {
     icon: TrendingUp,
-    title: "Save up to 60%",
-    description: "Better deals than any retail store",
+    title: "Great Student Deals",
+    description: "Better prices than retail stores",
     color: "from-purple-500 to-purple-600"
   }
 ];
@@ -52,7 +52,7 @@ interface EnhancedCTAProps {
  */
 export function EnhancedCTA({
   title = "Ready to Transform Your Campus Experience?",
-  subtitle = "Join thousands of students already saving money and making connections",
+  subtitle = "Join your university community and start saving money while making connections",
   primaryAction = { text: "Get Started Free", href: "/signup" },
   secondaryAction = { text: "See How It Works", href: "/landing" },
   className = ""
@@ -217,10 +217,10 @@ export function EnhancedCTA({
           className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-white/20"
         >
           {[
-            { number: "10K+", label: "Active Students" },
-            { number: "50+", label: "Universities" },
-            { number: "95%", label: "Satisfaction Rate" },
-            { number: "$2M+", label: "Student Savings" }
+            { number: "🎓", label: "University Students" },
+            { number: "🔒", label: "Secure Platform" },
+            { number: "💫", label: "Amazing Experience" },
+            { number: "💰", label: "Student Savings" }
           ].map((stat, index) => (
             <motion.div
               key={index}

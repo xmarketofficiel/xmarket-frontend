@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { ChevronLeft, Heart, Share2, Flag, MessageCircle } from "lucide-react";
 import { useUser } from "../../../../contexts/UserContext";
 import { useFavorites } from "../../../../contexts/FavoritesContext";
 import { useToast } from "../../../../contexts/ToastContext";
@@ -145,9 +146,7 @@ export default function OptimizedItemDetail({
         );
 
         // Open WhatsApp automatically after expressing interest
-        setTimeout(() => {
-          openWhatsApp();
-        }, 1000);
+        openWhatsApp();
 
         // Analytics
         if (typeof window !== "undefined" && window.gtag) {
@@ -217,44 +216,167 @@ export default function OptimizedItemDetail({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <ItemHeader
-        onBack={handleBack}
-        onFavoriteClick={handleFavoriteClick}
-        onShareClick={handleShareClick}
-        onReportClick={handleReportClick}
-        isFavorited={isItemFavorite}
-        isOwnItem={!!isOwnItem}
-        isLoading={{
-          favorite: state.loading.favorite,
-        }}
-      />
+      {/* Header - Mobile only */}
+      <div className="lg:hidden">
+        <ItemHeader
+          onBack={handleBack}
+          onFavoriteClick={handleFavoriteClick}
+          onShareClick={handleShareClick}
+          onReportClick={handleReportClick}
+          isFavorited={isItemFavorite}
+          isOwnItem={!!isOwnItem}
+          isLoading={{
+            favorite: state.loading.favorite,
+          }}
+        />
+      </div>
 
-      {/* Photo Gallery */}
-      <ItemGallery
-        images={photos}
-        title={item.title}
-        isFeatured={item.featured}
-        onImageClick={handleImageClick}
-      />
-
-      {/* Content Container */}
-      <div className="pb-32">
-        {/* Item Information */}
-        <div className="bg-white">
-          <ItemInfo item={item} />
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        {/* Desktop Header */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <button
+              onClick={handleBack}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ChevronLeft size={20} className="mr-2" />
+              Back to listings
+            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={handleFavoriteClick}
+                disabled={state.loading.favorite}
+                className={`p-2 rounded-full transition-colors ${
+                  isItemFavorite
+                    ? 'bg-red-50 text-red-600'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Heart size={20} className={isItemFavorite ? 'fill-current' : ''} />
+              </button>
+              <button
+                onClick={handleShareClick}
+                className="p-2 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                <Share2 size={20} />
+              </button>
+              {!isOwnItem && (
+                <button
+                  onClick={handleReportClick}
+                  className="p-2 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                  <Flag size={20} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Seller Card */}
-        <div className="px-4 md:px-6 mt-4">
-          <SellerCard
-            seller={item.seller}
-            isAnonymous={item.anonymous}
-            isOwnItem={!!isOwnItem}
-            onMessageClick={openWhatsApp}
-            onViewProfile={handleViewProfile}
-          />
+        {/* Desktop Main Content */}
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* Left Column - Gallery */}
+            <div className="lg:col-span-3 space-y-6 flex items-start justify-center">
+              <div className="w-full max-w-lg">
+                <ItemGallery
+                  images={photos}
+                  title={item.title}
+                  isFeatured={item.featured}
+                  onImageClick={handleImageClick}
+                />
+              </div>
+            </div>
+
+            {/* Right Column - Info & Actions */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <ItemInfo item={item} />
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <SellerCard
+                  seller={item.seller}
+                  isAnonymous={item.anonymous}
+                  isOwnItem={!!isOwnItem}
+                  onMessageClick={openWhatsApp}
+                  onViewProfile={handleViewProfile}
+                />
+              </div>
+
+              {/* Desktop Action Buttons */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="space-y-3">
+                  {!isOwnItem && (
+                    <>
+                      <button
+                        onClick={handleInterestClick}
+                        disabled={state.loading.interest}
+                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-blue-300 transition-colors flex items-center justify-center"
+                      >
+                        {state.loading.interest ? (
+                          <LoadingSpinner size="sm" className="mr-2" />
+                        ) : null}
+                        I'm Interested
+                      </button>
+                      <button
+                        onClick={openWhatsApp}
+                        className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center"
+                      >
+                        <MessageCircle size={18} className="mr-2" />
+                        Message Seller
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        {/* Photo Gallery */}
+        <ItemGallery
+          images={photos}
+          title={item.title}
+          isFeatured={item.featured}
+          onImageClick={handleImageClick}
+        />
+
+        {/* Content Container */}
+        <div className="pb-32">
+          {/* Item Information */}
+          <div className="bg-white">
+            <ItemInfo item={item} />
+          </div>
+
+          {/* Seller Card */}
+          <div className="px-4 md:px-6 mt-4">
+            <SellerCard
+              seller={item.seller}
+              isAnonymous={item.anonymous}
+              isOwnItem={!!isOwnItem}
+              onMessageClick={openWhatsApp}
+              onViewProfile={handleViewProfile}
+            />
+          </div>
+        </div>
+
+        {/* Mobile Action Buttons */}
+        <ItemActions
+          isOwnItem={!!isOwnItem}
+          isFavorited={isItemFavorite}
+          onInterestClick={handleInterestClick}
+          onFavoriteClick={handleFavoriteClick}
+          onShareClick={handleShareClick}
+          onMessageClick={openWhatsApp}
+          isLoading={{
+            interest: state.loading.interest,
+            favorite: state.loading.favorite,
+          }}
+        />
       </div>
 
       {/* Action Buttons */}

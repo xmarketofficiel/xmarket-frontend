@@ -106,7 +106,7 @@ export default function ItemGallery({
 
   return (
     <div 
-      className={`relative aspect-square bg-gray-100 overflow-hidden rounded-xl ${className}`}
+      className={`relative aspect-square lg:aspect-[4/3] lg:max-h-96 lg:max-w-lg lg:mx-auto bg-gray-100 overflow-hidden rounded-xl shadow-sm ${className}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

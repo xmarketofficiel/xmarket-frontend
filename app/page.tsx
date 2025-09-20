@@ -96,16 +96,16 @@ function LandingPageContent() {
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-medium">
             Transform how you buy, sell, and connect within your university community. 
-            <span className="text-[#009F9C] font-bold"> Join thousands of students</span> already saving money and making friends!
+            <span className="text-[#009F9C] font-bold"> Join your campus community</span> and start saving money while making friends!
           </p>
 
           {/* Feature highlights */}
           <div className="flex flex-wrap justify-center gap-8 mb-16">
             {[
-              { icon: Users, text: "10K+ Students", color: "text-blue-600" },
-              { icon: Shield, text: "100% Secure", color: "text-green-600" },
-              { icon: TrendingUp, text: "Save 60%", color: "text-purple-600" },
-              { icon: Heart, text: "Loved by All", color: "text-red-500" }
+              { icon: Users, text: "University Verified", color: "text-blue-600" },
+              { icon: Shield, text: "Safe & Secure", color: "text-green-600" },
+              { icon: TrendingUp, text: "Best Deals", color: "text-purple-600" },
+              { icon: Heart, text: "Student Friendly", color: "text-red-500" }
             ].map((item, index) => (
               <div
                 key={index}
@@ -191,7 +191,7 @@ function LandingPageContent() {
             Ready to Get Started?
           </h2>
           <p className="text-xl mb-12 max-w-2xl mx-auto">
-            Join thousands of students already transforming their campus experience
+            Join your university community and transform your campus experience
           </p>
           
           <button

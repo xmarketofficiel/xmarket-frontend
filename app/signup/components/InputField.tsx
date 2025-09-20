@@ -20,7 +20,9 @@ export function InputField({
   showPassword,
   onTogglePassword,
   icon,
-  maxLength
+  maxLength,
+  error,
+  isValid
 }: InputFieldProps) {
   const isPassword = type === 'password';
   const actualType = isPassword && showPassword ? 'text' : type;
@@ -66,11 +68,18 @@ export function InputField({
             bg-white/50 backdrop-blur-sm placeholder-gray-400
             ${icon ? 'pl-12' : 'pl-4'}
             ${isPassword ? 'pr-12' : 'pr-4'}
-            ${focused 
-              ? 'border-[#009F9C] shadow-lg shadow-[#009F9C]/20 bg-white/80' 
-              : 'border-gray-200 hover:border-gray-300'
+            ${error 
+              ? 'border-red-400 shadow-lg shadow-red-400/20 bg-red-50/80' 
+              : focused 
+                ? 'border-[#009F9C] shadow-lg shadow-[#009F9C]/20 bg-white/80' 
+                : isValid === true
+                  ? 'border-green-400 bg-green-50/80'
+                  : 'border-gray-200 hover:border-gray-300'
             }
-            focus:outline-none focus:border-[#009F9C] focus:shadow-lg focus:shadow-[#009F9C]/20 focus:bg-white/80
+            focus:outline-none ${error 
+              ? 'focus:border-red-400 focus:shadow-lg focus:shadow-red-400/20' 
+              : 'focus:border-[#009F9C] focus:shadow-lg focus:shadow-[#009F9C]/20'
+            } focus:bg-white/80
           `}
           style={{ 
             transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
@@ -99,8 +108,20 @@ export function InputField({
         )}
       </div>
       
+      {/* Error message */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="text-xs text-red-600 mt-1 flex items-center space-x-1"
+        >
+          <span>⚠️</span>
+          <span>{error}</span>
+        </motion.div>
+      )}
+      
       {/* Character count for limited inputs */}
-      {maxLength && value.length > 0 && (
+      {maxLength && value.length > 0 && !error && (
         <div className="text-xs text-gray-500 mt-1 text-right">
           {value.length}/{maxLength}
         </div>
