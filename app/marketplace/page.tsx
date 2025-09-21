@@ -155,8 +155,9 @@ export default function MarketplacePage() {
       console.log('📋 Response data type:', typeof response.data);
       console.log('📋 Response data length:', Array.isArray(response.data) ? response.data.length : 'Not an array');
       
-      // Backend returns full category objects with id, name, icon, description
-      const categoryList = response.data || [];
+      // Handle nested response structure: response.data.data contains the actual categories array
+      const responseData = response.data as any;
+      const categoryList = (responseData && responseData.data) ? responseData.data : (Array.isArray(responseData) ? responseData : []);
       console.log('📦 Category list:', categoryList);
       
       if (Array.isArray(categoryList) && categoryList.length > 0) {
