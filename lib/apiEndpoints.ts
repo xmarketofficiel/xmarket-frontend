@@ -191,18 +191,36 @@ export const authApi = {
   },
 
   logout: async (): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post("/auth/logout");
-    
-    // Clear tokens from localStorage
+    // Step 1: Clear tokens from localStorage immediately
     try {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('token_expires');
+      console.log('✅ Tokens cleared from localStorage');
     } catch (error) {
-      
+      console.warn('⚠️ Error clearing localStorage during logout:', error);
     }
     
-    return response as ApiResponse<{ message: string }>;
+    // Step 2: Wait a moment to ensure localStorage operations complete
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Step 3: Try to call the logout endpoint (optional)
+    try {
+      const response = await apiClient.post("/auth/logout");
+      console.log('✅ Logout API call successful');
+      return response as ApiResponse<{ message: string }>;
+    } catch (error: any) {
+      // If logout API call fails, still return success since tokens are cleared
+      // Only log non-server errors to avoid console spam
+      if (!error?.name?.includes('ServerError')) {
+        console.warn('⚠️ Logout API call failed, but tokens cleared locally:', error.message);
+      }
+      return {
+        data: { message: 'Logout successful (tokens cleared)' },
+        status: 200,
+        message: 'Logout successful'
+      };
+    }
   },
 
   refreshToken: async (): Promise<ApiResponse<{ access_token: string; expires_in: number }>> => {
