@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { api } from '../../lib/apiEndpoints';
 import { useUser } from '../../contexts/UserContext';
 import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
-import { ANIMATION_SYSTEM } from '../../lib/design-system';
 
 // Components
 import { AnimatedBackground } from './components/AnimatedBackground';
@@ -160,23 +159,15 @@ export default function LoginPage() {
           <BrandingPanel />
           
           {/* Login Form Panel */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                duration: ANIMATION_SYSTEM.duration.slow / 1000,
-                ease: 'easeOut'
-              }}
-              className="max-w-md w-full"
-            >
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-0 lg:p-8">
+            <div className="w-full max-w-md lg:max-w-md">
               <LoginCard onSubmit={handleLogin} state={state} handlers={{
                 updateState,
                 handleFieldFocus,
                 handleFieldBlur,
                 handleTogglePassword
               }} />
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,24 +191,24 @@ interface LoginCardProps {
 
 function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
   const { updateState, handleFieldFocus, handleFieldBlur, handleTogglePassword } = handlers;
+  const router = useRouter();
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm design-card rounded-3xl border border-white/50 shadow-xl p-8 relative hover:shadow-2xl transition-shadow"
-         style={{ 
-           transitionDuration: ANIMATION_SYSTEM.duration.slow + 'ms',
-           transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-         }}>
+    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none md:rounded-3xl border-0 md:border md:border-white/50 shadow-none md:shadow-xl p-6 md:p-8 relative min-h-screen md:min-h-0 flex flex-col justify-center">
+      {/* Back to Home Button */}
+      <button
+        onClick={() => router.push('/')}
+        className="flex items-center text-gray-600 hover:text-[#009F9C] transition-colors duration-200 mb-6 group self-start"
+      >
+        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+        Back to Home
+      </button>
+
       <LoginHeader />
       
-      <motion.form
+      <form
         onSubmit={onSubmit}
         className="space-y-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ 
-          duration: ANIMATION_SYSTEM.duration.slow / 1000, 
-          delay: 0.2 
-        }}
       >
         {/* Email Input */}
         <InputField
@@ -258,7 +249,7 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
           isLoading={state.isLoading}
           onClick={() => {}} // Form submission handled by onSubmit
         />
-      </motion.form>
+      </form>
 
       <LoginFooter />
     </div>

@@ -1,137 +1,93 @@
 'use client';
 
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useUser } from '../../contexts/UserContext';
 import { 
   ArrowRight,
   Play,
-  Download,
   CheckCircle
 } from 'lucide-react';
 
 // Import constants and components
 import { 
-  FEATURES, 
-  STATISTICS, 
-  TESTIMONIALS, 
-  CATEGORIES, 
+  FEATURES,
   FAQ_ITEMS,
-  BRAND_COLORS,
   ANIMATION_VARIANTS 
 } from './constants';
-import { FeatureCard } from './components/FeatureCard';
-import { TestimonialCard } from './components/TestimonialCard';
-import { StatisticCard } from './components/StatisticCard';
-import { CategoryCard } from './components/CategoryCard';
-import { FAQItem } from './components/FAQItem';
-
-// Lazy load heavy components
-const AdvancedAnimations = lazy(() => import('./components/AdvancedAnimations'));
+// No component imports needed for static sections
 
 /**
- * Landing Page - Optimized with clean architecture and reusable components
- * Features hero section, feature showcase, testimonials, and FAQ
+ * Landing Page - Hero section with Features, FAQ, and CTA sections
  */
 export default function LandingPage() {
   const router = useRouter();
   const { user, loading } = useUser();
   
-  // State management
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  // State for FAQ accordion
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   
-  // Refs for intersection observer
+  // Ref for hero section only
   const heroRef = useRef<HTMLDivElement>(null);
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
   
-  // Scroll animations
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 300], [0, -50]);
-  const heroOpacity = useTransform(scrollY, [0, 200], [1, 0.8]);
-  
-  // Intersection observers
-  const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
-  const featuresInView = useInView(featuresRef, { once: true, margin: "-100px" });
-  const statsInView = useInView(statsRef, { once: true, margin: "-100px" });
-
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Redirect authenticated users
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/marketplace');
-    }
-  }, [user, loading, router]);
+  if (user) {
+    router.push('/marketplace');
+    return null;
+  }
 
-  // Handle FAQ toggle
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
+
+  // Navigation handlers
+  const handleGetStarted = () => {
+    router.push('/auth/register');
+  };
+
+  const handleLogin = () => {
+    router.push('/auth/login');
+  };
+
+  const handlePlayVideo = () => {
+    // Could open a demo video modal in the future
+    console.log('Demo video clicked');
+  };
+
   const handleFAQToggle = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
 
-  // Navigation handlers
-  const handleGetStarted = () => {
-    router.push('/signup');
-  };
-
-  const handleLogin = () => {
-    router.push('/login');
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
       {/* Hero Section */}
       <motion.section 
         ref={heroRef}
-        style={{ y: heroY, opacity: heroOpacity }}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="min-h-screen flex items-center justify-center relative overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
       >
         <HeroBackground />
         <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
           <HeroContent 
             onGetStarted={handleGetStarted}
             onLogin={handleLogin}
-            onPlayVideo={() => setIsVideoPlaying(true)}
+            onPlayVideo={handlePlayVideo}
           />
         </div>
       </motion.section>
 
       {/* Features Section */}
-      <section ref={featuresRef} className="py-24 bg-white/50">
+      <section className="py-24 bg-white/50">
         <div className="container mx-auto px-4">
-          <FeaturesSection inView={featuresInView} />
-        </div>
-      </section>
-
-      {/* Statistics Section */}
-      <section ref={statsRef} className="py-24 bg-gradient-to-r from-[#009F9C] to-[#007B78] relative overflow-hidden">
-        <StatisticsSection inView={statsInView} />
-      </section>
-
-      {/* Categories Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <CategoriesSection />
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <TestimonialsSection 
-            currentTestimonial={currentTestimonial}
-            onTestimonialChange={setCurrentTestimonial}
-          />
+          <FeaturesSection />
         </div>
       </section>
 
@@ -145,17 +101,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Final CTA Section */}
       <section className="py-24 bg-gradient-to-r from-[#009F9C] to-[#007B78] text-white">
         <div className="container mx-auto px-4 text-center">
           <CTASection onGetStarted={handleGetStarted} />
         </div>
       </section>
-
-      {/* Advanced Animations (Lazy Loaded) */}
-      <Suspense fallback={null}>
-        <AdvancedAnimations />
-      </Suspense>
     </div>
   );
 }
@@ -279,64 +230,29 @@ function HeroContent({ onGetStarted, onLogin, onPlayVideo }: HeroContentProps) {
 }
 
 /**
- * Features section with feature cards
+ * Features section with feature cards (no animations)
  */
-interface FeaturesSectionProps {
-  inView: boolean;
-}
-
-function FeaturesSection({ inView }: FeaturesSectionProps) {
+function FeaturesSection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: inView ? 1 : 0 }}
-      transition={{ duration: 0.8 }}
-    >
+    <div>
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           Everything You Need
         </h2>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          A comprehensive platform designed specifically for university communities
+          From marketplace to services, we've built everything students need to thrive
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {FEATURES.map((feature, index) => (
-          <FeatureCard key={feature.title} {...feature} index={index} />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-/**
- * Statistics section with animated counters
- */
-interface StatisticsSectionProps {
-  inView: boolean;
-}
-
-function StatisticsSection({ inView }: StatisticsSectionProps) {
-  return (
-    <div className="container mx-auto px-4 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 50 }}
-        transition={{ duration: 0.8 }}
-        className="mb-12"
-      >
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          Trusted by Students
-        </h2>
-        <p className="text-xl text-white/80 max-w-2xl mx-auto">
-          Join thousands of students who are already part of our community
-        </p>
-      </motion.div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-        {STATISTICS.map((stat, index) => (
-          <StatisticCard key={stat.label} {...stat} index={index} />
+          <StaticFeatureCard
+            key={feature.title}
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description}
+            color={feature.color}
+          />
         ))}
       </div>
     </div>
@@ -344,78 +260,7 @@ function StatisticsSection({ inView }: StatisticsSectionProps) {
 }
 
 /**
- * Categories section
- */
-function CategoriesSection() {
-  return (
-    <>
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Popular Categories
-        </h2>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Discover what other students are buying and selling
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {CATEGORIES.map((category, index) => (
-          <CategoryCard key={category.name} {...category} index={index} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-/**
- * Testimonials section with carousel
- */
-interface TestimonialsSectionProps {
-  currentTestimonial: number;
-  onTestimonialChange: (index: number) => void;
-}
-
-function TestimonialsSection({ currentTestimonial, onTestimonialChange }: TestimonialsSectionProps) {
-  return (
-    <>
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          What Students Say
-        </h2>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Real feedback from our university community
-        </p>
-      </div>
-
-      <div className="max-w-4xl mx-auto">
-        <div className="grid md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map((testimonial, index) => (
-            <TestimonialCard
-              key={testimonial.name}
-              {...testimonial}
-              isActive={index === currentTestimonial}
-            />
-          ))}
-        </div>
-
-        <div className="flex justify-center mt-8 space-x-2">
-          {TESTIMONIALS.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => onTestimonialChange(index)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                index === currentTestimonial ? 'bg-[#009F9C]' : 'bg-gray-300'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/**
- * FAQ section with accordion
+ * FAQ section with accordion (no animations)
  */
 interface FAQSectionProps {
   openFAQ: number | null;
@@ -424,19 +269,19 @@ interface FAQSectionProps {
 
 function FAQSection({ openFAQ, onFAQToggle }: FAQSectionProps) {
   return (
-    <>
+    <div>
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           Frequently Asked Questions
         </h2>
-        <p className="text-xl text-gray-600">
-          Everything you need to know about XMarket
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Got questions? We've got answers to help you get started
         </p>
       </div>
 
-      <div>
+      <div className="space-y-4">
         {FAQ_ITEMS.map((faq, index) => (
-          <FAQItem
+          <StaticFAQItem
             key={index}
             question={faq.question}
             answer={faq.answer}
@@ -445,12 +290,12 @@ function FAQSection({ openFAQ, onFAQToggle }: FAQSectionProps) {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 /**
- * Final CTA section
+ * Final CTA section (no animations)
  */
 interface CTASectionProps {
   onGetStarted: () => void;
@@ -458,28 +303,83 @@ interface CTASectionProps {
 
 function CTASection({ onGetStarted }: CTASectionProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true }}
-    >
+    <div>
       <h2 className="text-4xl md:text-5xl font-bold mb-6">
         Ready to Get Started?
       </h2>
-      <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-        Join thousands of students who are already part of our thriving community
+      <p className="text-xl mb-12 max-w-2xl mx-auto opacity-90">
+        Join thousands of students already using XMarket to buy, sell, and connect
       </p>
       
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <button
         onClick={onGetStarted}
-        className="px-8 py-4 bg-white text-[#009F9C] font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center mx-auto"
+        className="px-12 py-4 bg-white text-[#009F9C] font-bold text-xl rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center"
       >
-        Get Started Today
-        <ArrowRight className="ml-2 w-5 h-5" />
-      </motion.button>
-    </motion.div>
+        Join XMarket Today
+        <ArrowRight className="ml-3 w-6 h-6" />
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Static feature card without animations
+ */
+interface StaticFeatureCardProps {
+  icon: React.ComponentType<any>;
+  title: string;
+  description: string;
+  color: string;
+}
+
+function StaticFeatureCard({ icon: Icon, title, description, color }: StaticFeatureCardProps) {
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+      <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${color} mb-4 shadow-md`}>
+        <Icon className="w-8 h-8 text-white" />
+      </div>
+      
+      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+        {title}
+      </h3>
+      
+      <p className="text-gray-600 leading-relaxed">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Static FAQ item without animations
+ */
+interface StaticFAQItemProps {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+function StaticFAQItem({ question, answer, isOpen, onToggle }: StaticFAQItemProps) {
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
+      <button
+        onClick={onToggle}
+        className="w-full px-6 py-4 text-left bg-white hover:bg-gray-50 transition-colors duration-200 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-[#009F9C]/20"
+      >
+        <span className="font-semibold text-gray-900 pr-4">{question}</span>
+        <div className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+      
+      {isOpen && (
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <p className="text-gray-700 leading-relaxed">{answer}</p>
+        </div>
+      )}
+    </div>
   );
 }
