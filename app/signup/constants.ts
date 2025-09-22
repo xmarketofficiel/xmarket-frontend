@@ -69,6 +69,7 @@ export const ERROR_MESSAGES = {
   INVALID_EMAIL: "Please enter a valid email address",
   EMAIL_REQUIRED: "Email address is required",
   EMAIL_NOT_AUTHORIZED: "This email is not authorized. Please contact admin or request access.",
+  EMAIL_ALREADY_EXISTS: "This email is already registered. Please login or use a different email address.",
   
   // OTP validation
   INVALID_OTP: "Please enter a valid 6-digit verification code",

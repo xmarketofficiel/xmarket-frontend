@@ -151,6 +151,11 @@ export default function SignupPage() {
     if (errorMessage.includes('Invalid email format')) {
       return ERROR_MESSAGES.INVALID_EMAIL;
     }
+    if (errorMessage.includes('Cette adresse email est déjà enregistrée') || 
+        errorMessage.includes('already registered') || 
+        errorMessage.includes('déjà enregistrée')) {
+      return ERROR_MESSAGES.EMAIL_ALREADY_EXISTS;
+    }
     if (errorMessage.includes('not authorized') || errorMessage.includes('unauthorized')) {
       return ERROR_MESSAGES.EMAIL_NOT_AUTHORIZED;
     }
