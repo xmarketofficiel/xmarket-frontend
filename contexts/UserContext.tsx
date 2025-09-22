@@ -133,14 +133,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await api.auth.logout();
-    } catch (error) {
-      // Logout errors are non-critical, continue with client-side cleanup
-    } finally {
-      // Clear user state and tokens
+      // First, clear tokens and user state immediately
       setUser(null);
       TokenManager.clearTokens();
-      // Redirect to home page (which will show landing for non-authenticated users)
+      
+      // Wait a moment to ensure tokens are fully cleared
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Try to call the logout API (non-critical if it fails)
+      try {
+        await api.auth.logout();
+      } catch (error: any) {
+        // Logout API errors are non-critical since tokens are already cleared
+        // Only log if it's not a server error to avoid console spam
+        if (!error?.name?.includes('ServerError')) {
+          console.warn('Logout API call failed, but tokens cleared locally:', error.message);
+        }
+      }
+      
+    } catch (error) {
+      // Even if something fails, ensure tokens are cleared
+      setUser(null);
+      TokenManager.clearTokens();
+      console.error('Error during logout:', error);
+    } finally {
+      // Always redirect to home page after token cleanup
       router.push('/');
     }
   }, [router]);

@@ -1,28 +1,32 @@
-// Health check endpoint for Docker
-// GET /api/health
+/**
+ * Health check endpoint to test SSR proxy functionality
+ */
 
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { serverApiClient } from '@/lib/server-api';
 
 export async function GET() {
   try {
-    const healthData = {
-      status: "healthy",
-      timestamp: new Date().toISOString(),
-      service: "xmarket-frontend",
-      version: process.env.npm_package_version || "1.0.0",
-      environment: process.env.NODE_ENV || "production",
-      uptime: process.uptime(),
-    };
-
-    return NextResponse.json(healthData, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        status: "unhealthy",
-        timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error',
+    // Test connection to backend
+    const response = await serverApiClient.get('/health');
+    
+    return NextResponse.json({
+      status: 'ok',
+      message: 'SSR proxy is working',
+      backend: {
+        status: response.status,
+        data: response.data
       },
-      { status: 503 }
-    );
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    
+    return NextResponse.json({
+      status: 'error',
+      message: 'SSR proxy health check failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
