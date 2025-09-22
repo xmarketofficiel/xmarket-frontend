@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { api } from '../../lib/apiEndpoints';
 import { useUser } from '../../contexts/UserContext';
 import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
@@ -437,20 +437,23 @@ export default function SignupPage() {
           />
           
           {/* Main Content Panel */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: SIGNUP_CONFIG.ANIMATION_DURATION }}
-              className="max-w-md w-full"
-            >
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 relative">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-0 lg:p-8">
+            <div className="w-full max-w-md lg:max-w-md">
+              <div className="bg-white/80 backdrop-blur-xl rounded-none md:rounded-3xl border-0 md:border md:border-white/50 shadow-none md:shadow-2xl p-6 md:p-8 relative min-h-screen md:min-h-0 flex flex-col justify-center">
+                {/* Back to Home Button */}
+                <button
+                  onClick={() => router.push('/')}
+                  className="flex items-center text-gray-600 hover:text-[#009F9C] transition-colors duration-200 mb-6 group self-start"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+                  Back to Home
+                </button>
+
                 <StepHeader 
                   step={state.requestSubmitted ? 'request-success' : state.formData.step} 
                   signupMode={state.signupMode}
                 />
                 
-                <AnimatePresence mode="wait">
                   {/* Email Step */}
                   {state.signupMode === 'signup' && state.formData.step === 'email' && (
                     <EmailStep
@@ -539,7 +542,6 @@ export default function SignupPage() {
                       onGoToLanding={handleGoToLanding}
                     />
                   )}
-                </AnimatePresence>
 
                 {!state.requestSubmitted && (
                   <NavigationFooter
@@ -550,7 +552,7 @@ export default function SignupPage() {
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

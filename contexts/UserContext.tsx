@@ -33,8 +33,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const currentPath = window.location.pathname;
     const isPublicPage = currentPath === '/' || 
                         currentPath.includes('/login') || 
-                        currentPath.includes('/signup') ||
-                        currentPath.includes('/landing');
+                        currentPath.includes('/signup');
     
     if (!isPublicPage) {
       router.push('/login'); // Redirect to login page
@@ -56,8 +55,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const currentPath = window.location.pathname;
       const isPublicPage = currentPath === '/' || 
                           currentPath.includes('/login') || 
-                          currentPath.includes('/signup') ||
-                          currentPath.includes('/landing');
+                          currentPath.includes('/signup');
       
       if (!isPublicPage) {
         handleAuthError();

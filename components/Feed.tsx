@@ -72,7 +72,7 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
   }
 
   return (
-    <div className="py-4 px-4">
+    <div className="">
       {/* Mobile layout - 2 column grid */}
       <div className="grid grid-cols-2 gap-3 md:hidden">
         {items.map((item, index) => (
