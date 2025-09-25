@@ -229,7 +229,9 @@ class ServerApiClient {
               }
             }
           } catch (parseError) {
-            console.warn('Failed to parse error response:', parseError);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to parse error response:', parseError);
+            }
           }
           
           throw new ServerApiError({

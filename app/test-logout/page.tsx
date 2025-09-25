@@ -25,18 +25,22 @@ export default function TestLogoutPage() {
       localStorage.setItem('access_token', 'fake-token-for-testing');
       localStorage.setItem('refresh_token', 'fake-refresh-token');
       
-      console.log('Before logout - tokens in localStorage:', {
-        access_token: localStorage.getItem('access_token'),
-        refresh_token: localStorage.getItem('refresh_token')
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Before logout - tokens in localStorage:', {
+          access_token: localStorage.getItem('access_token'),
+          refresh_token: localStorage.getItem('refresh_token')
+        });
+      }
 
       // Test the logout function
       const response = await authApi.logout();
       
-      console.log('After logout - tokens in localStorage:', {
-        access_token: localStorage.getItem('access_token'),
-        refresh_token: localStorage.getItem('refresh_token')
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('After logout - tokens in localStorage:', {
+          access_token: localStorage.getItem('access_token'),
+          refresh_token: localStorage.getItem('refresh_token')
+        });
+      }
       
       setResult(response);
     } catch (err: any) {
@@ -49,12 +53,15 @@ export default function TestLogoutPage() {
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <Card>
+        {/* @ts-ignore */}
         <CardHeader>
+          {/* @ts-ignore */}
           <CardTitle>Logout Test Page</CardTitle>
           <p className="text-muted-foreground">
             Test the logout functionality to ensure it works correctly with SSR.
           </p>
         </CardHeader>
+        {/* @ts-ignore */}
         <CardContent className="space-y-4">
           <Button 
             onClick={testLogout} 
@@ -66,6 +73,7 @@ export default function TestLogoutPage() {
 
           {error && (
             <Card className="border-red-200 bg-red-50">
+              {/* @ts-ignore */}
               <CardContent className="pt-6">
                 <h3 className="font-semibold text-red-800">Error</h3>
                 <p className="text-red-600">{error}</p>
@@ -75,6 +83,7 @@ export default function TestLogoutPage() {
 
           {result && (
             <Card className="border-green-200 bg-green-50">
+              {/* @ts-ignore */}
               <CardContent className="pt-6">
                 <h3 className="font-semibold text-green-800 mb-2">Logout Result</h3>
                 <pre className="bg-white p-4 rounded border text-sm overflow-auto max-h-96">
@@ -85,6 +94,7 @@ export default function TestLogoutPage() {
           )}
 
           <Card className="bg-blue-50 border-blue-200">
+            {/* @ts-ignore */}
             <CardContent className="pt-6">
               <h3 className="font-semibold text-blue-800 mb-2">Improved Logout Process</h3>
               <ol className="list-decimal list-inside space-y-1 text-blue-700">

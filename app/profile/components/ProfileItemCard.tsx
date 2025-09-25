@@ -72,7 +72,7 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
   };
 
   const getStatusBadge = () => {
-    const statusConfig = {
+    const statusConfig: Record<string, { color: string; label: string }> = {
       active: { color: 'bg-green-100 text-green-800', label: 'Active' },
       sold: { color: 'bg-blue-100 text-blue-800', label: 'Sold' },
       pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },

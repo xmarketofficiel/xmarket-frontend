@@ -79,7 +79,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           addToast('Added to favorites!', 'success');
         }
       } catch (error: any) {
-        console.log('[Favorites] Error details:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[Favorites] Error details:', error);
+        }
         
         // Handle specific error cases
         if (error?.message?.includes('Cannot favorite your own item') || error?.message?.includes('cannot favorite your own')) {

@@ -93,7 +93,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       );
       
       const response = await Promise.race([
-        api.auth.getCurrentUser(),
+        api.users.getProfile(),
         timeoutPromise
       ]);
       setUser(response.data);
@@ -184,7 +184,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const response = await api.auth.getCurrentUser();
+      const response = await api.users.getProfile();
       setUser(response.data);
     } catch (error: any) {
       if (error?.status === 401) {

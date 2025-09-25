@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import ProfileItemCard from './ProfileItemCard';
 import { PROFILE_CONSTANTS } from './constants';
-import type { ProfileContentProps, ProfileTab } from './types';
+import type { ProfileContentProps, ProfileTab, ProfileItem } from './types';
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
   activeTab,
@@ -206,7 +206,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
           : 'grid-cols-1'
         }
       `}>
-        {items.map((item) => (
+        {items.map((item: ProfileItem) => (
           <ProfileItemCard
             key={item.id}
             item={item}
