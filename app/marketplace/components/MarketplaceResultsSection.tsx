@@ -5,7 +5,7 @@
 
 'use client';
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { Item } from '../../../types';
 import { SearchResultsHeader } from './SearchResultsHeader';
 import { EmptyState } from './EmptyState';
@@ -26,7 +26,7 @@ interface ResultsSectionProps {
   viewMode: 'grid' | 'list';
 }
 
-function MarketplaceResultsSectionComponent({
+const MarketplaceResultsSectionComponent: React.FC<ResultsSectionProps> = ({
   items,
   loading,
   searchQuery,
@@ -36,7 +36,7 @@ function MarketplaceResultsSectionComponent({
   onLoadMore,
   onClearFilters,
   viewMode
-}: ResultsSectionProps) {
+}: ResultsSectionProps) => {
   // Loading state for initial load
   if (loading && items.length === 0) {
     return (
@@ -67,10 +67,9 @@ function MarketplaceResultsSectionComponent({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <SearchResultsHeader
-        totalItems={totalItems}
+        totalResults={totalItems}
         searchQuery={searchQuery}
-        selectedCategory={selectedCategory}
-        viewMode={viewMode}
+        onClearSearch={onClearFilters}
       />
 
       <div className="space-y-6">
@@ -91,7 +90,6 @@ function MarketplaceResultsSectionComponent({
       </div>
     </div>
   );
-  });
 }
 
-export const MarketplaceResultsSection = memo(MarketplaceResultsSectionComponent);
+export const MarketplaceResultsSection = MarketplaceResultsSectionComponent;

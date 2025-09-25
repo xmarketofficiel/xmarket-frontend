@@ -477,7 +477,7 @@ export const itemsApi = {
 
   getPendingSales: async (): Promise<ApiResponse<any[]>> => {
     try {
-      const response = await apiClient.get('/items/pending-sales');
+      const response = await apiClient.get('/items/sales/pending');
       return {
         data: response.data || [],
         status: 200,
@@ -564,7 +564,9 @@ export const itemsApi = {
   },
 
   // Toggle Favorite (consolidated method)
-  toggleFavorite: async (itemId: string | number): Promise<ApiResponse<{ message: string; isFavorited: boolean }>> => {
+  toggleFavorite: async (itemId: string | number): Promise<ApiResponse<{
+    isFavorite: any; message: string; isFavorited: boolean 
+}>> => {
     try {
       const response = await apiClient.post(`/items/${itemId}/toggle-favorite`);
       

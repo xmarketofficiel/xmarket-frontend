@@ -24,6 +24,7 @@ interface SearchSectionProps {
   sortBy: string;
   onSortChange: (sort: string) => void;
   onShowAdvancedFilters: () => void;
+  itemCount: number;
   loading?: boolean;
 }
 
@@ -39,13 +40,20 @@ function MarketplaceSearchSectionComponent({
   sortBy,
   onSortChange,
   onShowAdvancedFilters,
+  itemCount,
   loading = false
 }: SearchSectionProps) {
   if (loading) {
     return (
       <div className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <MarketplaceHeader />
+          <MarketplaceHeader
+            user={null}
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            onSearch={(q: string) => { onSearchChange(q); onSearchSubmit(); }}
+            showFilters={false}
+          />
           <div className="pb-6 space-y-4">
             <SkeletonSearchBar />
             <SkeletonCategoryFilter />
@@ -62,28 +70,35 @@ function MarketplaceSearchSectionComponent({
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MarketplaceHeader />
+        <MarketplaceHeader
+          user={null}
+          searchQuery={searchQuery}
+          onSearchChange={onSearchChange}
+          onSearch={(q: string) => { onSearchChange(q); onSearchSubmit(); }}
+          showFilters={false}
+        />
         <div className="pb-6 space-y-4">
           <EnhancedSearchBar
-            value={searchQuery}
-            onChange={onSearchChange}
-            onSubmit={onSearchSubmit}
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            onSearch={() => onSearchSubmit()}
             placeholder="Search for items..."
-            showAdvancedButton
-            onAdvancedClick={onShowAdvancedFilters}
+            showFilters
+            onToggleFilters={onShowAdvancedFilters}
           />
 
           <CategoryFilter
             categories={categories}
             selectedCategory={selectedCategory}
-            onCategoryChange={onCategoryChange}
+            onChange={onCategoryChange}
           />
 
           <ViewControls
             viewMode={viewMode}
             onViewModeChange={onViewModeChange}
-            sortBy={sortBy}
-            onSortChange={onSortChange}
+            showFilters={false}
+            onToggleFilters={onShowAdvancedFilters}
+            itemCount={itemCount}
           />
         </div>
       </div>
@@ -91,4 +106,4 @@ function MarketplaceSearchSectionComponent({
   );
 }
 
-export const MarketplaceSearchSection = memo(MarketplaceSearchSectionComponent);
+export const MarketplaceSearchSection = MarketplaceSearchSectionComponent;

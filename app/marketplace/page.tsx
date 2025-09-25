@@ -6,6 +6,7 @@ import { useUser } from '../../contexts/UserContext';
 import { api } from '../../lib/apiEndpoints';
 import { Item } from '../../types';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
+import { useConditionalLoading, getOptimalSkeletonCount } from '../../hooks/useConditionalLoading';
 
 // Components
 import { MarketplaceHeader } from './components/MarketplaceHeader';
@@ -64,6 +65,7 @@ export default function MarketplacePage() {
     items: [],
     totalItems: 0,
     currentPage: 1,
+    page: 1,
     hasMore: true,
     loading: true,
     error: null,
@@ -494,6 +496,12 @@ export default function MarketplacePage() {
     threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD
   });
 
+  // Smart loading management
+  const { showSkeleton } = useConditionalLoading(
+    state.loading, 
+    state.items.length > 0
+  );
+
   // Memoized computed values
   const isEmpty = useMemo(() => 
     !state.loading && state.items.length === 0, [state.loading, state.items.length]
@@ -530,7 +538,7 @@ export default function MarketplacePage() {
             categories={categories}
             selectedCategory={state.selectedCategory}
             onChange={handleCategoryChange}
-            loading={!categories.length}
+            loading={!categories.length && showSkeleton}
           />
         )}
 
@@ -538,7 +546,7 @@ export default function MarketplacePage() {
         <div className="bg-white border-b border-gray-100 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              {state.loading && state.items.length === 0 ? (
+              {showSkeleton ? (
                 <SkeletonResultsCounter />
               ) : (
                 <span>
@@ -585,9 +593,9 @@ export default function MarketplacePage() {
           )}
 
           {/* Loading State */}
-          {state.loading && state.items.length === 0 && (
+          {showSkeleton && (
             <div className="px-4 pt-4">
-              <SkeletonGrid count={8} />
+              <SkeletonGrid count={getOptimalSkeletonCount(state.items.length > 0)} />
             </div>
           )}
 

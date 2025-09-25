@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { 
   Edit,
   Trash2,
@@ -13,8 +14,8 @@ import {
   TrendingUp,
   Calendar
 } from 'lucide-react';
-import { getSafeImageUrl } from '../../../utils/imageUtils';
-import { getItemImageUrlWithSize } from '../../../lib/imageUtils';
+import { getProfileItemImageUrl } from '@/lib/imageUtils';
+import { getSafeImageUrl, DEFAULT_IMAGE_PLACEHOLDER } from '@/lib/urlUtils';
 import { useToast } from '../../../contexts/ToastContext';
 import { PROFILE_CONSTANTS } from './constants';
 import type { ProfileItemCardProps } from './types';
@@ -126,14 +127,18 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
       <div className={`relative ${compact ? 'h-32' : 'h-48'} bg-gray-100 rounded-lg overflow-hidden mb-3`}>
         {(() => {
           // Get the appropriate sized image URL (small for profile cards)
-          const imageUrl = getItemImageUrlWithSize(item, compact ? 'small' : 'medium');
+          const imageUrl = getProfileItemImageUrl(item, compact ? 'small' : 'medium');
 
           if (imageUrl !== PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM) {
             return (
-              <img
+              <Image
                 src={imageUrl}
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-200"
+                fill
+                className="object-cover transition-transform duration-200"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                placeholder="blur"
+                blurDataURL={DEFAULT_IMAGE_PLACEHOLDER}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM;

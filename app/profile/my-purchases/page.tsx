@@ -77,8 +77,10 @@ export default function MyPurchasesPage() {
     try {
       setLoading(true);
       const filterParam = filter === 'all' ? undefined : filter;
-      const response = await api.items.getMyPurchases(filterParam);
-      setPurchases(response.data || []);
+  const response = await api.items.getMyPurchases(filterParam);
+  const responseData = response.data as any;
+  const purchasesArray = responseData?.items ?? responseData ?? [];
+  setPurchases(purchasesArray as PurchaseItem[]);
     } catch (error: any) {
       console.error('Failed to fetch purchases:', error);
       addToast(error.message || 'Failed to load purchase history', 'error');

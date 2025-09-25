@@ -85,7 +85,7 @@ import type {
   ConditionFilter 
 } from './types';
 
-import { MARKETPLACE_CONFIG } from './constants';
+import { MARKETPLACE_CONFIG, FILTER_OPTIONS } from './constants';
 
 export default function OptimizedMarketplacePage() {
   const router = useRouter();
@@ -99,17 +99,23 @@ export default function OptimizedMarketplacePage() {
     hasMore: true,
     totalItems: 0,
     page: 1,
+    currentPage: 1,
     searchQuery: '',
     selectedCategory: 'all',
     viewMode: 'grid' as ViewMode,
     sortBy: 'newest' as SortOption,
-    priceRange: [0, 1000] as PriceRange,
-    condition: [] as ConditionFilter[]
+    priceRange: 'all' as PriceRange,
+    conditionFilter: 'all' as ConditionFilter,
+    error: null,
+    showFilters: false,
+    showSortOptions: false,
+    pendingSalesCount: 0,
+    itemsPerPage: MARKETPLACE_CONFIG.ITEMS_PER_PAGE
   });
 
   const [advancedFilters, setAdvancedFilters] = useState({
-    priceRange: [0, 1000] as PriceRange,
-    condition: [] as ConditionFilter[],
+    priceRange: [0, 1000] as [number, number],
+    condition: [] as string[],
     category: '',
     location: '',
     datePosted: '',
@@ -170,14 +176,29 @@ export default function OptimizedMarketplacePage() {
         setState(prev => ({ ...prev, loading: true }));
       }
 
+      // Resolve numeric min/max from priceRange which may be a predefined string or numeric tuple
+      let minPrice: number | undefined;
+      let maxPrice: number | undefined;
+
+      if (Array.isArray(state.priceRange)) {
+        minPrice = state.priceRange[0] > 0 ? state.priceRange[0] : undefined;
+        maxPrice = state.priceRange[1] < 1000 ? state.priceRange[1] : undefined;
+      } else {
+        const pr = FILTER_OPTIONS.priceRanges.find(p => p.value === state.priceRange);
+        if (pr) {
+          minPrice = pr.min > 0 && Number.isFinite(pr.min) ? pr.min : undefined;
+          maxPrice = pr.max < Infinity ? pr.max : undefined;
+        }
+      }
+
       const params: MarketplaceSearchParams = {
         page,
         limit: MARKETPLACE_CONFIG.ITEMS_PER_PAGE,
         search: state.searchQuery || undefined,
         category: state.selectedCategory !== 'all' ? state.selectedCategory : undefined,
         sortBy: state.sortBy,
-        minPrice: state.priceRange[0] > 0 ? state.priceRange[0] : undefined,
-        maxPrice: state.priceRange[1] < 1000 ? state.priceRange[1] : undefined
+        minPrice,
+        maxPrice
       };
 
       const response = await api.items.getItems(params);
@@ -246,15 +267,18 @@ export default function OptimizedMarketplacePage() {
       searchQuery: '',
       selectedCategory: 'all',
       sortBy: 'newest' as SortOption,
-      priceRange: [0, 1000] as PriceRange,
+      priceRange: 'all' as PriceRange,
       page: 1
     }));
     router.push('/marketplace', { scroll: false });
   }, [router]);
 
   // Pull to refresh
-  usePullToRefresh(() => {
-    loadItems(1, true);
+  usePullToRefresh({
+    onRefresh: async () => {
+      await loadItems(1, true);
+    },
+    threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD
   });
 
   // Trigger search when dependencies change
@@ -276,10 +300,11 @@ export default function OptimizedMarketplacePage() {
           categories={categories}
           onCategoryChange={handleCategoryChange}
           viewMode={state.viewMode}
-          onViewModeChange={(mode) => setState(prev => ({ ...prev, viewMode: mode }))}
+          onViewModeChange={(mode: ViewMode) => setState(prev => ({ ...prev, viewMode: mode }))}
           sortBy={state.sortBy}
           onSortChange={handleSortChange}
           onShowAdvancedFilters={() => setShowAdvancedFilters(true)}
+          itemCount={state.totalItems}
         />
       </Suspense>
 

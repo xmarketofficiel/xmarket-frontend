@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getItemImageUrlWithSize } from "../lib/imageUtils";
+import { getItemImageUrlWithSize } from '@/lib/imageUtils';
+import { getSafeImageUrl, DEFAULT_IMAGE_PLACEHOLDER } from '@/lib/urlUtils';
 import {
   Heart,
   CheckCircle,
@@ -165,7 +167,8 @@ export default function ItemCard({
 
   const getImageUrl = () => {
     // Use the new size-aware function (small size for card thumbnails)
-    return getItemImageUrlWithSize(item, "small");
+    const imageUrl = getItemImageUrlWithSize(item, "small");
+    return imageUrl;
   };
 
   return (
@@ -173,13 +176,17 @@ export default function ItemCard({
       <div onClick={handleCardClick} className="block group cursor-pointer">
         <div className="rounded-xl overflow-hidden">
           {/* Image Section - Fixed aspect ratio for grid layout */}
-          <div className="relative aspect-[4/3] bg-gray-100">
+          <div className="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
             {getImageUrl() ? (
-              <img
+              <Image
                 src={getImageUrl()!}
                 alt={item.title}
-                className="w-full h-full object-cover rounded-xl"
-                loading="lazy"
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                priority={priority}
+                placeholder="blur"
+                blurDataURL={DEFAULT_IMAGE_PLACEHOLDER}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">

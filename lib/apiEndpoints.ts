@@ -8,6 +8,7 @@ import { usersApi as _usersApi } from './api/users';
 import { messagesApi as _messagesApi } from './api/messages';
 import { searchApi as _searchApi, uploadsApi as _uploadsApi } from './api/uploads';
 import { adminApi as _adminApi } from './api/admin';
+import apiClient from './api';
 
 export const authApi = _authApi;
 export const itemsApi = _itemsApi;
@@ -25,6 +26,10 @@ export const api = {
   search: _searchApi,
   uploads: _uploadsApi,
   admin: _adminApi,
+  joinRequests: {
+    create: (data: { fullName: string; email: string; whatsappNumber: string; reason?: string }) =>
+      apiClient.post('/join-requests', data)
+  },
   
   notifications: {
     getNotifications: (params?: any) => Promise.resolve({

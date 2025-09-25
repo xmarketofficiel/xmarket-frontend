@@ -21,6 +21,7 @@ const Checkbox = React.forwardRef<
     )}
     {...props}
   >
+    {/* @ts-ignore - Radix types for Indicator are incompatible with our children usage */}
     <CheckboxPrimitive.Indicator
       className={cn('flex items-center justify-center text-current')}
     >

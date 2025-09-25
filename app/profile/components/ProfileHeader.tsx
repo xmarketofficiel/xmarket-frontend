@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   User, 
@@ -112,14 +113,19 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               const safeImageUrl = getSafeImageUrl(profileImageUrl);
               if (hasProfileImage && safeImageUrl) {
                 return (
-                  <img
+                  <Image
                     src={safeImageUrl}
                     alt={user.fullName}
-                    className="w-full h-full object-cover transition-all"
+                    fill
+                    className="object-cover transition-all"
                     style={{
                       transitionDuration: ANIMATION_SYSTEM.durationString.normal,
                       transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
                     }}
+                    sizes="(max-width: 640px) 96px, 120px"
+                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyOpCjvzSdmDaK6GVNR3x3xC1wW1Yh8tibb16+9EESLwHZRT0KAAYjhcXk2H5j+HTa1nEY5wJo8RbhKEdWYugoQtTKHWS2uwXQE="
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
