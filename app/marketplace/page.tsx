@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
 import { api } from '../../lib/apiEndpoints';
@@ -97,6 +97,9 @@ export default function MarketplacePage() {
 
   // Categories list
   const [categories, setCategories] = useState<string[]>([]);
+
+  // Ref to prevent multiple simultaneous loadItems calls
+  const loadItemsInProgress = useRef(false);
 
   /**
    * Update state helper function
@@ -339,6 +342,12 @@ export default function MarketplacePage() {
    * Load items with current filters
    */
   const loadItems = useCallback(async (page: number = 1, replaceItems: boolean = true) => {
+    // Prevent multiple simultaneous calls
+    if (loadItemsInProgress.current) {
+      return;
+    }
+    
+    loadItemsInProgress.current = true;
     updateState({ loading: true, error: null });
 
     try {
@@ -373,14 +382,21 @@ export default function MarketplacePage() {
       }
     } catch (error: any) {
       console.error('Failed to load items:', error);
-      updateState({ 
-        error: error.message || 'Failed to load items',
-        items: replaceItems ? [] : state.items
-      });
+      if (replaceItems) {
+        updateState({ 
+          error: error.message || 'Failed to load items',
+          items: []
+        });
+      } else {
+        updateState({ 
+          error: error.message || 'Failed to load items'
+        });
+      }
     } finally {
       updateState({ loading: false });
+      loadItemsInProgress.current = false;
     }
-  }, [buildSearchParams, updateState, state.items]);
+  }, [buildSearchParams, updateState]);
 
   /**
    * Handle search query change
@@ -455,7 +471,7 @@ export default function MarketplacePage() {
       loadPendingSalesCount(),
       loadCategories()
     ]);
-  }, [loadItems, loadPendingSalesCount, loadCategories]);
+  }, [loadPendingSalesCount, loadCategories]);
 
   // Initialize data on mount
   useEffect(() => {
@@ -474,7 +490,7 @@ export default function MarketplacePage() {
     if (categories.length > 0) {
       loadItems(1, true);
     }
-  }, [categories, loadItems]);
+  }, [categories]);
 
   // Load items when filters change
   useEffect(() => {
@@ -488,8 +504,7 @@ export default function MarketplacePage() {
     state.selectedCategory, 
     state.sortBy, 
     state.priceRange, 
-    state.conditionFilter,
-    loadItems
+    state.conditionFilter
   ]);
 
   // Pull to refresh

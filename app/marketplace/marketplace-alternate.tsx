@@ -17,7 +17,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
@@ -125,6 +125,9 @@ export default function OptimizedMarketplacePage() {
 
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
+  
+  // Prevent concurrent loadItems calls
+  const loadItemsInProgress = useRef(false);
 
   // Clear add-item draft when accessing marketplace
   useEffect(() => {
@@ -171,7 +174,14 @@ export default function OptimizedMarketplacePage() {
 
   // Load items function
   const loadItems = useCallback(async (page: number = 1, reset: boolean = false) => {
+    // Prevent concurrent calls
+    if (loadItemsInProgress.current) {
+      return;
+    }
+    
     try {
+      loadItemsInProgress.current = true;
+      
       if (!reset) {
         setState(prev => ({ ...prev, loading: true }));
       }
@@ -217,6 +227,8 @@ export default function OptimizedMarketplacePage() {
     } catch (error) {
       console.error('Failed to load items:', error);
       setState(prev => ({ ...prev, loading: false }));
+    } finally {
+      loadItemsInProgress.current = false;
     }
   }, [state.searchQuery, state.selectedCategory, state.sortBy, state.priceRange]);
 
@@ -254,7 +266,7 @@ export default function OptimizedMarketplacePage() {
     if (!state.loading && state.hasMore) {
       loadItems(state.page + 1);
     }
-  }, [state.loading, state.hasMore, state.page, loadItems]);
+  }, [state.loading, state.hasMore, state.page]);
 
   const handleClearSearch = useCallback(() => {
     setState(prev => ({ ...prev, searchQuery: '', page: 1 }));
@@ -286,7 +298,7 @@ export default function OptimizedMarketplacePage() {
     if (state.searchQuery !== undefined && state.selectedCategory !== undefined) {
       loadItems(1, true);
     }
-  }, [state.searchQuery, state.selectedCategory, state.sortBy, loadItems]);
+  }, [state.searchQuery, state.selectedCategory, state.sortBy]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
