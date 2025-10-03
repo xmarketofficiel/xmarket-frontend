@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -17,7 +18,7 @@ import { useApi } from '../../../hooks/useApi';
 import { ADD_ITEM_CONFIG, SUCCESS_MESSAGES, ERROR_MESSAGES, ANALYTICS_EVENTS } from '../constants';
 import { AddItemFormProps } from '../types';
 
-export default function OptimizedAddItemForm({ 
+export default function AddItemForm({ 
   onSuccess, 
   onCancel, 
   className = '' 
@@ -33,13 +34,9 @@ export default function OptimizedAddItemForm({
       
       // Ensure draft is cleared before navigation
       if (typeof window !== 'undefined') {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🧹 Explicitly clearing add-item draft before redirect...');
-        }
+        console.log('🧹 Explicitly clearing add-item draft before redirect...');
         localStorage.removeItem('add_item_draft');
-        if (process.env.NODE_ENV === 'development') {
-          console.log('✅ Draft cleared, redirecting to home page...');
-        }
+        console.log('✅ Draft cleared, redirecting to home page...');
       }
       
       // Analytics tracking
@@ -75,11 +72,9 @@ export default function OptimizedAddItemForm({
     {
       immediate: true,
       onError: (error) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('💥 Add-Item Form: Failed to load categories from backend:', error);
-          console.error('🔧 This usually means the backend server is not running or /categories endpoint is unavailable');
-          console.log('📦 Using comprehensive fallback categories instead...');
-        }
+        console.error('💥 Add-Item Form: Failed to load categories from backend:', error);
+        console.error('🔧 This usually means the backend server is not running or /categories endpoint is unavailable');
+        console.log('📦 Using comprehensive fallback categories instead...');
         // Don't show error toast since we have fallback
       }
     }
@@ -109,15 +104,24 @@ export default function OptimizedAddItemForm({
   const categories = (categoriesFromAPI && categoriesFromAPI.length > 0) ? categoriesFromAPI : fallbackCategories;
 
   // Debug logging for category loading
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 Add-Item Form Category Status:');
-    console.log('  - Backend categories loaded:', categoriesFromAPI?.length || 0);
-    console.log('  - Using fallback categories:', categories === fallbackCategories);
-    console.log('  - Total categories available:', categories.length);
-    if (categories.length > 0) {
-      console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
-    }
+  console.log('🔍 Add-Item Form Category Status:');
+  console.log('  - Backend categories loaded:', categoriesFromAPI?.length || 0);
+  console.log('  - Using fallback categories:', categories === fallbackCategories);
+  console.log('  - Total categories available:', categories.length);
+  if (categories.length > 0) {
+    console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
   }
+
+  // Cleanup effect - clear draft if user navigates away without completing
+  useEffect(() => {
+    return () => {
+      // Only clear draft on cleanup if form is not being submitted
+      // This prevents clearing draft during successful submission
+      if (!state.isSubmitting) {
+        actions.clearDraft();
+      }
+    };
+  }, [state.isSubmitting, actions]);
 
   // Handle navigation
   const handleBack = () => {
@@ -127,39 +131,37 @@ export default function OptimizedAddItemForm({
       if (onCancel) {
         onCancel();
       } else {
-        router.back();
+        router.push('/');
       }
     }
   };
 
+  // Handle photo step navigation
+  const handleNextFromPhotos = () => {
+    if (state.data.photos.length === 0) {
+      addToast('Please add at least one photo', 'error');
+      return;
+    }
+    actions.nextStep();
+  };
+
+  // Handle photo changes
+  const handlePhotosChange = (photos: File[]) => {
+    actions.updatePhotos(photos);
+  };
+
+  // Handle cancel
   const handleCancel = () => {
+    // Clear draft when user explicitly cancels the entire form
+    actions.clearDraft();
     if (onCancel) {
       onCancel();
     } else {
-      router.back();
+      router.push('/');
     }
   };
 
-  // Handle photo step
-  const handlePhotosChange = (photos: File[]) => {
-    actions.updateField('photos', photos);
-  };
-
-  const handleNextFromPhotos = () => {
-    if (actions.validateStep(ADD_ITEM_CONFIG.STEP_PHOTOS)) {
-      actions.nextStep();
-      
-      // Analytics
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', ANALYTICS_EVENTS.STEP_COMPLETED, {
-          step: ADD_ITEM_CONFIG.STEP_PHOTOS,
-          photos_count: state.data.photos.length
-        });
-      }
-    }
-  };
-
-  // Handle form submission
+  // Handle form submission with Instagram-style background processing
   const handleSubmit = async () => {
     if (!user) {
       addToast(ERROR_MESSAGES.UNAUTHORIZED, 'error');
@@ -192,6 +194,9 @@ export default function OptimizedAddItemForm({
         return;
       }
 
+      // Clear draft immediately since we're starting the submission process
+      actions.clearDraft();
+
       // Show posting message and redirect immediately (Instagram-style)
       addToast('Your item is being posted...', 'info');
       
@@ -223,14 +228,9 @@ export default function OptimizedAddItemForm({
           // Upload photos if item creation succeeded
           if (state.data.photos.length > 0) {
             try {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`Uploading ${state.data.photos.length} images for item ${newItem.id}`);
-              }
               await api.items.uploadItemImages(String(newItem.id), state.data.photos);
             } catch (uploadError: any) {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('Error uploading images:', uploadError);
-              }
+              console.error('Error uploading images:', uploadError);
               addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
               return; // Don't throw the error, item was created successfully
             }
@@ -238,6 +238,9 @@ export default function OptimizedAddItemForm({
 
           // Show success toast
           addToast('Item posted successfully!', 'success');
+          
+          // Clear draft immediately after successful creation
+          actions.clearDraft();
           actions.reset();
           
           // Analytics tracking
@@ -249,9 +252,7 @@ export default function OptimizedAddItemForm({
             });
           }
         } catch (error: any) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Error creating item:', error);
-          }
+          console.error('Error creating item:', error);
           addToast('Failed to post item. Please try again.', 'error');
           // Clear draft on error to prevent it from affecting next item creation
           actions.clearDraft();
@@ -259,9 +260,7 @@ export default function OptimizedAddItemForm({
       }, 100);
 
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error creating item:', error);
-      }
+      console.error('Error creating item:', error);
       addToast(error.message || ERROR_MESSAGES.CREATION_FAILED, 'error');
       actions.setSubmitting(false);
       // Clear draft on error to prevent it from affecting next item creation
@@ -269,74 +268,260 @@ export default function OptimizedAddItemForm({
     }
   };
 
+  // Debug function to check draft status (for development)
+  const checkDraftStatus = () => {
+    if (typeof window !== 'undefined') {
+      const draftExists = localStorage.getItem('add_item_draft') !== null;
+      console.log('Draft exists in localStorage:', draftExists);
+      if (draftExists) {
+        console.log('Draft content:', localStorage.getItem('add_item_draft'));
+      }
+      return draftExists;
+    }
+    return false;
+  };
+
+  // Add to window for debugging (development only)
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    (window as any).checkAddItemDraft = checkDraftStatus;
+    (window as any).clearAddItemDraft = () => {
+      localStorage.removeItem('add_item_draft');
+      console.log('Draft cleared manually');
+    };
+    
+
+  }
+
   return (
-    <div className={`h-full flex flex-col bg-gray-50 ${className}`}>
-      {/* Header */}
-      <div className="flex-shrink-0">
-        <FormHeader
-          title="Add Item"
-          onBack={handleBack}
-          step={state.currentStep}
-          totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
-        />
+    <div className={`min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 ${className}`}>
+      {/* Enhanced Header with Glass Effect */}
+      <div className="flex-shrink-0 sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/50 shadow-sm">
+        <div className="max-w-7xl mx-auto">
+          <FormHeader
+            title="Add Item"
+            onBack={handleBack}
+            showBackButton={true}
+          />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 pb-20">
-        {/* Step Indicator */}
-        <StepIndicator
-          currentStep={state.currentStep}
-          totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
-          className="mb-8"
-        />
-
-        {/* Step Content */}
-        <div className="max-w-md mx-auto">
-          {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS && (
-            <PhotoUploadStep
-              photos={state.data.photos}
-              onPhotosChange={handlePhotosChange}
-              error={state.validation.errors.photos}
-              onNext={handleNextFromPhotos}
-              onCancel={handleCancel}
-            />
-          )}
-
-          {state.currentStep === ADD_ITEM_CONFIG.STEP_DETAILS && (
-            <ItemDetailsStep
-              data={state.data}
-              onChange={actions.updateField}
-              errors={state.validation.errors}
-              categories={categories || []}
-              isSubmitting={state.isSubmitting}
-              onSubmit={handleSubmit}
-              onBack={actions.previousStep}
-            />
-          )}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Enhanced Step Indicator */}
+        <div className="max-w-4xl mx-auto w-full">
+          <StepIndicator
+            currentStep={state.currentStep}
+            totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
+            className="mb-8 lg:mb-12"
+          />
         </div>
 
-        {/* Draft Auto-save Indicator */}
-        {state.isAutoSaving && (
-          <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm">
-            💾 Auto-saving draft...
-          </div>
-        )}
+        {/* Enhanced Step Content Container */}
+        <div className="flex-1 flex items-start justify-center">
+          <div className="w-full max-w-2xl lg:max-w-4xl">
+            {/* Step Content with Enhanced Responsive Layout */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              {/* Content Header */}
+              <div className="bg-gradient-to-r from-[#009F9C] to-[#00C4A7] px-6 sm:px-8 py-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">
+                  {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? (
+                    <>
+                      📸 Add Photos
+                      <span className="block text-sm font-normal text-white/80 mt-1">
+                        Upload high-quality images to showcase your item
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      📝 Item Details
+                      <span className="block text-sm font-normal text-white/80 mt-1">
+                        Fill in the details about your item
+                      </span>
+                    </>
+                  )}
+                </h2>
+              </div>
 
-        {/* Progress Indicator */}
-        <div className="fixed bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3 md:hidden">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">
+              {/* Content Body */}
+              <div className="p-6 sm:p-8 lg:p-10">
+                {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS && (
+                  <div className="space-y-6">
+                    <PhotoUploadStep
+                      photos={state.data.photos}
+                      onPhotosChange={handlePhotosChange}
+                      error={state.validation.errors.photos}
+                      onNext={handleNextFromPhotos}
+                      onCancel={handleCancel}
+                    />
+                  </div>
+                )}
+
+                {state.currentStep === ADD_ITEM_CONFIG.STEP_DETAILS && (
+                  <div className="space-y-6">
+                    <ItemDetailsStep
+                      data={state.data}
+                      onChange={actions.updateField}
+                      errors={state.validation.errors}
+                      categories={categories || []}
+                      isSubmitting={state.isSubmitting}
+                      onSubmit={handleSubmit}
+                      onBack={actions.previousStep}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Tips Section */}
+            <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                💡 <span className="ml-2">Pro Tips</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? (
+                  <>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Use natural lighting for better photo quality</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Show multiple angles of your item</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Include close-ups of important details</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Clear, uncluttered backgrounds work best</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Write clear, detailed descriptions</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Price competitively by checking similar items</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Be honest about condition and defects</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Choose the most accurate category</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Auto-save Indicator */}
+      {state.isAutoSaving && (
+        <div className="fixed bottom-24 sm:bottom-20 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="bg-gray-900/90 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium shadow-lg animate-pulse">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>💾 Auto-saving draft...</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Mobile Progress Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-30">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-gray-600 font-medium">
               Step {state.currentStep} of {ADD_ITEM_CONFIG.TOTAL_STEPS}
             </span>
-            <div className="flex space-x-1">
-              {Array.from({ length: ADD_ITEM_CONFIG.TOTAL_STEPS }, (_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${
-                    i + 1 <= state.currentStep ? 'bg-[#006666]' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
+            <span className="text-gray-900 font-semibold">
+              {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? 'Add Photos' : 'Item Details'}
+            </span>
+          </div>
+          <div className="bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-[#009F9C] to-[#00C4A7] h-2 rounded-full transition-all duration-500 ease-out shadow-sm"
+              style={{ width: `${(state.currentStep / ADD_ITEM_CONFIG.TOTAL_STEPS) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Desktop Progress Sidebar */}
+      <div className="hidden lg:block fixed left-6 top-1/2 transform -translate-y-1/2 z-30">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 max-w-xs">
+          <h3 className="font-bold text-gray-900 mb-4">Progress</h3>
+          <div className="space-y-4">
+            <div className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+              state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS 
+                ? 'bg-green-50 border border-green-200' 
+                : 'bg-gray-50 border border-gray-200'
+            }`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-300 text-gray-600'
+              }`}>
+                {state.currentStep > ADD_ITEM_CONFIG.STEP_PHOTOS ? '✓' : '1'}
+              </div>
+              <span className={`font-medium ${
+                state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS ? 'text-green-700' : 'text-gray-600'
+              }`}>
+                Add Photos
+              </span>
+            </div>
+            
+            <div className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+              state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS 
+                ? 'bg-green-50 border border-green-200' 
+                : 'bg-gray-50 border border-gray-200'
+            }`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-300 text-gray-600'
+              }`}>
+                {state.currentStep > ADD_ITEM_CONFIG.STEP_DETAILS ? '✓' : '2'}
+              </div>
+              <span className={`font-medium ${
+                state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS ? 'text-green-700' : 'text-gray-600'
+              }`}>
+                Item Details
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Keyboard Shortcuts Help */}
+      <div className="hidden xl:block fixed bottom-6 right-6 z-30">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200 p-4 max-w-64">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+              <span className="text-xs">⌨️</span>
+            </div>
+            <span className="font-semibold text-gray-900 text-sm">Shortcuts</span>
+          </div>
+          <div className="space-y-2 text-xs text-gray-600">
+            <div className="flex justify-between items-center">
+              <span>Next step</span>
+              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Enter</kbd>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Go back</span>
+              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Esc</kbd>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Navigate</span>
+              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Tab</kbd>
             </div>
           </div>
         </div>

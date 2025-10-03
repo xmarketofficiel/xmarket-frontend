@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useUser } from "../../../contexts/UserContext";
 import { useToast } from "../../../contexts/ToastContext";
 import {
@@ -407,17 +408,16 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
                 <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
                   {profileData?.user?.profileImageUrl ||
                   currentUser?.profileImageUrl ? (
-                    <img
+                    <Image
                       src={
                         profileData?.user?.profileImageUrl ||
-                        currentUser?.profileImageUrl
+                        currentUser?.profileImageUrl ||
+                        '/placeholder-avatar.jpg'
                       }
                       alt="Profile"
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">

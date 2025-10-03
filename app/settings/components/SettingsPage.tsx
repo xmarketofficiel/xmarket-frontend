@@ -9,7 +9,7 @@ import SettingsOverview from './SettingsOverview';
 import { SETTINGS_CONSTANTS } from './constants';
 import type { SettingsSection, UserSettings } from './types';
 
-const OptimizedSettingsPage: React.FC = () => {
+const SettingsPage: React.FC = () => {
   const router = useRouter();
   const { user } = useUser();
   const { addToast } = useToast();
@@ -100,4 +100,4 @@ const OptimizedSettingsPage: React.FC = () => {
   );
 };
 
-export default OptimizedSettingsPage;
+export default SettingsPage;

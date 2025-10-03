@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { ChevronRight, MoreVertical, Heart, Share2, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -252,9 +253,10 @@ export function ProductCard({
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
-        <img
-          src={imageUrl}
+        <Image
+          src={imageUrl || '/placeholder-item.jpg'}
           alt={imageAlt || title}
+          fill
           className="w-full h-full object-cover transition-transform group-hover:scale-105"
         />
         
@@ -493,9 +495,10 @@ export function ProfileCard({
       {/* Cover Image */}
       {coverUrl && (
         <div className="h-32 bg-gradient-to-r from-primary to-blue-600 relative">
-          <img
+          <Image
             src={coverUrl}
             alt="Cover"
+            fill
             className="w-full h-full object-cover"
           />
         </div>
@@ -514,9 +517,10 @@ export function ProfileCard({
             )}
           >
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt={name}
+                fill
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

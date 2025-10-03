@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { MarketplaceHeader } from './MarketplaceHeader';
-import { EnhancedSearchBar } from './EnhancedSearchBar';
+import { SearchBar } from './SearchBar';
 import { CategoryFilter } from './CategoryFilter';
 import { ViewControls } from './ViewControls';
 import { SkeletonSearchBar, SkeletonCategoryFilter } from '../../../components/skeletons/SkeletonComponents';
@@ -78,7 +78,7 @@ function MarketplaceSearchSectionComponent({
           showFilters={false}
         />
         <div className="pb-6 space-y-4">
-          <EnhancedSearchBar
+          <SearchBar
             searchQuery={searchQuery}
             onSearchChange={onSearchChange}
             onSearch={() => onSearchSubmit()}

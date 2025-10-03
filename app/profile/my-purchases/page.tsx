@@ -67,12 +67,6 @@ export default function MyPurchasesPage() {
   const { addToast } = useToast();
   const { user } = useUser();
 
-  useEffect(() => {
-    if (user) {
-      fetchPurchases();
-    }
-  }, [user, filter]);
-
   const fetchPurchases = async () => {
     try {
       setLoading(true);
@@ -88,6 +82,12 @@ export default function MyPurchasesPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchPurchases();
+    }
+  }, [user, filter, addToast]);
 
   const filteredPurchases = purchases.filter(purchase => {
     if (filter === 'all') return true;

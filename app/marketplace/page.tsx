@@ -10,7 +10,7 @@ import { useConditionalLoading, getOptimalSkeletonCount } from '../../hooks/useC
 
 // Components
 import { MarketplaceHeader } from './components/MarketplaceHeader';
-import { EnhancedSearchBar } from './components/EnhancedSearchBar';
+import { SearchBar } from './components/SearchBar';
 import { AdvancedFilterPanel } from './components/AdvancedFilterPanel';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ViewControls } from './components/ViewControls';
@@ -144,7 +144,7 @@ export default function MarketplacePage() {
       console.error('Error loading pending confirmations count:', error);
       updateState({ pendingSalesCount: 0 });
     }
-  }, [user]); // Only depend on user, not updateState
+  }, [user, updateState]);
 
   /**
    * Load categories
@@ -466,14 +466,14 @@ export default function MarketplacePage() {
     if (savedViewMode && ['grid', 'list'].includes(savedViewMode)) {
       updateState({ viewMode: savedViewMode });
     }
-  }, []); // Empty dependency array - only run on mount
+  }, [loadCategories, loadPendingSalesCount, updateState]);
 
   // Load initial items once categories are loaded
   useEffect(() => {
     if (categories.length > 0) {
       loadItems(1, true);
     }
-  }, [categories]); // Load items when categories are available
+  }, [categories, loadItems]);
 
   // Load items when filters change
   useEffect(() => {
@@ -487,8 +487,9 @@ export default function MarketplacePage() {
     state.selectedCategory, 
     state.sortBy, 
     state.priceRange, 
-    state.conditionFilter
-  ]); // Removed loadItems from dependencies
+    state.conditionFilter,
+    loadItems
+  ]);
 
   // Pull to refresh
   usePullToRefresh({

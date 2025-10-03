@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Upload, X, ImageIcon, Zap, Clock, CheckCircle } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 
-interface OptimizedImageUploadProps {
+interface ImageUploadAdvancedProps {
   images: File[];
   onImagesChange: (images: File[]) => void;
   onUploadComplete?: (uploadResults: OptimizedUploadResult[]) => void;
@@ -45,7 +45,7 @@ interface UploadStatus {
   result?: OptimizedUploadResult;
 }
 
-export default function OptimizedImageUpload({
+export default function ImageUploadAdvanced({
   images,
   onImagesChange,
   onUploadComplete,
@@ -54,7 +54,7 @@ export default function OptimizedImageUpload({
   className = '',
   autoUpload = false,
   showOptimizationInfo = true
-}: OptimizedImageUploadProps) {
+}: ImageUploadAdvancedProps) {
   const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);

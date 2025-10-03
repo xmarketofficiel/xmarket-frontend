@@ -2,7 +2,7 @@
 
 import { useParams, notFound } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { OptimizedItemDetail, LoadingSpinner } from './components';
+import { ItemDetail, LoadingSpinner } from './components';
 import { api } from '../../../lib/apiEndpoints';
 import { Item } from '../../../types';
 
@@ -50,5 +50,5 @@ export default function ItemDetailPage() {
     notFound();
   }
 
-  return <OptimizedItemDetail item={item} />;
+  return <ItemDetail item={item} />;
 }

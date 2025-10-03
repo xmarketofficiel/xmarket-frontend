@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Heart, ShoppingBag, ArrowLeft, Package } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
@@ -14,13 +14,7 @@ export default function SavedItemsPage() {
   const { addToast } = useToast();
   const { user } = useUser();
 
-  useEffect(() => {
-    if (user) {
-      fetchFavorites();
-    }
-  }, [user]);
-
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.items.getFavorites();
@@ -31,11 +25,20 @@ export default function SavedItemsPage() {
       setFavorites(favoriteItems);
     } catch (error: any) {
       console.error('Failed to fetch favorites:', error);
-      addToast(error.message || 'Failed to load your saved items', 'error');
+      addToast('Failed to load favorites', 'error');
+      setFavorites([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
+
+  useEffect(() => {
+    if (user) {
+      fetchFavorites();
+    }
+  }, [user, fetchFavorites]);
+
+
 
   const handleRemoveFavorite = async (itemId: string | number) => {
     try {

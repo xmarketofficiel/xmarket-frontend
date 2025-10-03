@@ -1,6 +1,6 @@
 // Settings Components
 export { default as SettingsOverview } from './SettingsOverview';
-export { default as OptimizedSettingsPage } from './OptimizedSettingsPage';
+export { default as SettingsPage } from './SettingsPage';
 
 // Constants and Types
 export { SETTINGS_CONSTANTS } from './constants';
