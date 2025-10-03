@@ -68,7 +68,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }: any, ref: any) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [isFocused, setIsFocused] = React.useState(false);
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
     const isPassword = type === 'password' || showPasswordToggle;
     const actualType = isPassword && showPassword ? 'text' : type;
 
@@ -272,7 +273,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const [isFocused, setIsFocused] = React.useState(false);
     const [charCount, setCharCount] = React.useState(0);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
 
     React.useImperativeHandle(ref, () => textareaRef.current!);
 

@@ -22,11 +22,6 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
   const [isDeleting, setIsDeleting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Safety check - return null if item is invalid
-  if (!item || !item.id) {
-    return null;
-  }
-
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -40,6 +35,11 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Safety check - return null if item is invalid
+  if (!item || !item.id) {
+    return null;
+  }
 
   const handleDeleteItem = async () => {
     setIsDeleting(true);

@@ -25,5 +25,15 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", "out"]
+  "exclude": [
+    "node_modules", 
+    ".next", 
+    "out",
+    "__tests__",
+    "e2e",
+    "**/*.test.ts",
+    "**/*.test.tsx", 
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

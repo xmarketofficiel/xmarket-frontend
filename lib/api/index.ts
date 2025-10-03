@@ -30,8 +30,8 @@ export const loadAuthApi = async (): Promise<AuthApiModule['authApi']> => {
   if (!moduleCache.has('auth')) {
     moduleCache.set('auth', import('./auth'));
   }
-  const module = await moduleCache.get('auth')!;
-  return module.authApi;
+  const authModule = await moduleCache.get('auth')!;
+  return authModule.authApi;
 };
 
 /**
@@ -42,8 +42,8 @@ export const loadItemsApi = async (): Promise<ItemsApiModule['itemsApi']> => {
   if (!moduleCache.has('items')) {
     moduleCache.set('items', import('./items'));
   }
-  const module = await moduleCache.get('items')!;
-  return module.itemsApi;
+  const itemsModule = await moduleCache.get('items')!;
+  return itemsModule.itemsApi;
 };
 
 /**
@@ -54,8 +54,8 @@ export const loadUsersApi = async (): Promise<UsersApiModule['usersApi']> => {
   if (!moduleCache.has('users')) {
     moduleCache.set('users', import('./users'));
   }
-  const module = await moduleCache.get('users')!;
-  return module.usersApi;
+  const usersModule = await moduleCache.get('users')!;
+  return usersModule.usersApi;
 };
 
 /**
@@ -66,8 +66,8 @@ export const loadMessagesApi = async (): Promise<MessagesApiModule['messagesApi'
   if (!moduleCache.has('messages')) {
     moduleCache.set('messages', import('./messages'));
   }
-  const module = await moduleCache.get('messages')!;
-  return module.messagesApi;
+  const messagesModule = await moduleCache.get('messages')!;
+  return messagesModule.messagesApi;
 };
 
 /**
@@ -81,8 +81,8 @@ export const loadUploadsApi = async (): Promise<{
   if (!moduleCache.has('uploads')) {
     moduleCache.set('uploads', import('./uploads'));
   }
-  const module = await moduleCache.get('uploads')!;
-  return { searchApi: module.searchApi, uploadsApi: module.uploadsApi };
+  const uploadsModule = await moduleCache.get('uploads')!;
+  return { searchApi: uploadsModule.searchApi, uploadsApi: uploadsModule.uploadsApi };
 };
 
 /**
@@ -93,8 +93,8 @@ export const loadAdminApi = async (): Promise<AdminApiModule['adminApi']> => {
   if (!moduleCache.has('admin')) {
     moduleCache.set('admin', import('./admin'));
   }
-  const module = await moduleCache.get('admin')!;
-  return module.adminApi;
+  const adminModule = await moduleCache.get('admin')!;
+  return adminModule.adminApi;
 };
 
 // ===== DIRECT EXPORTS FOR BACKWARD COMPATIBILITY =====

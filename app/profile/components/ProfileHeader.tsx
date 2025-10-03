@@ -115,7 +115,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 return (
                   <Image
                     src={safeImageUrl}
-                    alt={user.fullName}
+                    alt={user.fullName || 'Profile picture'}
                     fill
                     className="object-cover transition-all"
                     style={{
