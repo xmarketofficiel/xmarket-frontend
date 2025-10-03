@@ -310,14 +310,24 @@ export const itemsApi = {
       // Use the proper favorites endpoint that works with item_favorites table
       const response = await apiClient.get('/items/favorites', cleanParams);
 
-      // The backend should return paginated favorites data
-      const data = response.data as {
-        items: Item[];
-        total: number;
-        page: number;
-        totalPages: number;
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
+      // Backend returns { success: true, data: [...items], pagination: {...} }
+      // We need to transform it to match the expected frontend format
+      const backendData = response.data;
+      
+      if (!backendData.success || !backendData.data) {
+        throw new Error('Invalid response format from server');
+      }
+
+      const items = backendData.data as Item[];
+      const pagination = backendData.pagination || {};
+      
+      const data = {
+        items: items,
+        total: pagination.total || 0,
+        page: pagination.page || 1,
+        totalPages: pagination.pages || 0,
+        hasNextPage: pagination.page < pagination.pages,
+        hasPreviousPage: pagination.page > 1
       };
 
       return {

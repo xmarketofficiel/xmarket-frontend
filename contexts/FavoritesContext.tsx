@@ -52,8 +52,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const response = await api.items.getFavorites();
-      const favoriteIds = response.data.items.map(item => String(item.id));
-      setFavorites(favoriteIds);
+      
+      if (response.data && response.data.items) {
+        const favoriteIds = response.data.items.map(item => String(item.id));
+        setFavorites(favoriteIds);
+      } else {
+        setFavorites([]);
+      }
     } catch (error) {
       // Fallback to localStorage
       loadFavoritesFromLocalStorage();

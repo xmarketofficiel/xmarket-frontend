@@ -52,7 +52,6 @@ export default function FavoritesList() {
           const response = await api.items.getFavorites();
           setFavoriteItems(response.data.items || []);
         } catch (error) {
-          console.error('Failed to load favorites from backend:', error);
           // Fallback to localStorage-based loading
           if (favorites.length > 0) {
             const itemPromises = favorites.map(async (itemId: string) => {

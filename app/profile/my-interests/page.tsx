@@ -40,12 +40,20 @@ export default function SavedItemsPage() {
   const fetchFavorites = async () => {
     try {
       setLoading(true);
+      console.log('MyInterests: Fetching favorites for user:', user);
       const response = await api.items.getFavorites();
+      console.log('MyInterests: Raw response:', response);
+      
       const responseData = (response.data as any)?.data || response.data || {};
+      console.log('MyInterests: Processed response data:', responseData);
+      
       const favoriteItems = responseData.items || responseData || [];
+      console.log('MyInterests: Final favorite items:', favoriteItems);
+      
       setFavorites(favoriteItems);
     } catch (error: any) {
-      console.error('Failed to fetch favorites:', error);
+      console.error('MyInterests: Failed to fetch favorites:', error);
+      console.error('MyInterests: Error details:', error.response?.data);
       addToast(error.message || 'Failed to load your saved items', 'error');
     } finally {
       setLoading(false);
