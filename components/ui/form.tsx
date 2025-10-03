@@ -24,7 +24,7 @@ type FormFieldContextValue<
   name: TName;
 };
 
-const FormFieldContext = React.createContext<FormFieldContextValue | undefined>();
+const FormFieldContext: any = React.createContext();
 
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
@@ -51,13 +51,13 @@ const useFormField = () => {
   }
 
   const { getFieldState, formState } = useFormContext();
-  const fieldState = getFieldState(fieldContext.name, formState);
+  const fieldState = getFieldState((fieldContext as any).name, formState);
 
-  const { id } = itemContext;
+  const { id } = itemContext as any;
 
   return {
     id,
-    name: fieldContext.name,
+    name: (fieldContext as any).name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
@@ -69,7 +69,7 @@ type FormItemContextValue = {
   id: string;
 };
 
-const FormItemContext = React.createContext<FormItemContextValue | undefined>();
+const FormItemContext: any = React.createContext();
 
 const FormItem = React.forwardRef<any, any>(({ className, ...props }: any, ref: any) => {
   const id = React.useId();
