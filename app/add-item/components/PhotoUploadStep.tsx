@@ -76,7 +76,7 @@ export default function PhotoUploadStep({
 
     const droppedFiles = Array.from(e.dataTransfer.files);
     processFiles(droppedFiles);
-  }, [photos, onPhotosChange]);
+  }, [photos, onPhotosChange, processFiles]);
 
   const removePhoto = (index: number) => {
     const newPhotos = photos.filter((_, i) => i !== index);

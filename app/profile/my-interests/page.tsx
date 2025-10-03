@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Heart, ShoppingBag, ArrowLeft, Package } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -127,9 +128,11 @@ export default function SavedItemsPage() {
                   {/* Item Image */}
                   <div className="aspect-square bg-gray-100 relative">
                     {item.images?.[0]?.imageUrl ? (
-                      <img
+                      <Image
                         src={item.images[0].imageUrl}
                         alt={item.title}
+                        width={300}
+                        height={300}
                         className="w-full h-full object-cover"
                       />
                     ) : (

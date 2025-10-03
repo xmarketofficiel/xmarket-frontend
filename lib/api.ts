@@ -88,7 +88,10 @@ class ApiClient {
     for (let attempt = 0; attempt <= this.config.retries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+        const timeoutId = setTimeout(() => {
+          console.warn(`⚠️ API request timeout after ${this.config.timeout}ms:`, url);
+          controller.abort();
+        }, this.config.timeout);
 
         const response = await fetch(url, {
           ...requestOptions,
@@ -368,8 +371,8 @@ const getApiBaseUrl = () => {
 
 const apiClient = new ApiClient({
   baseUrl: getApiBaseUrl(),
-  timeout: 10000,
-  retries: 3,
+  timeout: 15000, // 15 seconds to handle Railway's slower response times
+  retries: 1, // Single retry to avoid long waits
 });
 
 // Debug function to test backend connectivity via SSR proxy

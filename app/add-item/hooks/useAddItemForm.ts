@@ -175,7 +175,7 @@ export function useAddItemForm({
 
       return null;
     },
-    []
+    [validationRules]
   );
 
   // Validate the entire form

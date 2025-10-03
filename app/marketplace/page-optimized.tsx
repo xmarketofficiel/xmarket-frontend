@@ -286,7 +286,7 @@ export default function OptimizedMarketplacePage() {
     if (state.searchQuery !== undefined && state.selectedCategory !== undefined) {
       loadItems(1, true);
     }
-  }, [state.searchQuery, state.selectedCategory, state.sortBy]);
+  }, [state.searchQuery, state.selectedCategory, state.sortBy, loadItems]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
