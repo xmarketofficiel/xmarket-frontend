@@ -9,7 +9,7 @@ interface ToastContextType {
   removeToast: (id: string) => void;
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const ToastContext: any = React.createContext();
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
@@ -43,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useToast() {
+export function useToast(): any {
   const context = useContext(ToastContext);
   if (context === undefined) {
     throw new Error('useToast must be used within a ToastProvider');

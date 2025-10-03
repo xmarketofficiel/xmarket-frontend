@@ -479,7 +479,7 @@ export const itemsApi = {
     try {
       const response = await apiClient.get('/items/sales/pending');
       return {
-        data: response.data || [],
+        data: (response.data || []) as any[],
         status: 200,
         message: 'Pending sales loaded successfully'
       };
@@ -509,7 +509,7 @@ export const itemsApi = {
       const response = await apiClient.get("/items/purchases/pending-confirmations");
       
       return {
-        data: response.data || [],
+        data: (response.data || []) as any,
         status: response.status,
         message: response.message || 'Pending confirmations loaded successfully'
       };
@@ -523,7 +523,7 @@ export const itemsApi = {
       } else if (error?.response?.status === 404) {
         // No pending confirmations found is not an error
         return {
-          data: [],
+          data: [] as any,
           status: 200,
           message: 'No pending confirmations found'
         };
@@ -539,7 +539,7 @@ export const itemsApi = {
       const response = await apiClient.get("/items/purchases/my-purchases", params);
       
       return {
-        data: response.data || [],
+        data: (response.data || []) as any,
         status: response.status,
         message: response.message || 'Purchases loaded successfully'
       };
@@ -553,40 +553,13 @@ export const itemsApi = {
       } else if (error?.response?.status === 404) {
         // No purchases found is not an error
         return {
-          data: [],
+          data: [] as any,
           status: 200,
           message: 'No purchases found'
         };
       }
       
       throw new Error('Unable to load your purchases. Please try again.');
-    }
-  },
-
-  // Toggle Favorite (consolidated method)
-  toggleFavorite: async (itemId: string | number): Promise<ApiResponse<{
-    isFavorite: any; message: string; isFavorited: boolean 
-}>> => {
-    try {
-      const response = await apiClient.post(`/items/${itemId}/toggle-favorite`);
-      
-      return {
-        data: response.data || { message: 'Favorite status toggled', isFavorited: false },
-        status: response.status,
-        message: response.message || 'Favorite status updated'
-      };
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error("Toggle favorite failed:", error);
-      }
-      
-      if (error?.response?.status === 401) {
-        throw new Error('Please log in to manage favorites');
-      } else if (error?.response?.status === 404) {
-        throw new Error('Item not found');
-      }
-      
-      throw new Error('Unable to update favorite status. Please try again.');
     }
   }
 };

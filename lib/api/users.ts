@@ -24,7 +24,6 @@ interface PaginatedResponse<T> {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
-import { SearchParams } from "./items";
 
 // ===== USERS API =====
 export const usersApi = {

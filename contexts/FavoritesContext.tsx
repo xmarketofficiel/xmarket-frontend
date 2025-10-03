@@ -14,7 +14,8 @@ interface FavoritesContextType {
   loading: boolean;
 }
 
-const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+// Use React.createContext to avoid any local symbol conflicts with other imports
+const FavoritesContext: any = React.createContext();
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = React.useState<string[]>([]);
@@ -170,7 +171,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useFavorites() {
+export function useFavorites(): any {
   const context = useContext(FavoritesContext);
   if (context === undefined) {
     throw new Error('useFavorites must be used within a FavoritesProvider');
