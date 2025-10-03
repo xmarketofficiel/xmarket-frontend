@@ -23,7 +23,7 @@ type ChartContextProps = {
 };
 
 // @ts-ignore  
-const ChartContext = React.createContext<ChartContextProps | null>(null);
+const ChartContext: any = (React.createContext as any)();
 
 function useChart() {
   const context = React.useContext(ChartContext);
@@ -32,7 +32,7 @@ function useChart() {
     throw new Error('useChart must be used within a <ChartContainer />');
   }
 
-  return context;
+  return context as any;
 }
 
 const ChartContainer = React.forwardRef<

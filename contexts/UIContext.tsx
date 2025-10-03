@@ -7,7 +7,7 @@ type UIContextValue = {
   setHideNavbar: (v: boolean) => void;
 };
 
-const UIContext: any = React.createContext();
+const UIContext: any = (React.createContext as any)();
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [hideNavbar, setHideNavbar] = useState(false);

@@ -15,7 +15,7 @@ interface FavoritesContextType {
 }
 
 // Use React.createContext to avoid any local symbol conflicts with other imports
-const FavoritesContext: any = React.createContext();
+const FavoritesContext: any = (React.createContext as any)();
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = React.useState<string[]>([]);

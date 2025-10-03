@@ -7,7 +7,7 @@ import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { toggleVariants } from '@/components/ui/toggle';
 
-const ToggleGroupContext: any = React.createContext();
+const ToggleGroupContext: any = (React.createContext as any)();
 
 const ToggleGroup = React.forwardRef<any, any>(({ className, variant, size, children, ...props }, ref) => {
   const p = props as any;

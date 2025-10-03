@@ -9,7 +9,7 @@ interface ToastContextType {
   removeToast: (id: string) => void;
 }
 
-const ToastContext: any = React.createContext();
+const ToastContext: any = (React.createContext as any)();
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);

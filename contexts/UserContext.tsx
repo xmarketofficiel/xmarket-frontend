@@ -17,7 +17,7 @@ interface UserContextType {
 }
 
 // Use React.createContext to avoid any local symbol conflicts with other imports
-const UserContext: any = React.createContext();
+const UserContext: any = (React.createContext as any)();
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
