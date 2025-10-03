@@ -312,22 +312,36 @@ export const itemsApi = {
 
       // Backend returns { success: true, data: [...items], pagination: {...} }
       // We need to transform it to match the expected frontend format
-      const backendData = response.data;
+      const backendData = response.data as {
+        success: boolean;
+        data: Item[];
+        pagination?: {
+          page: number;
+          limit: number;
+          total: number;
+          pages: number;
+        };
+      };
       
       if (!backendData.success || !backendData.data) {
         throw new Error('Invalid response format from server');
       }
 
       const items = backendData.data as Item[];
-      const pagination = backendData.pagination || {};
+      const pagination = backendData.pagination || {
+        page: 1,
+        limit: 12,
+        total: 0,
+        pages: 0
+      };
       
       const data = {
         items: items,
         total: pagination.total || 0,
         page: pagination.page || 1,
         totalPages: pagination.pages || 0,
-        hasNextPage: pagination.page < pagination.pages,
-        hasPreviousPage: pagination.page > 1
+        hasNextPage: (pagination.page || 1) < (pagination.pages || 0),
+        hasPreviousPage: (pagination.page || 1) > 1
       };
 
       return {

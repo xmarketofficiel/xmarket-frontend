@@ -6,27 +6,10 @@ import { Heart, ShoppingBag, ArrowLeft, Package } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
 import { api } from '../../../lib/apiEndpoints';
-
-interface FavoriteItem {
-  id: number;
-  title: string;
-  price: number;
-  condition: string;
-  images: Array<{ 
-    id: number;
-    imageUrl: string; 
-  }>;
-  seller?: {
-    id: number;
-    fullName: string;
-    whatsappNumber?: string;
-  };
-  createdAt: string;
-  isFavorited?: boolean;
-}
+import { Item } from '../../../types';
 
 export default function SavedItemsPage() {
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [favorites, setFavorites] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
   const { user } = useUser();
@@ -40,27 +23,21 @@ export default function SavedItemsPage() {
   const fetchFavorites = async () => {
     try {
       setLoading(true);
-      console.log('MyInterests: Fetching favorites for user:', user);
       const response = await api.items.getFavorites();
-      console.log('MyInterests: Raw response:', response);
       
-      const responseData = (response.data as any)?.data || response.data || {};
-      console.log('MyInterests: Processed response data:', responseData);
-      
-      const favoriteItems = responseData.items || responseData || [];
-      console.log('MyInterests: Final favorite items:', favoriteItems);
+      // The API now returns properly formatted data
+      const favoriteItems = response.data.items || [];
       
       setFavorites(favoriteItems);
     } catch (error: any) {
-      console.error('MyInterests: Failed to fetch favorites:', error);
-      console.error('MyInterests: Error details:', error.response?.data);
+      console.error('Failed to fetch favorites:', error);
       addToast(error.message || 'Failed to load your saved items', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveFavorite = async (itemId: number) => {
+  const handleRemoveFavorite = async (itemId: string | number) => {
     try {
       await api.items.removeFavorite(String(itemId));
       setFavorites(prev => prev.filter(item => item.id !== itemId));
@@ -70,7 +47,7 @@ export default function SavedItemsPage() {
     }
   };
 
-  const handleViewItem = (itemId: number) => {
+  const handleViewItem = (itemId: string | number) => {
     window.location.href = `/item/${itemId}`;
   };
 
@@ -135,9 +112,9 @@ export default function SavedItemsPage() {
                 <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   {/* Item Image */}
                   <div className="aspect-square bg-gray-100 relative">
-                    {item.images?.[0]?.imageUrl ? (
+                    {(item.images?.[0]?.imageUrl || item.photos?.[0]) ? (
                       <Image
-                        src={item.images[0].imageUrl}
+                        src={item.images?.[0]?.imageUrl || item.photos?.[0] || ''}
                         alt={item.title}
                         width={300}
                         height={300}
@@ -162,7 +139,7 @@ export default function SavedItemsPage() {
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.title}</h3>
                     <p className="text-[#006666] font-bold mb-2">{item.price} DH</p>
-                    <p className="text-sm text-gray-600 mb-3 capitalize">{item.condition}</p>
+                    <p className="text-sm text-gray-600 mb-3 capitalize">{item.condition || 'N/A'}</p>
                     
                     {/* Action Buttons */}
                     <div className="flex gap-2">
