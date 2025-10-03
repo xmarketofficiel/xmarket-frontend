@@ -44,7 +44,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
         
       }
     },
-    [targetUserId]
+    []
   );
 
   // Error handling
@@ -158,7 +158,7 @@ export const useProfile = (userId?: string): UseProfileReturn => {
     } finally {
       setLoading((prev) => ({ ...prev, profile: false }));
     }
-  }, [targetUserId, handleError, trackAnalytics]);
+  }, [targetUserId, handleError, trackAnalytics, currentUser, isOwner]);
 
   // Load items for specific tab
   const loadTabItems = useCallback(

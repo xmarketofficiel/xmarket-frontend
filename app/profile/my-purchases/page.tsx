@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Package, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -67,7 +68,7 @@ export default function MyPurchasesPage() {
   const { addToast } = useToast();
   const { user } = useUser();
 
-  const fetchPurchases = async () => {
+  const fetchPurchases = useCallback(async () => {
     try {
       setLoading(true);
       const filterParam = filter === 'all' ? undefined : filter;
@@ -81,13 +82,13 @@ export default function MyPurchasesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, addToast]);
 
   useEffect(() => {
     if (user) {
       fetchPurchases();
     }
-  }, [user, filter, addToast]);
+  }, [user, fetchPurchases]);
 
   const filteredPurchases = purchases.filter(purchase => {
     if (filter === 'all') return true;
@@ -174,12 +175,13 @@ export default function MyPurchasesPage() {
                   {/* Item Image */}
                   <div className="w-full lg:w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                     {purchase.item.images?.[0]?.imageUrl ? (
-                      <img
+                      <Image
                         src={purchase.item.images[0].imageUrl.startsWith('/') 
                           ? `${process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001')}${purchase.item.images[0].imageUrl}`
                           : purchase.item.images[0].imageUrl
                         }
                         alt={purchase.item.title}
+                        fill
                         className="w-full h-full object-cover"
                       />
                     ) : (

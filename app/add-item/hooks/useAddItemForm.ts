@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import {
   AddItemFormData,
   FormState,
@@ -46,7 +46,7 @@ export function useAddItemForm({
   });
 
   // Validation rules
-  const validationRules: Record<keyof AddItemFormData, ValidationRule[]> = {
+  const validationRules = useMemo((): Record<keyof AddItemFormData, ValidationRule[]> => ({
     title: [
       { required: true },
       { minLength: ADD_ITEM_CONFIG.TITLE_MIN_LENGTH },
@@ -104,7 +104,7 @@ export function useAddItemForm({
       },
     ],
     showIdentity: [],
-  };
+  }), []);
 
   // Validate a single field
   const validateField = useCallback(

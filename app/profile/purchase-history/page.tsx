@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -53,11 +53,7 @@ export default function PurchaseHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPurchases();
-  }, []);
-
-  const loadPurchases = async () => {
+  const loadPurchases = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -76,7 +72,11 @@ export default function PurchaseHistoryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, addToast]);
+
+  useEffect(() => {
+    loadPurchases();
+  }, [loadPurchases]);
 
   const handleItemClick = (item: any) => {
     router.push(`/item/${item.item.id}`);

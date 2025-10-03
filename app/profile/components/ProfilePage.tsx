@@ -29,6 +29,7 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileStats from "./ProfileStats";
 import ProfileContent from "./ProfileContent";
 import { ExtendedUser } from "./types";
+import { ProfilePageSkeleton } from "../../../components/skeletons/ProfilePageSkeleton";
 import { useProfile } from "./useProfile";
 import { PROFILE_CONSTANTS } from "./constants";
 import type { ProfileItem, ProfileTab } from "./types";
@@ -324,26 +325,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   // Show loading state
   if (loading && !profileData) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-2xl mx-auto px-4 py-4">
-            <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
-          </div>
-        </div>
-        <div className="max-w-2xl mx-auto px-4 py-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse"></div>
-              <div className="flex-1 space-y-2">
-                <div className="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-48 animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <ProfilePageSkeleton />;
   }
 
   // Render sub-page view

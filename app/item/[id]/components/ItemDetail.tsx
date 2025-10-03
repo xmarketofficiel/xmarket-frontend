@@ -205,14 +205,7 @@ export default function ItemDetail({
     }
   };
 
-  // Loading state
-  if (state.loading.item) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" text={STATUS_MESSAGES.loading.item} />
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">

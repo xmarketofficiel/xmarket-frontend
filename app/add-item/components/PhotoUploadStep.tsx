@@ -70,13 +70,12 @@ export default function PhotoUploadStep({
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setIsDragActive(false);
     setDragCounter(0);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
     processFiles(droppedFiles);
-  }, [photos, onPhotosChange, processFiles]);
+  }, [processFiles]);
 
   const removePhoto = (index: number) => {
     const newPhotos = photos.filter((_, i) => i !== index);

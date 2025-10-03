@@ -2,7 +2,8 @@
 
 import { useParams, notFound } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ItemDetail, LoadingSpinner } from './components';
+import { ItemDetail } from './components';
+import { ItemDetailSkeleton } from '../../../components/skeletons/ItemDetailSkeleton';
 import { api } from '../../../lib/apiEndpoints';
 import { Item } from '../../../types';
 
@@ -35,15 +36,7 @@ export default function ItemDetailPage() {
   }, [itemId]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <LoadingSpinner 
-          size="lg" 
-          text="Loading item details..." 
-          className="p-8"
-        />
-      </div>
-    );
+    return <ItemDetailSkeleton />;
   }
 
   if (error || !item) {

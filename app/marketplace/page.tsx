@@ -27,6 +27,7 @@ import {
   SkeletonResultsCounter,
   SkeletonGrid 
 } from '../../components/skeletons/SkeletonComponents';
+import { MarketplaceGridSkeleton } from '../../components/skeletons/MarketplacePageSkeleton';
 
 // Constants and Types
 import { MARKETPLACE_CONFIG, CATEGORY_CONFIG } from './constants';
@@ -379,7 +380,7 @@ export default function MarketplacePage() {
     } finally {
       updateState({ loading: false });
     }
-  }, [buildSearchParams]); // Only depend on buildSearchParams, not updateState or state.items
+  }, [buildSearchParams, updateState, state.items]);
 
   /**
    * Handle search query change
@@ -595,9 +596,7 @@ export default function MarketplacePage() {
 
           {/* Loading State */}
           {showSkeleton && (
-            <div className="px-4 pt-4">
-              <SkeletonGrid count={getOptimalSkeletonCount(state.items.length > 0)} />
-            </div>
+            <MarketplaceGridSkeleton count={getOptimalSkeletonCount(state.items.length > 0)} />
           )}
 
           {/* Empty State */}

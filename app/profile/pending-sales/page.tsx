@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { api } from '../../../lib/apiEndpoints';
@@ -61,13 +61,7 @@ export default function PendingConfirmationsPage() {
   const [processingIds, setProcessingIds] = useState<Set<number>>(new Set());
   const [filter, setFilter] = useState<'all' | 'buyer-pending' | 'seller-pending' | 'awaiting-seller'>('all');
 
-  useEffect(() => {
-    if (user) {
-      fetchPendingPurchases();
-    }
-  }, [user]);
-
-  const fetchPendingPurchases = async () => {
+  const fetchPendingPurchases = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -134,7 +128,13 @@ export default function PendingConfirmationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast, user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchPendingPurchases();
+    }
+  }, [user, fetchPendingPurchases]);
 
   const handleSellerConfirmation = async (purchaseId: number, confirmed: boolean, notes?: string) => {
     setProcessingIds(prev => new Set(prev).add(purchaseId));
