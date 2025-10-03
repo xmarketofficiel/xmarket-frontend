@@ -150,7 +150,7 @@ test.describe('Browse and Favorite Flow', () => {
 
   test('responsive design works on mobile', async ({ page, isMobile }) => {
     if (!isMobile) {
-      test.skip('Mobile-only test');
+      test.skip();
     }
     
     // Verify mobile navbar

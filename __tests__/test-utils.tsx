@@ -24,7 +24,7 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) => render(ui, { wrapper: AllTheProviders, ...options });
+) => render(ui, { wrapper: AllTheProviders, ...options } as any);
 
 // Re-export everything
 export * from '@testing-library/react';

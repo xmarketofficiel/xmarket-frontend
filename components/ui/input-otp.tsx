@@ -10,14 +10,15 @@ const InputOTP = React.forwardRef<any, any>(({ className, containerClassName, ..
   <OTPInput
     ref={ref as React.LegacyRef<HTMLInputElement>}
     maxLength={props.maxLength ?? 6}
-    children={props.children ?? null}
     containerClassName={cn(
       'flex items-center gap-2 has-[:disabled]:opacity-50',
       containerClassName
     )}
     className={cn('disabled:cursor-not-allowed', className)}
     {...props}
-  />
+  >
+    {props.children ?? null}
+  </OTPInput>
 ));
 InputOTP.displayName = 'InputOTP';
 

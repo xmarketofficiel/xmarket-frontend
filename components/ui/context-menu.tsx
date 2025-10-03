@@ -24,7 +24,6 @@ const ContextMenuSubTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
     inset?: boolean;
   }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 >((props: any, ref: any) => {
   const { className, inset, children, ...rest } = props;
   return (
