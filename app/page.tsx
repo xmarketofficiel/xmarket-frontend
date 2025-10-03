@@ -23,9 +23,13 @@ export default function HomePage() {
     if (user && typeof window !== 'undefined') {
       const draftExists = localStorage.getItem('add_item_draft');
       if (draftExists) {
-        console.log('🧹 Cleaning up add-item draft from localStorage on home page...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🧹 Cleaning up add-item draft from localStorage on home page...');
+        }
         localStorage.removeItem('add_item_draft');
-        console.log('✅ Add-item draft cleared from localStorage');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Add-item draft cleared from localStorage');
+        }
       }
     }
   }, [user]);

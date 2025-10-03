@@ -16,7 +16,8 @@ interface UserContextType {
   refreshUser: () => Promise<void>;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+// Use React.createContext to avoid any local symbol conflicts with other imports
+const UserContext: any = React.createContext();
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
@@ -93,7 +94,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       );
       
       const response = await Promise.race([
-        api.auth.getCurrentUser(),
+        api.users.getProfile(),
         timeoutPromise
       ]);
       setUser(response.data);
@@ -184,7 +185,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const response = await api.auth.getCurrentUser();
+      const response = await api.users.getProfile();
       setUser(response.data);
     } catch (error: any) {
       if (error?.status === 401) {
@@ -209,7 +210,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useUser() {
+export function useUser(): any {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');

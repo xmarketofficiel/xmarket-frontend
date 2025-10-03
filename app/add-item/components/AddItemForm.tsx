@@ -33,9 +33,13 @@ export default function OptimizedAddItemForm({
       
       // Ensure draft is cleared before navigation
       if (typeof window !== 'undefined') {
-        console.log('🧹 Explicitly clearing add-item draft before redirect...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🧹 Explicitly clearing add-item draft before redirect...');
+        }
         localStorage.removeItem('add_item_draft');
-        console.log('✅ Draft cleared, redirecting to home page...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Draft cleared, redirecting to home page...');
+        }
       }
       
       // Analytics tracking
@@ -71,9 +75,11 @@ export default function OptimizedAddItemForm({
     {
       immediate: true,
       onError: (error) => {
-        console.error('💥 Add-Item Form: Failed to load categories from backend:', error);
-        console.error('🔧 This usually means the backend server is not running or /categories endpoint is unavailable');
-        console.log('📦 Using comprehensive fallback categories instead...');
+        if (process.env.NODE_ENV === 'development') {
+          console.error('💥 Add-Item Form: Failed to load categories from backend:', error);
+          console.error('🔧 This usually means the backend server is not running or /categories endpoint is unavailable');
+          console.log('📦 Using comprehensive fallback categories instead...');
+        }
         // Don't show error toast since we have fallback
       }
     }
@@ -103,12 +109,14 @@ export default function OptimizedAddItemForm({
   const categories = (categoriesFromAPI && categoriesFromAPI.length > 0) ? categoriesFromAPI : fallbackCategories;
 
   // Debug logging for category loading
-  console.log('🔍 Add-Item Form Category Status:');
-  console.log('  - Backend categories loaded:', categoriesFromAPI?.length || 0);
-  console.log('  - Using fallback categories:', categories === fallbackCategories);
-  console.log('  - Total categories available:', categories.length);
-  if (categories.length > 0) {
-    console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Add-Item Form Category Status:');
+    console.log('  - Backend categories loaded:', categoriesFromAPI?.length || 0);
+    console.log('  - Using fallback categories:', categories === fallbackCategories);
+    console.log('  - Total categories available:', categories.length);
+    if (categories.length > 0) {
+      console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
+    }
   }
 
   // Handle navigation
@@ -215,10 +223,14 @@ export default function OptimizedAddItemForm({
           // Upload photos if item creation succeeded
           if (state.data.photos.length > 0) {
             try {
-              console.log(`Uploading ${state.data.photos.length} images for item ${newItem.id}`);
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`Uploading ${state.data.photos.length} images for item ${newItem.id}`);
+              }
               await api.items.uploadItemImages(String(newItem.id), state.data.photos);
             } catch (uploadError: any) {
-              console.error('Error uploading images:', uploadError);
+              if (process.env.NODE_ENV === 'development') {
+                console.error('Error uploading images:', uploadError);
+              }
               addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
               return; // Don't throw the error, item was created successfully
             }
@@ -237,7 +249,9 @@ export default function OptimizedAddItemForm({
             });
           }
         } catch (error: any) {
-          console.error('Error creating item:', error);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error creating item:', error);
+          }
           addToast('Failed to post item. Please try again.', 'error');
           // Clear draft on error to prevent it from affecting next item creation
           actions.clearDraft();
@@ -245,7 +259,9 @@ export default function OptimizedAddItemForm({
       }, 100);
 
     } catch (error: any) {
-      console.error('Error creating item:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error creating item:', error);
+      }
       addToast(error.message || ERROR_MESSAGES.CREATION_FAILED, 'error');
       actions.setSubmitting(false);
       // Clear draft on error to prevent it from affecting next item creation

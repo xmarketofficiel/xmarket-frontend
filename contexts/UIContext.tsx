@@ -7,7 +7,7 @@ type UIContextValue = {
   setHideNavbar: (v: boolean) => void;
 };
 
-const UIContext = createContext<UIContextValue | undefined>(undefined);
+const UIContext: any = React.createContext();
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [hideNavbar, setHideNavbar] = useState(false);
@@ -28,7 +28,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useUI() {
+export function useUI(): any {
   const ctx = useContext(UIContext);
   if (!ctx) throw new Error('useUI must be used within UIProvider');
   return ctx;

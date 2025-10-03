@@ -136,7 +136,7 @@ export default function LoginPage() {
         });
         
         setTimeout(() => {
-          router.push('/marketplace');
+          router.push('/');
         }, LOGIN_CONFIG.REDIRECT_DELAY);
       }
     } catch (error: any) {

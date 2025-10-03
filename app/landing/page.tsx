@@ -52,7 +52,7 @@ export default function LandingPage() {
   };
 
   const handleLogin = () => {
-    router.push('/auth/login');
+    router.push('/login');
   };
 
   const handlePlayVideo = () => {

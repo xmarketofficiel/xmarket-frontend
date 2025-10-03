@@ -135,7 +135,7 @@ class ApiClient {
           } else if (response.status >= 500) {
             // Server errors should be logged, except for logout which is expected to sometimes fail
             const isLogoutEndpoint = url.includes('/auth/logout');
-            if (!isLogoutEndpoint) {
+            if (!isLogoutEndpoint && process.env.NODE_ENV === 'development') {
               console.error(`API Server Error [${response.status}]:`, errorData);
             }
             apiError.name = 'ServerError';
@@ -154,7 +154,9 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              
+              if (process.env.NODE_ENV === 'development') {
+                console.warn('JSON parse error:', e);
+              }
               data = { message: 'Operation completed successfully' };
             }
           } else {
@@ -298,7 +300,9 @@ class ApiClient {
             }
           } catch (parseError) {
             // If we can't parse the error response, use the default message
-            console.warn('Failed to parse error response:', parseError);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to parse error response:', parseError);
+            }
           }
           
           throw new ApiError({
@@ -319,7 +323,9 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              
+              if (process.env.NODE_ENV === 'development') {
+                console.warn('JSON parse error in upload:', e);
+              }
               data = { message: 'File uploaded successfully' };
             }
           } else {
@@ -369,25 +375,37 @@ const apiClient = new ApiClient({
 // Debug function to test backend connectivity via SSR proxy
 export const testBackendConnection = async () => {
   const baseUrl = getApiBaseUrl();
-  console.log('🔍 Testing backend connection via SSR proxy...');
-  console.log('📡 Proxy URL:', baseUrl);
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Testing backend connection via SSR proxy...');
+    console.log('📡 Proxy URL:', baseUrl);
+  }
   
   try {
     // Test basic connectivity through the proxy
     const response = await fetch(`${baseUrl}/health`);
-    console.log('✅ Proxy response status:', response.status);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Proxy response status:', response.status);
+    }
     
     if (response.ok) {
       const data = await response.text();
-      console.log('✅ Backend is reachable via SSR proxy. Response:', data);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Backend is reachable via SSR proxy. Response:', data);
+      }
       return true;
     } else {
-      console.warn('⚠️ Proxy returned non-200 status:', response.status);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Proxy returned non-200 status:', response.status);
+      }
       return false;
     }
   } catch (error) {
-    console.error('❌ SSR proxy connection failed:', error);
-    console.error('💡 Check if the Next.js server and backend are running');
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ SSR proxy connection failed:', error);
+      console.error('💡 Check if the Next.js server and backend are running');
+    }
     return false;
   }
 };

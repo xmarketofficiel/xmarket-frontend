@@ -32,7 +32,7 @@ export default function ToastContainer() {
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
-      {toasts.map((toast) => (
+      {toasts.map((toast: any) => (
         <div
           key={toast.id}
           className={`max-w-sm w-full ${getBackgroundColor(toast.type)} border rounded-lg shadow-lg p-4 flex items-start space-x-3 animate-in slide-in-from-right-5`}

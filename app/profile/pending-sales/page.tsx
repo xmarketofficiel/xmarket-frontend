@@ -140,7 +140,7 @@ export default function PendingConfirmationsPage() {
     setProcessingIds(prev => new Set(prev).add(purchaseId));
     
     try {
-      await api.items.sellerConfirmPurchase(String(purchaseId), confirmed, notes);
+  await api.items.confirmSale(String(purchaseId), confirmed, notes);
       
       // Remove from pending list
       setPendingPurchases(prev => prev.filter(purchase => purchase.id !== purchaseId));

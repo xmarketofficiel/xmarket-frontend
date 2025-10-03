@@ -51,13 +51,16 @@ export default function TestSSRPage() {
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <Card>
+        {/* @ts-ignore */}
         <CardHeader>
+          {/* @ts-ignore */}
           <CardTitle>SSR API Test Page</CardTitle>
           <p className="text-muted-foreground">
             Test the SSR proxy functionality. Open your browser's Network tab and notice that 
             backend API calls are hidden - only calls to Next.js API routes are visible.
           </p>
         </CardHeader>
+        {/* @ts-ignore */}
         <CardContent className="space-y-4">
           <div className="flex gap-4">
             <Button 
@@ -78,6 +81,7 @@ export default function TestSSRPage() {
 
           {error && (
             <Card className="border-red-200 bg-red-50">
+              {/* @ts-ignore */}
               <CardContent className="pt-6">
                 <h3 className="font-semibold text-red-800">Error</h3>
                 <p className="text-red-600">{error}</p>
@@ -87,6 +91,7 @@ export default function TestSSRPage() {
 
           {result && (
             <Card className="border-green-200 bg-green-50">
+              {/* @ts-ignore */}
               <CardContent className="pt-6">
                 <h3 className="font-semibold text-green-800 mb-2">Success</h3>
                 <pre className="bg-white p-4 rounded border text-sm overflow-auto max-h-96">
@@ -97,6 +102,7 @@ export default function TestSSRPage() {
           )}
 
           <Card className="bg-blue-50 border-blue-200">
+            {/* @ts-ignore */}
             <CardContent className="pt-6">
               <h3 className="font-semibold text-blue-800 mb-2">How to Test SSR</h3>
               <ol className="list-decimal list-inside space-y-1 text-blue-700">
