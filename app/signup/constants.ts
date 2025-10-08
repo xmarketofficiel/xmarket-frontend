@@ -108,6 +108,13 @@ export const SUCCESS_MESSAGES = {
 
 // Step configuration
 export const STEP_CONFIG = {
+  USER_TYPE: {
+    title: "Choose Your Access Type",
+    subtitle: "",
+    buttonText: "Continue",
+    loadingText: "Loading..."
+  },
+
   EMAIL: {
     title: "Welcome to XMarket",
     subtitle: "Enter your student email to get started",
@@ -133,6 +140,13 @@ export const STEP_CONFIG = {
     title: "Welcome Aboard!",
     subtitle: "Your account has been created successfully",
     redirectText: "Redirecting to marketplace..."
+  },
+
+  "1337_STUDENT": {
+    title: "1337 Student Registration",
+    subtitle: "Enter your 1337 credentials",
+    buttonText: "Continue",
+    loadingText: "Processing..."
   },
   
   REQUEST_ACCESS: {
