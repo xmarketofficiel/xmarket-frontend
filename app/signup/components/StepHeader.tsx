@@ -17,6 +17,12 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
     if (isRequestAccess) {
       return STEP_CONFIG.REQUEST_ACCESS;
     }
+    if (step === 'user-type') {
+      return STEP_CONFIG.USER_TYPE;
+    }
+    if (step === '1337-student') {
+      return STEP_CONFIG["1337_STUDENT"];
+    }
     return STEP_CONFIG[step.toUpperCase() as keyof typeof STEP_CONFIG] || STEP_CONFIG.EMAIL;
   };
 
@@ -26,14 +32,16 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
     <motion.div
       {...ANIMATION_VARIANTS.fadeInUp}
       transition={{ duration: 0.6 }}
-      className="text-center mb-8"
+      className="text-center mb-8 lg:mb-10"
     >
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">
+      <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3 lg:mb-2 leading-tight">
         {config.title}
       </h2>
-      <p className="text-gray-600 text-lg">
-        {config.subtitle}
-      </p>
+      {config.subtitle && (
+        <p className="text-gray-600 text-base lg:text-lg leading-relaxed px-2">
+          {config.subtitle}
+        </p>
+      )}
       
       {/* Additional context for specific steps */}
       {step === 'otp' && (
@@ -41,7 +49,7 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-gray-500 mt-2"
+          className="text-sm text-gray-500 mt-3 px-4"
         >
           Didn't receive the code? Check your spam folder
         </motion.p>
@@ -52,7 +60,7 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-gray-500 mt-2"
+          className="text-sm text-gray-500 mt-3 px-4"
         >
           This information helps us create a better experience for you
         </motion.p>
@@ -63,7 +71,7 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-gray-500 mt-2"
+          className="text-sm text-gray-500 mt-3 px-4"
         >
           We'll review your request and get back to you within 24 hours
         </motion.p>

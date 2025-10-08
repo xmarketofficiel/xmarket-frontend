@@ -18,10 +18,12 @@ export function SubmitButton({
   const isPrimary = variant === 'primary';
   
   const baseClasses = `
-    design-card w-full py-3 px-6 rounded-xl font-semibold transition-all
+    design-card w-full py-4 sm:py-3 px-6 rounded-xl font-semibold transition-all
     focus:outline-none focus:ring-2 focus:ring-offset-2 
     disabled:opacity-50 disabled:cursor-not-allowed
     flex items-center justify-center space-x-2
+    min-h-[3.5rem] sm:min-h-[3rem] text-base sm:text-sm
+    touch-manipulation
   `;
   
   const variantClasses = isPrimary

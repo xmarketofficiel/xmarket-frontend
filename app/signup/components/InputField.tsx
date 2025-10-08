@@ -37,7 +37,7 @@ export function InputField({
         ease: 'easeOut'
       }}
     >
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-2 px-1">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -64,8 +64,10 @@ export function InputField({
           placeholder={placeholder}
           maxLength={maxLength}
           className={`
-            design-card w-full px-4 py-3 rounded-xl border-2 transition-all
+            design-card w-full px-4 py-4 sm:py-3 rounded-xl border-2 transition-all
             bg-white/50 backdrop-blur-sm placeholder-gray-400
+            text-base sm:text-sm font-medium
+            min-h-[3.5rem] sm:min-h-[3rem]
             ${icon ? 'pl-12' : 'pl-4'}
             ${isPassword ? 'pr-12' : 'pr-4'}
             ${error 
@@ -80,12 +82,15 @@ export function InputField({
               ? 'focus:border-red-400 focus:shadow-lg focus:shadow-red-400/20' 
               : 'focus:border-[#009F9C] focus:shadow-lg focus:shadow-[#009F9C]/20'
             } focus:bg-white/80
+            touch-manipulation
           `}
           style={{ 
             transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
             transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
           }}
           required={required}
+          autoComplete={type === 'email' ? 'email' : type === 'password' ? 'current-password' : 'off'}
+          inputMode={type === 'email' ? 'email' : 'text'}
         />
         
         {/* Password toggle button */}
