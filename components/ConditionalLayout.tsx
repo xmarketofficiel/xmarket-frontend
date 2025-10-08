@@ -20,7 +20,14 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   }
   
   // Public pages - no navbar, no authentication required
-  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon') {
+  if (pathname === '/login' || 
+      pathname === '/signup' || 
+      pathname === '/signup/um6p-student' || 
+      pathname === '/signup/1337-student' || 
+      pathname === '/signup/external' || 
+      pathname === '/auth/register' || 
+      pathname === '/auth/discord/callback' ||
+      pathname === '/coming-soon') {
     return (
       <main className={pathname === '/coming-soon' ? 'min-h-screen' : 'min-h-screen bg-gray-50'}>
         {children}

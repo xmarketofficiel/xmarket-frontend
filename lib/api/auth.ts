@@ -19,6 +19,24 @@ export interface CompleteRegistrationData {
   password: string;
 }
 
+export interface Discord1337VerificationData {
+  code: string;
+  email: string;
+  loginName: string;
+}
+
+export interface Discord1337VerificationResponse {
+  verified: boolean;
+  user?: {
+    id: string;
+    username: string;
+    discriminator: string;
+    email: string;
+    avatar: string;
+  };
+  message?: string;
+}
+
 export interface AuthResponse {
   message: string;
   user: User;
@@ -115,6 +133,10 @@ export const authApi = {
       };
     }
   },
+
+  // Discord 1337 verification
+  verifyDiscord1337: (data: Discord1337VerificationData): Promise<ApiResponse<Discord1337VerificationResponse>> =>
+    apiClient.post('/auth/discord/verify-1337', data),
 
   refreshToken: async (): Promise<ApiResponse<{ access_token: string; expires_in: number }>> => {
     const refreshToken = localStorage.getItem('refresh_token');
