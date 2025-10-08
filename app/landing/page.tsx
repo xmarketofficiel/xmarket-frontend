@@ -48,7 +48,7 @@ export default function LandingPage() {
 
   // Navigation handlers
   const handleGetStarted = () => {
-    router.push('/auth/register');
+    router.push('/signup');
   };
 
   const handleLogin = () => {
