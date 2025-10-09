@@ -31,11 +31,16 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
     userType: 'um6p',
     email: '',
     otp: '',
-    fullName: '',
+    firstName: '',
+    lastName: '',
+    department: 'UM6P',
+    role: 'student',
+    address: '',
     whatsappNumber: '',
     password: '',
     confirmPassword: '',
-    loginName: ''
+    loginName: '',
+    fullName: '' // Legacy field
   });
 
   const [state, setState] = useState({
@@ -241,9 +246,15 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
     try {
       const response = await api.auth.completeRegistration({
         email: formData.email,
-        fullName,
+        firstName: formData.firstName || '',
+        lastName: formData.lastName || '',
+        department: 'UM6P',
+        role: formData.role || 'student',
+        address: formData.address || '',
         whatsappNumber,
-        password
+        password,
+        // Backward compatibility
+        fullName: `${formData.firstName || ''} ${formData.lastName || ''}`.trim() || fullName
       });
 
       if (response.data) {

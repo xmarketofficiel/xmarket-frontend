@@ -14,15 +14,19 @@ export interface LoginCredentials {
 
 export interface CompleteRegistrationData {
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: 'student' | 'staff';
+  address: string;
   whatsappNumber: string;
   password: string;
+  // Legacy field for backward compatibility
+  fullName?: string;
 }
 
 export interface Discord1337VerificationData {
   code: string;
-  email: string;
-  loginName: string;
 }
 
 export interface Discord1337VerificationResponse {
@@ -33,6 +37,14 @@ export interface Discord1337VerificationResponse {
     discriminator: string;
     email: string;
     avatar: string;
+    avatar_url?: string;
+    global_name?: string;
+    server_nickname?: string;
+    display_name?: string;
+    is_guild_member?: boolean;
+    guild_name?: string;
+    guild_roles?: any[];
+    joined_at?: string;
   };
   message?: string;
 }

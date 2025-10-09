@@ -23,10 +23,15 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
   const router = useRouter();
 
   const [requestData, setRequestData] = useState<RequestAccessData>({
+    firstName: '',
+    lastName: '',
+    department: '',
+    role: 'student',
+    address: '',
     email: '',
-    fullName: '',
     whatsappNumber: '',
-    reason: ''
+    reason: '',
+    fullName: '' // Legacy field
   });
 
   const [state, setState] = useState({
@@ -82,7 +87,7 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
     
     updateState({ isLoading: true, message: '', messageType: 'error' });
 
-    const { email, fullName, whatsappNumber } = requestData;
+    const { email, firstName, lastName, department, role, address, whatsappNumber } = requestData;
     
     if (!email) {
       updateState({ message: ERROR_MESSAGES.EMAIL_REQUIRED, isLoading: false });
@@ -94,8 +99,23 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
       return;
     }
     
-    if (!fullName) {
-      updateState({ message: ERROR_MESSAGES.NAME_REQUIRED, isLoading: false });
+    if (!firstName) {
+      updateState({ message: 'First name is required', isLoading: false });
+      return;
+    }
+    
+    if (!lastName) {
+      updateState({ message: 'Last name is required', isLoading: false });
+      return;
+    }
+    
+    if (!department) {
+      updateState({ message: 'Department is required', isLoading: false });
+      return;
+    }
+    
+    if (!address) {
+      updateState({ message: 'Address is required', isLoading: false });
       return;
     }
     
@@ -111,9 +131,10 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
 
     try {
       await api.joinRequests.create({
+        fullName: `${firstName} ${lastName}`.trim(),
         email,
-        fullName,
-        whatsappNumber
+        whatsappNumber,
+        reason: `Department: ${department}, Role: ${role}, Address: ${address}`
       });
 
       updateState({

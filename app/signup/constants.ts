@@ -144,7 +144,7 @@ export const STEP_CONFIG = {
 
   "1337_STUDENT": {
     title: "1337 Student Registration",
-    subtitle: "Enter your 1337 credentials",
+    subtitle: "Connect with Discord to verify your 1337 membership and complete your registration.",
     buttonText: "Continue",
     loadingText: "Processing..."
   },

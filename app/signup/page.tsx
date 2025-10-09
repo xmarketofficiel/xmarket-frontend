@@ -37,6 +37,11 @@ export default function SignupPage() {
       userType: undefined,
       email: '',
       otp: '',
+      firstName: '',
+      lastName: '',
+      department: '',
+      role: 'student',
+      address: '',
       fullName: '',
       whatsappNumber: '',
       password: '',
@@ -44,6 +49,11 @@ export default function SignupPage() {
       loginName: ''
     },
     requestAccessData: {
+      firstName: '',
+      lastName: '',
+      department: '',
+      role: 'student',
+      address: '',
       fullName: '',
       email: '',
       whatsappNumber: '',
@@ -80,17 +90,15 @@ export default function SignupPage() {
       <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-cyan-50">
         <AnimatedBackground floatingElements={floatingElements} />
         
-        <div className="relative z-10 min-h-screen">
+        <div className="relative z-10 min-h-screen flex">
           {/* Hide branding panel on mobile, show only on desktop */}
-          <div className="hidden lg:block">
             <BrandingPanel 
               currentStep={state.formData.step} 
               signupMode={state.signupMode}
             />
-          </div>
           
           {/* Main Content Panel - Full width on mobile */}
-          <div className="w-full lg:w-1/2 lg:ml-auto flex items-center justify-center p-4 lg:p-8">
+          <div className="w-full lg:w-1/2 lg:ml-auto flex  justify-center p-4 lg:p-8">
             <div className="w-full max-w-sm lg:max-w-md">
               <div className="relative">
                 {/* Back to Home Button - Mobile optimized */}
