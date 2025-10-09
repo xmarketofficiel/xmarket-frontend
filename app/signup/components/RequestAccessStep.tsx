@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MessageSquare, Send } from 'lucide-react';
+import { User, Mail, Phone, MessageSquare, Building, MapPin, Users, Send } from 'lucide-react';
 import { InputField } from './InputField';
 import { MessageDisplay } from './MessageDisplay';
 import { SubmitButton } from './SubmitButton';
@@ -46,7 +46,9 @@ export function RequestAccessStep({
   };
 
   const isPhoneValid = isValidPhoneNumber(requestData.whatsappNumber);
-  const isFormValid = requestData.fullName && requestData.email && isPhoneValid && requestData.reason;
+  const isFormValid = requestData.firstName && requestData.lastName && requestData.email && 
+                     isPhoneValid && requestData.reason && requestData.role && 
+                     requestData.department && requestData.address;
 
   // Error messages
   const getPhoneError = () => {
@@ -76,17 +78,94 @@ export function RequestAccessStep({
 
       {/* Personal Information */}
       <div className="space-y-4">
+                {/* Name Fields Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            label="First Name"
+            type="text"
+            value={requestData.firstName || ''}
+            onChange={(value) => onUpdateRequestData({ firstName: value })}
+            onFocus={() => onFieldFocus('firstName')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'firstName'}
+            icon={<User className="w-5 h-5" />}
+            placeholder="Enter your first name"
+            required
+          />
+          
+          <InputField
+            label="Last Name"
+            type="text"
+            value={requestData.lastName || ''}
+            onChange={(value) => onUpdateRequestData({ lastName: value })}
+            onFocus={() => onFieldFocus('lastName')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'lastName'}
+            icon={<User className="w-5 h-5" />}
+            placeholder="Enter your last name"
+            required
+          />
+        </div>
+
+        {/* Role Selection */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Role <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => onUpdateRequestData({ role: 'student' })}
+              className={`flex-1 px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                requestData.role === 'student'
+                  ? 'border-[#009F9C] bg-[#009F9C]/10 text-[#009F9C]'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Users className="w-4 h-4 mx-auto mb-1" />
+              Student
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateRequestData({ role: 'staff' })}
+              className={`flex-1 px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                requestData.role === 'staff'
+                  ? 'border-[#009F9C] bg-[#009F9C]/10 text-[#009F9C]'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Building className="w-4 h-4 mx-auto mb-1" />
+              Staff
+            </button>
+          </div>
+        </div>
+
+        {/* Department Field */}
         <InputField
+          label="Department"
           type="text"
-          value={requestData.fullName}
-          onChange={(value) => onUpdateRequestData({ fullName: value })}
-          onFocus={() => onFieldFocus('fullName')}
+          value={requestData.department || ''}
+          onChange={(value) => onUpdateRequestData({ department: value })}
+          onFocus={() => onFieldFocus('department')}
           onBlur={onFieldBlur}
-          focused={focusedField === 'fullName'}
-          placeholder="Enter your full name"
-          label="Full Name"
+          focused={focusedField === 'department'}
+          icon={<Building className="w-5 h-5" />}
+          placeholder="Enter your department"
           required
-          icon={<User className="w-5 h-5" />}
+        />
+
+        {/* Address Field */}
+        <InputField
+          label="Address"
+          type="text"
+          value={requestData.address || ''}
+          onChange={(value) => onUpdateRequestData({ address: value })}
+          onFocus={() => onFieldFocus('address')}
+          onBlur={onFieldBlur}
+          focused={focusedField === 'address'}
+          icon={<MapPin className="w-5 h-5" />}
+          placeholder="Enter your address"
+          required
         />
 
         <InputField

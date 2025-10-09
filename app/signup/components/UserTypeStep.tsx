@@ -84,8 +84,6 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
           ease: ANIMATION_SYSTEM.framerEasing.easeOut 
         }}
       >
-        {/* Removed "Students" title as requested */}
-
         <div className="grid grid-cols-1 gap-5">
           {cardTypes.map((userType, index) => {
             const Icon = userType.icon;

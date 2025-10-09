@@ -22,7 +22,8 @@ export function InputField({
   icon,
   maxLength,
   error,
-  isValid
+  isValid,
+  disabled = false
 }: InputFieldProps) {
   const isPassword = type === 'password';
   const actualType = isPassword && showPassword ? 'text' : type;
@@ -45,7 +46,15 @@ export function InputField({
       <div className="relative">
         {/* Icon */}
         {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-colors"
+          <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-colors z-10 pointer-events-none ${
+            disabled 
+              ? 'text-gray-300' 
+              : focused 
+                ? 'text-[#009F9C]' 
+                : error 
+                  ? 'text-red-400'
+                  : 'text-gray-500'
+          }`}
                style={{ 
                  transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
                  transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
@@ -58,37 +67,40 @@ export function InputField({
         <input
           type={actualType}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onChange={(e) => !disabled && onChange(e.target.value)}
+          onFocus={!disabled ? onFocus : undefined}
+          onBlur={!disabled ? onBlur : undefined}
           placeholder={placeholder}
           maxLength={maxLength}
+          disabled={disabled}
           className={`
-            design-card w-full px-4 py-4 sm:py-3 rounded-xl border-2 transition-all
-            bg-white/50 backdrop-blur-sm placeholder-gray-400
+            w-full px-4 py-4 sm:py-3 rounded-xl border-2 transition-all
+            bg-white/70 placeholder-gray-400
             text-base sm:text-sm font-medium
             min-h-[3.5rem] sm:min-h-[3rem]
             ${icon ? 'pl-12' : 'pl-4'}
             ${isPassword ? 'pr-12' : 'pr-4'}
-            ${error 
-              ? 'border-red-400 shadow-lg shadow-red-400/20 bg-red-50/80' 
-              : focused 
-                ? 'border-[#009F9C] shadow-lg shadow-[#009F9C]/20 bg-white/80' 
-                : isValid === true
-                  ? 'border-green-400 bg-green-50/80'
-                  : 'border-gray-200 hover:border-gray-300'
+            ${disabled 
+              ? 'border-gray-200 bg-gray-50/90 text-gray-500 cursor-not-allowed'
+              : error 
+                ? 'border-red-400 shadow-lg shadow-red-400/20 bg-red-50/90' 
+                : focused 
+                  ? 'border-[#009F9C] shadow-lg shadow-[#009F9C]/20 bg-white/90' 
+                  : isValid === true
+                    ? 'border-green-400 bg-green-50/90'
+                    : 'border-gray-200 hover:border-gray-300'
             }
-            focus:outline-none ${error 
+            ${!disabled && 'focus:outline-none'} ${!disabled && (error 
               ? 'focus:border-red-400 focus:shadow-lg focus:shadow-red-400/20' 
               : 'focus:border-[#009F9C] focus:shadow-lg focus:shadow-[#009F9C]/20'
-            } focus:bg-white/80
+            )} ${!disabled && 'focus:bg-white/90'}
             touch-manipulation
           `}
           style={{ 
             transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
             transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
           }}
-          required={required}
+          required={required && !disabled}
           autoComplete={type === 'email' ? 'email' : type === 'password' ? 'current-password' : 'off'}
           inputMode={type === 'email' ? 'email' : 'text'}
         />
@@ -98,7 +110,12 @@ export function InputField({
           <button
             type="button"
             onClick={onTogglePassword}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#009F9C]/20 rounded-md p-1 transition-all"
+            disabled={disabled}
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 focus:outline-none focus:ring-2 focus:ring-[#009F9C]/20 rounded-md p-1 transition-all z-10 ${
+              disabled 
+                ? 'text-gray-300 cursor-not-allowed' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
             style={{ 
               transitionDuration: ANIMATION_SYSTEM.duration.normal + 'ms',
               transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut

@@ -19,20 +19,32 @@ export interface SignupFormData {
   userType?: UserType;
   email: string;
   otp: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: 'student' | 'staff';
+  address: string;
   whatsappNumber: string;
   password: string;
   confirmPassword: string;
   loginName?: string; // For 1337 students
   studentType?: 'um6p' | '1337'; // Track which student verification was used
   discordData?: DiscordData; // Discord verification data for 1337 students
+  // Legacy field for backward compatibility
+  fullName?: string;
 }
 
 export interface RequestAccessData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: 'student' | 'staff';
+  address: string;
   email: string;
   whatsappNumber: string;
   reason: string;
+  // Legacy field for backward compatibility
+  fullName?: string;
 }
 
 export interface SignupState {
@@ -187,6 +199,7 @@ export interface InputFieldProps {
   maxLength?: number;
   error?: string;
   isValid?: boolean;
+  disabled?: boolean;
 }
 
 export interface SubmitButtonProps {
