@@ -218,10 +218,7 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
 
     const { fullName, whatsappNumber, password, confirmPassword } = formData;
     
-    if (!fullName) {
-      updateState({ message: ERROR_MESSAGES.NAME_REQUIRED, isLoading: false });
-      return;
-    }
+
     
     if (!whatsappNumber) {
       updateState({ message: ERROR_MESSAGES.PHONE_REQUIRED, isLoading: false });

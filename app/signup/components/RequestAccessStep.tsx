@@ -109,23 +109,36 @@ export function RequestAccessStep({
 
         {/* Role Selection */}
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          {/* <label className="block text-sm font-medium text-gray-700 mb-2">
             Role <span className="text-red-500">*</span>
           </label>
-          <div className="flex gap-3">
-            <button
+          <div className="flex gap-3"> */}
+            {/* <button
               type="button"
-              onClick={() => onUpdateRequestData({ role: 'student' })}
+              onClick={() => onUpdateRequestData({ role: 'seller' })}
               className={`flex-1 px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                requestData.role === 'student'
+                requestData.role === 'seller'
                   ? 'border-[#009F9C] bg-[#009F9C]/10 text-[#009F9C]'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
               }`}
             >
               <Users className="w-4 h-4 mx-auto mb-1" />
               Student
-            </button>
-            <button
+            </button> */}
+            {/* <InputField
+          label="Role"
+          type="text"
+          value={requestData.role || ''}
+          onChange={(value) => onUpdateRequestData({ role: value as 'seller' })}
+          onFocus={() => onFieldFocus('role')}
+          onBlur={onFieldBlur}
+          focused={focusedField === 'role'}
+          icon={<Building className="w-5 h-5" />}
+          placeholder="Enter your role"
+          disabled
+          required
+        /> */}
+            {/* <button
               type="button"
               onClick={() => onUpdateRequestData({ role: 'staff' })}
               className={`flex-1 px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
@@ -136,12 +149,12 @@ export function RequestAccessStep({
             >
               <Building className="w-4 h-4 mx-auto mb-1" />
               Staff
-            </button>
-          </div>
+            </button>/ */}
+          {/* </div> */}
         </div>
 
         {/* Department Field */}
-        <InputField
+        {/* <InputField
           label="Department"
           type="text"
           value={requestData.department || ''}
@@ -152,7 +165,7 @@ export function RequestAccessStep({
           icon={<Building className="w-5 h-5" />}
           placeholder="Enter your department"
           required
-        />
+        /> */}
 
         {/* Address Field */}
         <InputField
