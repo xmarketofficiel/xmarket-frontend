@@ -27,7 +27,7 @@ export const api = {
   uploads: _uploadsApi,
   admin: _adminApi,
   joinRequests: {
-    create: (data: { fullName: string; email: string; whatsappNumber: string; reason?: string }) =>
+    create: (data: any) =>
       apiClient.post('/join-requests', data)
   },
   

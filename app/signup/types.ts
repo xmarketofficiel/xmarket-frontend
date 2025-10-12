@@ -38,7 +38,7 @@ export interface RequestAccessData {
   firstName: string;
   lastName: string;
   department: string;
-  role: 'student' | 'staff';
+  role: 'seller';
   address: string;
   email: string;
   whatsappNumber: string;

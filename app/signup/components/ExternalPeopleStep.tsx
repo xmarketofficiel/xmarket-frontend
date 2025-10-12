@@ -25,8 +25,8 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
   const [requestData, setRequestData] = useState<RequestAccessData>({
     firstName: '',
     lastName: '',
-    department: '',
-    role: 'student',
+    department: 'External',
+    role: 'seller',
     address: '',
     email: '',
     whatsappNumber: '',
@@ -132,9 +132,14 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
     try {
       await api.joinRequests.create({
         fullName: `${firstName} ${lastName}`.trim(),
+        firstName,
+        lastName,
+        department,
+        role,
+        address,
         email,
         whatsappNumber,
-        reason: `Department: ${department}, Role: ${role}, Address: ${address}`
+        // reason: `Department: ${department}, Role: ${role}, Address: ${address}`
       });
 
       updateState({
