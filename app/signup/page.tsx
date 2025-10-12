@@ -52,7 +52,7 @@ export default function SignupPage() {
       firstName: '',
       lastName: '',
       department: '',
-      role: 'student',
+      role: 'seller',
       address: '',
       fullName: '',
       email: '',
