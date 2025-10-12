@@ -25,7 +25,7 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
   const [requestData, setRequestData] = useState<RequestAccessData>({
     firstName: '',
     lastName: '',
-    department: 'Eternal',
+    department: 'External',
     role: 'seller',
     address: '',
     email: '',
