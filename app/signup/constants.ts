@@ -29,8 +29,8 @@ export const SIGNUP_CONFIG = {
 
 // Brand messaging and features
 export const BRAND_FEATURES = {
-  MAIN_TITLE: "Join the Future of Student Commerce",
-  SUBTITLE: "Connect with students, trade textbooks, gadgets, and more",
+  MAIN_TITLE: "Join XMarket Today",
+  SUBTITLE: "Connect, trade, and thrive within your university community",
   
   FEATURES: [
     {

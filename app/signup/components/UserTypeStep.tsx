@@ -65,7 +65,7 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
 
   return (
     <motion.div 
-      className="space-y-6 lg:space-y-8"
+      className="space-y-4 lg:space-y-5"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
@@ -75,7 +75,7 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
     >
       {/* Student Card */}
       <motion.div
-        className="bg-white/70 backdrop-blur-sm rounded-3xl border border-white/40 p-6 lg:p-8 space-y-6"
+        className="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-lg p-4 lg:p-6 space-y-4"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ 
@@ -84,7 +84,7 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
           ease: ANIMATION_SYSTEM.framerEasing.easeOut 
         }}
       >
-        <div className="grid grid-cols-1 gap-5">
+        <div className="grid grid-cols-1 gap-3 lg:gap-4">
           {cardTypes.map((userType, index) => {
             const Icon = userType.icon;
             return (
@@ -101,7 +101,7 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
               >
                 {/* Tooltip - Hidden on mobile, shown on desktop */}
                 <div className="hidden lg:block absolute -top-12 left-1/2 transform -translate-x-1/2 
-                  bg-gray-900 text-white text-sm py-2 px-3 rounded-lg opacity-0 
+                  bg-gray-900 text-white text-xs py-1.5 px-3 rounded-lg opacity-0 
                   group-hover:opacity-100 transition-opacity duration-200 z-10 whitespace-nowrap
                   before:content-[''] before:absolute before:top-full before:left-1/2 
                   before:transform before:-translate-x-1/2 before:border-4 
@@ -112,13 +112,13 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
                 <motion.button
                   onClick={() => handleNavigation(userType.route)}
                   disabled={isLoading}
-                  className={`w-full p-6 lg:p-8 rounded-2xl border border-gray-200 ${userType.color} ${userType.hoverColor} text-white 
-                    transition-all duration-300 transform hover:scale-[1.02] lg:hover:scale-[1.05] hover:shadow-xl
+                  className={`w-full p-4 lg:p-5 rounded-xl border border-white/50 ${userType.color} ${userType.hoverColor} text-white 
+                    transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl
                     disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                    focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-[#009F9C]/30
-                    touch-manipulation min-h-[5rem] lg:min-h-[6rem]`}
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#009F9C]/50
+                    touch-manipulation relative overflow-hidden group`}
                   whileHover={{ 
-                    scale: isLoading ? 1 : (typeof window !== 'undefined' && window.innerWidth < 1024) ? 1.02 : 1.05,
+                    scale: isLoading ? 1 : 1.02,
                     transition: { duration: 0.2 }
                   }}
                   whileTap={{ 
@@ -126,16 +126,22 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
                     transition: { duration: 0.1 }
                   }}
                 >
-                  <div className="flex flex-col lg:flex-col items-center space-y-3 lg:space-y-4">
-                    <div className="p-3 lg:p-4 bg-white/20 rounded-2xl">
-                      <Icon className="w-7 h-7 lg:w-8 lg:h-8" />
+                  {/* Subtle gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <div className="relative flex items-center space-x-3 lg:space-x-4">
+                    <div className="flex-shrink-0 p-2.5 lg:p-3 bg-white/20 backdrop-blur-sm rounded-lg">
+                      <Icon className="w-6 h-6 lg:w-7 lg:h-7" />
                     </div>
-                    <div className="text-center">
-                      <div className="font-bold text-lg lg:text-xl">{userType.title}</div>
-                      <div className="text-white/80 text-sm lg:hidden mt-1">
+                    <div className="flex-1 text-left">
+                      <div className="font-bold text-base lg:text-lg">{userType.title}</div>
+                      <div className="text-white/90 text-xs lg:text-sm mt-0.5 lg:hidden">
                         {userType.tooltip}
                       </div>
                     </div>
+                    <svg className="w-5 h-5 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
                 </motion.button>
               </motion.div>
@@ -147,7 +153,6 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
       {/* External People option */}
       {externalType && (
         <motion.div
-          className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
@@ -156,12 +161,12 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
             ease: ANIMATION_SYSTEM.framerEasing.easeOut 
           }}
         >
-          <div className="text-sm text-gray-500 mb-4 font-medium">or</div>
+          <div className="text-xs text-gray-500 mb-3 font-medium text-center">or</div>
           
           <motion.div className="group relative">
             {/* Tooltip - Hidden on mobile */}
             <div className="hidden lg:block absolute -top-12 left-1/2 transform -translate-x-1/2 
-              bg-gray-900 text-white text-sm py-2 px-3 rounded-lg opacity-0 
+              bg-gray-900 text-white text-xs py-1.5 px-3 rounded-lg opacity-0 
               group-hover:opacity-100 transition-opacity duration-200 z-10 whitespace-nowrap
               before:content-[''] before:absolute before:top-full before:left-1/2 
               before:transform before:-translate-x-1/2 before:border-4 
@@ -172,13 +177,13 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
             <motion.button
               onClick={() => handleNavigation(externalType.route)}
               disabled={isLoading}
-              className={`w-full lg:w-auto px-8 lg:px-12 py-5 lg:py-6 rounded-2xl border border-gray-300 ${externalType.color} ${externalType.hoverColor} text-white 
-                transition-all duration-300 transform hover:scale-[1.02] lg:hover:scale-[1.05] hover:shadow-xl
+              className={`w-full p-4 lg:p-5 rounded-xl border border-white/50 ${externalType.color} ${externalType.hoverColor} text-white 
+                transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-gray-500/30
-                touch-manipulation min-h-[4rem]`}
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500/50
+                touch-manipulation relative overflow-hidden`}
               whileHover={{ 
-                scale: isLoading ? 1 : (typeof window !== 'undefined' && window.innerWidth < 1024) ? 1.02 : 1.05,
+                scale: isLoading ? 1 : 1.02,
                 transition: { duration: 0.2 }
               }}
               whileTap={{ 
@@ -186,16 +191,22 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
                 transition: { duration: 0.1 }
               }}
             >
-              <div className="flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-4">
-                <div className="p-3 bg-white/20 rounded-xl">
-                  <externalType.icon className="w-6 h-6" />
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative flex items-center space-x-3 lg:space-x-4">
+                <div className="flex-shrink-0 p-2.5 lg:p-3 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <externalType.icon className="w-5 h-5 lg:w-6 lg:h-6" />
                 </div>
-                <div className="text-center lg:text-left">
-                  <div className="font-bold text-lg">{externalType.title}</div>
-                  <div className="text-white/80 text-sm lg:hidden mt-1">
+                <div className="flex-1 text-left">
+                  <div className="font-bold text-base lg:text-lg">{externalType.title}</div>
+                  <div className="text-white/90 text-xs lg:text-sm mt-0.5 lg:hidden">
                     {externalType.tooltip}
                   </div>
                 </div>
+                <svg className="w-5 h-5 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </div>
             </motion.button>
           </motion.div>

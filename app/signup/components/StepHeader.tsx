@@ -32,13 +32,13 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
     <motion.div
       {...ANIMATION_VARIANTS.fadeInUp}
       transition={{ duration: 0.6 }}
-      className="text-center mb-8 lg:mb-10"
+      className="text-center mb-6 lg:mb-8"
     >
-      <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3 lg:mb-2 leading-tight">
+      <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
         {config.title}
       </h2>
       {config.subtitle && (
-        <p className="text-gray-600 text-base lg:text-lg leading-relaxed px-2">
+        <p className="text-gray-600 text-sm lg:text-base leading-relaxed px-2">
           {config.subtitle}
         </p>
       )}
@@ -49,7 +49,7 @@ export function StepHeader({ step, signupMode }: StepHeaderProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-gray-500 mt-3 px-4"
+          className="text-xs text-gray-500 mt-2 px-4"
         >
           Didn't receive the code? Check your spam folder
         </motion.p>

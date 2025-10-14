@@ -389,7 +389,7 @@ export function Student1337Step({ onBack, onNext }: Student1337StepProps) {
 
   return (
     <motion.div 
-      className="space-y-9 px-6 py-4 max-w-sm mx-auto min-h-screen flex flex-col"
+      className="space-y-6 px-6 py-4 max-w-sm mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
