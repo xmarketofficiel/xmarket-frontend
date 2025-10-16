@@ -110,4 +110,22 @@
   .font-inter {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   }
+  
+  /* Animated gradient backgrounds */
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+  
+  .bg-pos-0 {
+    background-position: 0% 0%;
+  }
+  
+  .bg-pos-100 {
+    background-position: 100% 0%;
+  }
+  
+  /* Smooth color transitions */
+  .transition-bg-pos {
+    transition: background-position 0.6s ease;
+  }
 }

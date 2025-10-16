@@ -73,9 +73,9 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
         ease: ANIMATION_SYSTEM.framerEasing.easeOut 
       }}
     >
-      {/* Student Card */}
+      {/* Student Card - Premium Design */}
       <motion.div
-        className="bg-white/80 backdrop-blur-md rounded-2xl border border-gray-100 shadow-lg p-4 lg:p-6 space-y-4"
+        className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl border-2 border-white/50 shadow-2xl shadow-gray-200/50 p-5 sm:p-6 lg:p-7 space-y-3 sm:space-y-4 relative overflow-hidden"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ 
@@ -84,7 +84,15 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
           ease: ANIMATION_SYSTEM.framerEasing.easeOut 
         }}
       >
-        <div className="grid grid-cols-1 gap-3 lg:gap-4">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#009F9C]/5 via-transparent to-cyan-500/5 pointer-events-none" />
+        
+        {/* Title */}
+        <div className="relative">
+          <h3 className="text-sm sm:text-base font-bold text-gray-700 mb-1 tracking-wide uppercase">Student Access</h3>
+          <p className="text-xs sm:text-sm text-gray-500">Select your institution</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:gap-3.5 lg:gap-4">
           {cardTypes.map((userType, index) => {
             const Icon = userType.icon;
             return (
@@ -112,36 +120,54 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
                 <motion.button
                   onClick={() => handleNavigation(userType.route)}
                   disabled={isLoading}
-                  className={`w-full p-4 lg:p-5 rounded-xl border border-white/50 ${userType.color} ${userType.hoverColor} text-white 
-                    transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl
+                  className={`w-full p-4 sm:p-5 rounded-2xl border-2 border-white/30 ${userType.color} ${userType.hoverColor} text-white 
+                    transition-all duration-300 transform hover:scale-[1.03] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0
+                    hover:shadow-2xl hover:shadow-black/20 active:shadow-lg
                     disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#009F9C]/50
-                    touch-manipulation relative overflow-hidden group`}
+                    touch-manipulation relative overflow-hidden group min-h-[80px] sm:min-h-[88px]`}
                   whileHover={{ 
-                    scale: isLoading ? 1 : 1.02,
+                    scale: isLoading ? 1 : 1.03,
+                    y: isLoading ? 0 : -4,
                     transition: { duration: 0.2 }
                   }}
                   whileTap={{ 
                     scale: isLoading ? 1 : 0.98,
+                    y: isLoading ? 0 : 0,
                     transition: { duration: 0.1 }
                   }}
                 >
-                  {/* Subtle gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Animated gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  <div className="relative flex items-center space-x-3 lg:space-x-4">
-                    <div className="flex-shrink-0 p-2.5 lg:p-3 bg-white/20 backdrop-blur-sm rounded-lg">
-                      <Icon className="w-6 h-6 lg:w-7 lg:h-7" />
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+                  </div>
+                  
+                  <div className="relative flex items-center space-x-3 sm:space-x-4">
+                    <div className="flex-shrink-0 p-3 sm:p-3.5 bg-white/25 backdrop-blur-md rounded-xl shadow-lg group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+                      <Icon className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-lg" />
                     </div>
-                    <div className="flex-1 text-left">
-                      <div className="font-bold text-base lg:text-lg">{userType.title}</div>
-                      <div className="text-white/90 text-xs lg:text-sm mt-0.5 lg:hidden">
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="font-bold text-base sm:text-lg mb-0.5 group-hover:translate-x-1 transition-transform duration-200">
+                        {userType.title}
+                      </div>
+                      <div className="text-white/85 text-xs sm:text-sm lg:hidden truncate">
                         {userType.tooltip}
                       </div>
                     </div>
-                    <svg className="w-5 h-5 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <motion.svg 
+                      className="w-6 h-6 flex-shrink-0 text-white/70 group-hover:text-white transition-colors duration-200" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 4 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </motion.svg>
                   </div>
                 </motion.button>
               </motion.div>
@@ -150,7 +176,7 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
         </div>
       </motion.div>
 
-      {/* External People option */}
+      {/* External People option - Premium Design */}
       {externalType && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -161,7 +187,15 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
             ease: ANIMATION_SYSTEM.framerEasing.easeOut 
           }}
         >
-          <div className="text-xs text-gray-500 mb-3 font-medium text-center">or</div>
+          {/* Elegant divider */}
+          <div className="relative flex items-center justify-center my-5 sm:my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t-2 border-gray-200" />
+            </div>
+            <div className="relative px-4 bg-gradient-to-br from-teal-50 to-cyan-50">
+              <span className="text-xs sm:text-sm text-gray-500 font-semibold uppercase tracking-wider">Or</span>
+            </div>
+          </div>
           
           <motion.div className="group relative">
             {/* Tooltip - Hidden on mobile */}
@@ -177,36 +211,54 @@ export function UserTypeStep({ isLoading }: UserTypeStepProps) {
             <motion.button
               onClick={() => handleNavigation(externalType.route)}
               disabled={isLoading}
-              className={`w-full p-4 lg:p-5 rounded-xl border border-white/50 ${externalType.color} ${externalType.hoverColor} text-white 
-                transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl
+              className={`w-full p-4 sm:p-5 rounded-2xl border-2 border-white/30 ${externalType.color} ${externalType.hoverColor} text-white 
+                transition-all duration-300 transform hover:scale-[1.03] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0
+                hover:shadow-2xl hover:shadow-black/20 active:shadow-lg
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500/50
-                touch-manipulation relative overflow-hidden`}
+                touch-manipulation relative overflow-hidden min-h-[80px] sm:min-h-[88px]`}
               whileHover={{ 
-                scale: isLoading ? 1 : 1.02,
+                scale: isLoading ? 1 : 1.03,
+                y: isLoading ? 0 : -4,
                 transition: { duration: 0.2 }
               }}
               whileTap={{ 
                 scale: isLoading ? 1 : 0.98,
+                y: isLoading ? 0 : 0,
                 transition: { duration: 0.1 }
               }}
             >
-              {/* Subtle gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Animated gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              <div className="relative flex items-center space-x-3 lg:space-x-4">
-                <div className="flex-shrink-0 p-2.5 lg:p-3 bg-white/20 backdrop-blur-sm rounded-lg">
-                  <externalType.icon className="w-5 h-5 lg:w-6 lg:h-6" />
+              {/* Shine effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+              </div>
+              
+              <div className="relative flex items-center space-x-3 sm:space-x-4">
+                <div className="flex-shrink-0 p-3 sm:p-3.5 bg-white/25 backdrop-blur-md rounded-xl shadow-lg group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+                  <externalType.icon className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow-lg" />
                 </div>
-                <div className="flex-1 text-left">
-                  <div className="font-bold text-base lg:text-lg">{externalType.title}</div>
-                  <div className="text-white/90 text-xs lg:text-sm mt-0.5 lg:hidden">
+                <div className="flex-1 text-left min-w-0">
+                  <div className="font-bold text-base sm:text-lg mb-0.5 group-hover:translate-x-1 transition-transform duration-200">
+                    {externalType.title}
+                  </div>
+                  <div className="text-white/85 text-xs sm:text-sm lg:hidden truncate">
                     {externalType.tooltip}
                   </div>
                 </div>
-                <svg className="w-5 h-5 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <motion.svg 
+                  className="w-6 h-6 flex-shrink-0 text-white/70 group-hover:text-white transition-colors duration-200" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: 4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </motion.svg>
               </div>
             </motion.button>
           </motion.div>

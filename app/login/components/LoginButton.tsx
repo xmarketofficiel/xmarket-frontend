@@ -16,7 +16,7 @@ export function LoginButton({ isLoading, onClick }: LoginButtonProps) {
       type="submit"
       disabled={isLoading}
       onClick={onClick}
-      className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-[#009F9C] to-[#40E0D0] p-4 text-white font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group hover:shadow-xl design-card"
+      className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-[#009F9C] to-[#40E0D0] p-3.5 sm:p-4 text-white font-semibold text-base sm:text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group hover:shadow-xl active:shadow-md design-card min-h-[52px] sm:min-h-[56px] touch-manipulation"
       style={{
         transition: `all ${ANIMATION_SYSTEM.duration.normal}ms ${ANIMATION_SYSTEM.easing.easeOut}`
       }}

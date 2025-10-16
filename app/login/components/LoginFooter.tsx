@@ -10,7 +10,7 @@ import { LOGIN_CONFIG } from '../constants';
 export function LoginFooter() {
   return (
     <motion.div
-      className="mt-8 space-y-4"
+      className="mt-6 sm:mt-8 space-y-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
@@ -30,7 +30,7 @@ export function LoginFooter() {
 function SignupLink() {
   return (
     <div className="text-center">
-      <p className="text-gray-600 mb-4 transition-colors"
+      <p className="text-sm sm:text-base text-gray-600 mb-4 transition-colors"
          style={{
            transitionDuration: ANIMATION_SYSTEM.durationString.fast,
            transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
@@ -39,7 +39,7 @@ function SignupLink() {
       </p>
       <Link href="/signup">
         <motion.div
-          className="design-card inline-flex items-center justify-center px-6 py-3 border-2 border-[#009F9C] text-[#009F9C] rounded-xl font-semibold hover:bg-[#009F9C] hover:text-white hover:shadow-lg transition-all group"
+          className="design-card inline-flex items-center justify-center px-5 sm:px-6 py-3 sm:py-3 border-2 border-[#009F9C] text-[#009F9C] rounded-xl font-semibold hover:bg-[#009F9C] hover:text-white active:bg-[#007B78] hover:shadow-lg active:shadow-md transition-all group min-h-[48px] sm:min-h-[52px] touch-manipulation text-sm sm:text-base"
           style={{
             transitionDuration: ANIMATION_SYSTEM.durationString.normal,
             transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
@@ -48,7 +48,7 @@ function SignupLink() {
           whileTap={{ scale: 0.98 }}
           transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
         >
-          <User className="w-5 h-5 mr-2 transition-transform"
+          <User className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform"
                 style={{
                   transitionDuration: ANIMATION_SYSTEM.durationString.fast,
                   transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut

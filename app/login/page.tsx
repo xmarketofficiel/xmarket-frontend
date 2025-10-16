@@ -158,9 +158,9 @@ export default function LoginPage() {
         <div className="relative z-10 min-h-screen flex">
           <BrandingPanel />
           
-          {/* Login Form Panel */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-0 lg:p-8">
-            <div className="w-full max-w-md lg:max-w-md">
+          {/* Login Form Panel - Enhanced Mobile Responsiveness */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div className="w-full max-w-md">
               <LoginCard onSubmit={handleLogin} state={state} handlers={{
                 updateState,
                 handleFieldFocus,
@@ -194,21 +194,21 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
   const router = useRouter();
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none md:rounded-3xl border-0 md:border md:border-white/50 shadow-none md:shadow-xl p-6 md:p-8 relative min-h-screen md:min-h-0 flex flex-col justify-center">
-      {/* Back to Home Button */}
+    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border sm:border-white/50 shadow-none sm:shadow-lg lg:shadow-xl p-6 sm:p-8 lg:p-10 relative min-h-screen sm:min-h-0 flex flex-col justify-center">
+      {/* Back to Home Button - Mobile Optimized */}
       <button
         onClick={() => router.push('/')}
-        className="flex items-center text-gray-600 hover:text-[#009F9C] transition-colors duration-200 mb-6 group self-start"
+        className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-6 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
       >
-        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-        Back to Home
+        <ArrowLeft className="w-5 h-5 sm:w-5 sm:h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+        <span className="font-medium text-sm sm:text-base">Back to Home</span>
       </button>
 
       <LoginHeader />
       
       <form
         onSubmit={onSubmit}
-        className="space-y-6"
+        className="space-y-5 sm:space-y-6"
       >
         {/* Email Input */}
         <InputField

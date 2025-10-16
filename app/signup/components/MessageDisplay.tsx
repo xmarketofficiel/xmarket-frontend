@@ -23,16 +23,44 @@ export function MessageDisplay({ message, type }: MessageDisplayProps) {
         ease: 'easeOut'
       }}
       className={`
-        design-card p-4 rounded-xl border flex items-center space-x-3
+        design-card p-4 sm:p-4 rounded-xl border-2 flex items-start space-x-3 relative overflow-hidden
         ${isSuccess 
-          ? 'bg-green-50/80 border-green-200 text-green-700' 
-          : 'bg-red-50/80 border-red-200 text-red-700'
+          ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 text-green-800 shadow-lg shadow-green-100' 
+          : 'bg-gradient-to-br from-red-50 to-rose-50 border-red-300 text-red-800 shadow-lg shadow-red-100'
         }
         backdrop-blur-sm
       `}
     >
-      <Icon className={`w-5 h-5 flex-shrink-0 ${isSuccess ? 'text-green-500' : 'text-red-500'}`} />
-      <p className="text-sm font-medium">{message}</p>
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent" />
+      </div>
+      
+      {/* Icon with animated background */}
+      <motion.div 
+        className={`
+          flex-shrink-0 p-1.5 rounded-lg
+          ${isSuccess 
+            ? 'bg-green-100 text-green-600' 
+            : 'bg-red-100 text-red-600'
+          }
+        `}
+        initial={{ scale: 0.5, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ 
+          type: "spring",
+          stiffness: 200,
+          damping: 15,
+          delay: 0.1
+        }}
+      >
+        <Icon className="w-5 h-5" />
+      </motion.div>
+      
+      {/* Message text */}
+      <div className="flex-1 min-w-0 relative">
+        <p className="text-sm font-semibold leading-relaxed">{message}</p>
+      </div>
     </motion.div>
   );
 }

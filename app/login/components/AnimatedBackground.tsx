@@ -27,9 +27,9 @@ export function AnimatedBackground() {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Floating Elements */}
-      {floatingElements.map((element) => (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Floating Elements - Fewer on mobile for performance */}
+      {floatingElements.slice(0, 8).map((element) => (
         <motion.div
           key={element.id}
           className="absolute rounded-full opacity-10"
@@ -54,9 +54,9 @@ export function AnimatedBackground() {
         />
       ))}
       
-      {/* Gradient Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-[#009F9C]/20 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-cyan-300/20 to-transparent rounded-full blur-3xl" />
+      {/* Gradient Orbs - Smaller on mobile */}
+      <div className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-r from-[#009F9C]/20 to-transparent rounded-full blur-2xl sm:blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-cyan-300/20 to-transparent rounded-full blur-2xl sm:blur-3xl" />
     </div>
   );
 }

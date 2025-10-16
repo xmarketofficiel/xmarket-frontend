@@ -38,19 +38,19 @@ export function InputField({
         ease: 'easeOut'
       }}
     >
-      <label className="block text-sm font-medium text-gray-700 mb-2 px-1">
+      <label className="block text-sm font-semibold text-gray-800 mb-2.5 px-1 tracking-wide">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       
-      <div className="relative">
+      <div className="relative group">
         {/* Icon */}
         {icon && (
-          <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 transition-colors z-10 pointer-events-none ${
+          <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all z-10 pointer-events-none ${
             disabled 
               ? 'text-gray-300' 
               : focused 
-                ? 'text-[#009F9C]' 
+                ? 'text-[#009F9C] scale-110' 
                 : error 
                   ? 'text-red-400'
                   : 'text-gray-500'
@@ -74,10 +74,10 @@ export function InputField({
           maxLength={maxLength}
           disabled={disabled}
           className={`
-            w-full px-4 py-4 sm:py-3 rounded-xl border-2 transition-all
-            bg-white/70 placeholder-gray-400
+            w-full px-4 py-4 sm:py-3.5 rounded-xl border-2 transition-all
+            bg-white/80 backdrop-blur-sm placeholder-gray-400
             text-base sm:text-sm font-medium
-            min-h-[3.5rem] sm:min-h-[3rem]
+            min-h-[3.5rem] sm:min-h-[3.25rem]
             ${icon ? 'pl-12' : 'pl-4'}
             ${isPassword ? 'pr-12' : 'pr-4'}
             ${disabled 
