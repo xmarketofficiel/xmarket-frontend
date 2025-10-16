@@ -8,6 +8,7 @@ import { useEffect } from 'react';
  */
 export default function DiscordCallbackPage() {
   useEffect(() => {
+    
     const handleCallback = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
