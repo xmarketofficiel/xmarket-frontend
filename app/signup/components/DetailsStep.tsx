@@ -138,6 +138,7 @@ export function DetailsStep({
             icon={<Mail className="w-5 h-5" />}
             error={formData.email && !isEmailValid ? getEmailError() : ''}
             isValid={formData.email ? isEmailValid : undefined}
+            disabled={true}
           />
           {formData.email && formData.userType && (formData.userType === '1337' || formData.userType === 'um6p') && (
             <p className="text-xs text-gray-500 px-1">

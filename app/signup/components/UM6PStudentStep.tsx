@@ -302,7 +302,7 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
           onFieldFocus={(field: string) => updateState({ focusedField: field })}
           onFieldBlur={() => updateState({ focusedField: '' })}
           onUpdateFormData={updateFormData}
-          onSwitchToRequestAccess={() => {}}
+          onSwitchToRequestAccess={() => router.push('/signup/external')}
         />
       )}
 
