@@ -194,20 +194,10 @@ export default function AddItemForm({
         return;
       }
 
-      // Clear draft immediately since we're starting the submission process
-      actions.clearDraft();
+      // Show posting message
+      addToast('Creating your item...', 'info');
 
-      // Show posting message and redirect immediately (Instagram-style)
-      addToast('Your item is being posted...', 'info');
-      
-      // Redirect to homepage immediately
-      if (onSuccess) {
-        onSuccess('posting');
-      } else {
-        router.push('/');
-      }
-
-      // Process in background
+      // Prepare item data
       const itemData = {
         title: state.data.title,
         description: state.data.description,
@@ -218,46 +208,56 @@ export default function AddItemForm({
         anonymous: !state.data.showIdentity,
       };
 
-      // Background processing
-      setTimeout(async () => {
+      // Create item and wait for response
+      const response = await api.items.createItem(itemData);
+      const newItem = response.data;
+
+      // Upload photos if item creation succeeded
+      if (state.data.photos.length > 0) {
+        addToast('Uploading images...', 'info');
         try {
-          // Create item
-          const response = await api.items.createItem(itemData);
-          const newItem = response.data;
-
-          // Upload photos if item creation succeeded
-          if (state.data.photos.length > 0) {
-            try {
-              await api.items.uploadItemImages(String(newItem.id), state.data.photos);
-            } catch (uploadError: any) {
-              console.error('Error uploading images:', uploadError);
-              addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
-              return; // Don't throw the error, item was created successfully
-            }
-          }
-
-          // Show success toast
-          addToast('Item posted successfully!', 'success');
+          await api.items.uploadItemImages(String(newItem.id), state.data.photos);
+        } catch (uploadError: any) {
+          console.error('Error uploading images:', uploadError);
+          addToast('Item created but some images failed to upload. You can add them later from your profile.', 'warning');
           
-          // Clear draft immediately after successful creation
+          // Clear draft and reset
           actions.clearDraft();
           actions.reset();
           
-          // Analytics tracking
-          if (typeof window !== 'undefined' && window.gtag) {
-            window.gtag('event', ANALYTICS_EVENTS.ITEM_CREATED, {
-              item_id: String(newItem.id),
-              category: state.data.category,
-              price: state.data.price
-            });
+          // Redirect even if images failed
+          if (onSuccess) {
+            onSuccess(String(newItem.id));
+          } else {
+            router.push('/');
           }
-        } catch (error: any) {
-          console.error('Error creating item:', error);
-          addToast('Failed to post item. Please try again.', 'error');
-          // Clear draft on error to prevent it from affecting next item creation
-          actions.clearDraft();
+          return;
         }
-      }, 100);
+      }
+
+      // Success - everything uploaded successfully!
+      addToast('Item posted successfully!', 'success');
+      
+      // Clear draft and reset form
+      actions.clearDraft();
+      actions.reset();
+      
+      // Analytics tracking
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', ANALYTICS_EVENTS.ITEM_CREATED, {
+          item_id: String(newItem.id),
+          category: state.data.category,
+          price: state.data.price,
+          images_count: state.data.photos.length
+        });
+      }
+
+      // Redirect to homepage after successful upload
+      if (onSuccess) {
+        onSuccess(String(newItem.id));
+      } else {
+        router.push('/');
+      }
 
     } catch (error: any) {
       console.error('Error creating item:', error);
