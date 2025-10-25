@@ -500,32 +500,6 @@ export default function AddItemForm({
           </div>
         </div>
       </div>
-
-      {/* Enhanced Keyboard Shortcuts Help */}
-      <div className="hidden xl:block fixed bottom-6 right-6 z-30">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200 p-4 max-w-64">
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-xs">⌨️</span>
-            </div>
-            <span className="font-semibold text-gray-900 text-sm">Shortcuts</span>
-          </div>
-          <div className="space-y-2 text-xs text-gray-600">
-            <div className="flex justify-between items-center">
-              <span>Next step</span>
-              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Enter</kbd>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Go back</span>
-              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Esc</kbd>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Navigate</span>
-              <kbd className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono">Tab</kbd>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

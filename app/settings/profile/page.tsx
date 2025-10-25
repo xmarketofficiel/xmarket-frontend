@@ -52,8 +52,9 @@ export default function EditProfilePage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      addToast('Image size must be less than 5MB', 'error');
+    if (file.size > 7 * 1024 * 1024) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      addToast(`Image is too large (${sizeMB}MB). Maximum size is 7MB`, 'error');
       return;
     }
 
@@ -224,7 +225,7 @@ export default function EditProfilePage() {
                 Click the camera icon to upload a new profile picture
               </p>
               <p className="text-xs text-gray-500">
-                JPG, PNG or WebP. Max size: 5MB
+                JPG, PNG or WebP. Max size: 7MB
               </p>
             </div>
             

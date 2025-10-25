@@ -71,23 +71,24 @@ export const itemsApi = {
   uploadOptimizedImage: (
     image: File
   ): Promise<ApiResponse<{
-    cloudinaryUrl: string;
-    spacesUrls: {
-      thumbnail: string;
-      small: string;
-      medium: string;
-      large: string;
+    success: boolean;
+    message: string;
+    urls: {
+      primary: string;
+      fallback?: string;
     };
-    metadata: {
+    cloudinary: {
+      success: boolean;
+      url: string;
+      publicId: string;
+    };
+    spaces: {
+      success: boolean;
+      url?: string;
+    };
+    storage: {
       originalSize: number;
-      optimizedSizes: {
-        thumbnail: number;
-        small: number;
-        medium: number;
-        large: number;
-      };
-      spaceSaved: number;
-      spaceSavedPercentage: number;
+      uploaded: string;
     };
   }>> => {
     const formData = new FormData();

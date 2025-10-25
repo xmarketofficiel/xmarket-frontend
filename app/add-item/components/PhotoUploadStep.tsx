@@ -18,6 +18,7 @@ export default function PhotoUploadStep({
   const [isDragActive, setIsDragActive] = useState(false);
   const [dragCounter, setDragCounter] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
+  const [uploadError, setUploadError] = useState<string>('');
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -25,18 +26,40 @@ export default function PhotoUploadStep({
   };
 
   const processFiles = (files: File[]) => {
+    setUploadError(''); // Clear previous errors
+    
     // Validate file count
     if (photos.length + files.length > ADD_ITEM_CONFIG.MAX_IMAGES) {
+      setUploadError(`You can only upload up to ${ADD_ITEM_CONFIG.MAX_IMAGES} photos`);
       return;
     }
 
-    // Validate file size and format with better error reporting
-    const validFiles = files.filter(file => {
-      const isValidSize = file.size <= ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB * 1024 * 1024;
-      const isValidFormat = ADD_ITEM_CONFIG.SUPPORTED_FORMATS.includes(file.type);
-      return isValidSize && isValidFormat;
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    files.forEach(file => {
+      // Check file size (7MB limit)
+      if (file.size > ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB * 1024 * 1024) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        errors.push(`"${file.name}" is too large (${sizeMB}MB). Maximum size is ${ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB`);
+        return;
+      }
+
+      // Check file format
+      if (!ADD_ITEM_CONFIG.SUPPORTED_FORMATS.includes(file.type)) {
+        errors.push(`"${file.name}" is not a supported format`);
+        return;
+      }
+
+      validFiles.push(file);
     });
 
+    // Show first error if any
+    if (errors.length > 0) {
+      setUploadError(errors[0]);
+    }
+
+    // Add valid files
     if (validFiles.length > 0) {
       onPhotosChange([...photos, ...validFiles]);
       setShowPreview(true);
@@ -80,6 +103,7 @@ export default function PhotoUploadStep({
   const removePhoto = (index: number) => {
     const newPhotos = photos.filter((_, i) => i !== index);
     onPhotosChange(newPhotos);
+    setUploadError(''); // Clear error when removing photo
   };
 
   const reorderPhotos = (dragIndex: number, hoverIndex: number) => {
@@ -101,6 +125,31 @@ export default function PhotoUploadStep({
     >
       {/* Upload Area */}
       <div className="space-y-4">
+        {/* Upload Error Message */}
+        {uploadError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start space-x-3"
+          >
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-red-800">Upload Error</h3>
+              <p className="text-sm text-red-600 mt-1">{uploadError}</p>
+            </div>
+            <button
+              onClick={() => setUploadError('')}
+              className="flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </motion.div>
+        )}
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Photos {photos.length === 0 && <span className="text-red-500">*</span>}

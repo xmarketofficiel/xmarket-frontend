@@ -19,22 +19,10 @@ interface ImageUploadAdvancedProps {
 interface OptimizedUploadResult {
   originalFile: File;
   cloudinaryUrl: string;
-  spacesUrls: {
-    thumbnail: string;
-    small: string;
-    medium: string;
-    large: string;
-  };
+  spacesUrl?: string;
   metadata: {
     originalSize: number;
-    optimizedSizes: {
-      thumbnail: number;
-      small: number;
-      medium: number;
-      large: number;
-    };
-    spaceSaved: number;
-    spaceSavedPercentage: number;
+    uploaded: string;
   };
 }
 
@@ -136,22 +124,10 @@ export default function ImageUploadAdvanced({
         const optimizedResult: OptimizedUploadResult = {
           originalFile: file,
           cloudinaryUrl: presignedData.publicUrl,
-          spacesUrls: {
-            thumbnail: presignedData.publicUrl,
-            small: presignedData.publicUrl,
-            medium: presignedData.publicUrl,
-            large: presignedData.publicUrl
-          },
+          spacesUrl: presignedData.publicUrl,
           metadata: {
             originalSize: file.size,
-            optimizedSizes: {
-              thumbnail: Math.round(file.size * 0.1),
-              small: Math.round(file.size * 0.3),
-              medium: Math.round(file.size * 0.6),
-              large: Math.round(file.size * 0.9)
-            },
-            spaceSaved: Math.round(file.size * 0.4),
-            spaceSavedPercentage: 40
+            uploaded: 'Original image uploaded via presigned URL'
           }
         };
 
@@ -163,7 +139,7 @@ export default function ImageUploadAdvanced({
 
         if (showOptimizationInfo) {
           addToast(
-            `📸 Image uploaded to organized folder! Saved ~40% with direct upload`,
+            `📸 Image uploaded successfully to both Cloudinary and Spaces!`,
             'success'
           );
         }
@@ -191,23 +167,11 @@ export default function ImageUploadAdvanced({
         
         const optimizedResult: OptimizedUploadResult = {
           originalFile: file,
-          cloudinaryUrl: result.cloudinary?.url || result.urls?.primary,
-          spacesUrls: result.urls?.variants || {
-            thumbnail: result.urls?.fallback,
-            small: result.urls?.fallback,
-            medium: result.urls?.fallback,
-            large: result.urls?.fallback
-          },
-          metadata: result.optimization || {
-            originalSize: file.size,
-            optimizedSizes: {
-              thumbnail: Math.round(file.size * 0.2),
-              small: Math.round(file.size * 0.4),
-              medium: Math.round(file.size * 0.7),
-              large: Math.round(file.size * 0.9)
-            },
-            spaceSaved: Math.round(file.size * 0.3),
-            spaceSavedPercentage: 30
+          cloudinaryUrl: result.urls?.primary || result.cloudinary?.url,
+          spacesUrl: result.urls?.fallback || result.spaces?.url,
+          metadata: {
+            originalSize: result.storage?.originalSize || file.size,
+            uploaded: result.storage?.uploaded || 'Original image uploaded'
           }
         };
 
@@ -218,9 +182,8 @@ export default function ImageUploadAdvanced({
         }));
 
         if (showOptimizationInfo) {
-          const savedPercentage = optimizedResult.metadata.spaceSavedPercentage || 0;
           addToast(
-            `📸 Image optimized! Saved ${savedPercentage.toFixed(1)}% storage space`,
+            `📸 Image uploaded successfully to both Cloudinary and Spaces!`,
             'success'
           );
         }
@@ -496,7 +459,7 @@ export default function ImageUploadAdvanced({
                     {index + 1}
                     {status.result && showOptimizationInfo && (
                       <span className="ml-1 text-green-400">
-                        ({status.result.metadata.spaceSavedPercentage.toFixed(0)}% saved)
+                        ✓ Uploaded
                       </span>
                     )}
                   </div>
@@ -512,11 +475,10 @@ export default function ImageUploadAdvanced({
                   <div className="mt-1 text-xs text-green-600">
                     <div className="flex items-center">
                       <Zap className="w-3 h-3 mr-1" />
-                      {(status.result.metadata.originalSize / 1024).toFixed(1)}KB → {' '}
-                      {((status.result.metadata.optimizedSizes.thumbnail + 
-                        status.result.metadata.optimizedSizes.small + 
-                        status.result.metadata.optimizedSizes.medium + 
-                        status.result.metadata.optimizedSizes.large) / 1024).toFixed(1)}KB
+                      {(status.result.metadata.originalSize / 1024).toFixed(1)}KB uploaded
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      {status.result.metadata.uploaded}
                     </div>
                   </div>
                 )}

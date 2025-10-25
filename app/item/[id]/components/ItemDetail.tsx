@@ -208,9 +208,16 @@ export default function ItemDetail({
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-purple-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-100/20 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Header - Mobile only */}
-      <div className="lg:hidden">
+      <div className="lg:hidden relative z-10">
         <ItemHeader
           onBack={handleBack}
           onFavoriteClick={handleFavoriteClick}
@@ -225,39 +232,39 @@ export default function ItemDetail({
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:block">
-        {/* Desktop Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="hidden lg:block relative z-10">
+        {/* Desktop Header - Enhanced with glassmorphism */}
+        <div className="bg-white/90 backdrop-blur-xl border-b border-gray-200/50 px-6 py-4 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <button
               onClick={handleBack}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="group flex items-center text-gray-700 hover:text-gray-900 transition-all duration-300 px-4 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md"
             >
-              <ChevronLeft size={20} className="mr-2" />
-              Back to listings
+              <ChevronLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="font-semibold">Back to listings</span>
             </button>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               <button
                 onClick={handleFavoriteClick}
                 disabled={state.loading.favorite}
-                className={`p-2 rounded-full transition-colors ${
+                className={`p-3.5 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 ${
                   isItemFavorite
-                    ? 'bg-red-50 text-red-600'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    ? 'bg-gradient-to-br from-red-50 to-pink-50 text-red-600 shadow-md shadow-red-100'
+                    : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 hover:from-gray-100 hover:to-gray-200 hover:shadow-md'
                 }`}
               >
-                <Heart size={20} className={isItemFavorite ? 'fill-current' : ''} />
+                <Heart size={20} className={`${isItemFavorite ? 'fill-current animate-pulse' : ''} transition-all`} />
               </button>
               <button
                 onClick={handleShareClick}
-                className="p-2 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+                className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-md shadow-blue-100"
               >
                 <Share2 size={20} />
               </button>
               {!isOwnItem && (
                 <button
                   onClick={handleReportClick}
-                  className="p-2 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="p-3.5 rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 text-orange-600 hover:from-orange-100 hover:to-amber-100 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-md shadow-orange-100"
                 >
                   <Flag size={20} />
                 </button>
@@ -266,12 +273,14 @@ export default function ItemDetail({
           </div>
         </div>
 
-        {/* Desktop Main Content */}
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            {/* Left Column - Gallery */}
-            <div className="lg:col-span-3 space-y-6 flex items-start justify-center">
-              <div className="w-full max-w-lg">
+        {/* Desktop Main Content - Enhanced with animations */}
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Gallery - Enhanced with premium effects */}
+            <div className="lg:col-span-2 space-y-6 animate-fade-in">
+              <div className="group bg-white rounded-3xl shadow-xl border border-gray-100/50 p-5 hover:shadow-2xl transition-all duration-500 hover:border-gray-200 relative overflow-hidden">
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <ItemGallery
                   images={photos}
                   title={item.title}
@@ -279,15 +288,110 @@ export default function ItemDetail({
                   onImageClick={handleImageClick}
                 />
               </div>
-            </div>
-
-            {/* Right Column - Info & Actions */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              
+              {/* Item Info - Below gallery on desktop with slide-up animation */}
+              <div className="group bg-white rounded-3xl shadow-xl border border-gray-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:border-gray-200 relative animate-slide-up">
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
                 <ItemInfo item={item} />
               </div>
+            </div>
 
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            {/* Right Column - Seller Card - Enhanced with premium styling */}
+            <div className="lg:col-span-1 animate-fade-in-delay">
+              <div className="sticky top-24 space-y-6">
+                {/* Seller Card with premium gradient */}
+                <div className="group bg-gradient-to-br from-white via-gray-50/50 to-white rounded-3xl shadow-xl border border-gray-100/50 p-6 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] relative overflow-hidden">
+                  {/* Animated background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-purple-50/0 to-pink-50/0 group-hover:from-blue-50/30 group-hover:via-purple-50/30 group-hover:to-pink-50/30 transition-all duration-700"></div>
+                  <div className="relative z-10">
+                    <SellerCard
+                      seller={item.seller}
+                      isAnonymous={item.anonymous}
+                      isOwnItem={!!isOwnItem}
+                      onMessageClick={openWhatsApp}
+                      onViewProfile={handleViewProfile}
+                    />
+                  </div>
+                </div>
+                
+                {/* Quick Actions Card with premium design */}
+                {!isOwnItem && (
+                  <div className="group relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-xl p-[1px] hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] overflow-hidden">
+                    {/* Animated border gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
+                    <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                          <span className="text-white text-xl">⚡</span>
+                        </div>
+                        <h3 className="ml-3 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                          Quick Actions
+                        </h3>
+                      </div>
+                      <div className="space-y-3">
+                        {[
+                          { icon: '🔒', text: 'Safe and secure messaging' },
+                          { icon: '✓', text: 'Verified seller information' },
+                          { icon: '⚡', text: 'Fast response time' }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-start group/item">
+                            <div className="w-6 h-6 rounded-lg bg-white shadow-sm flex items-center justify-center text-sm group-hover/item:scale-110 transition-transform">
+                              {item.icon}
+                            </div>
+                            <span className="ml-3 text-sm text-gray-700 font-medium">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Trust Badge */}
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-bold text-emerald-700">Verified Listing</p>
+                      <p className="text-xs text-emerald-600">Safe to browse</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Layout - Enhanced with premium design */}
+      <div className="lg:hidden relative z-10">
+        {/* Photo Gallery with premium styling */}
+        <div className="bg-white shadow-lg">
+          <ItemGallery
+            images={photos}
+            title={item.title}
+            isFeatured={item.featured}
+            onImageClick={handleImageClick}
+          />
+        </div>
+
+        {/* Content Container */}
+        <div className="pb-32 bg-gradient-to-b from-gray-50 to-white">
+          {/* Item Information with enhanced card */}
+          <div className="bg-white shadow-lg relative">
+            {/* Top accent gradient */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <ItemInfo item={item} />
+          </div>
+
+          {/* Seller Card with premium styling */}
+          <div className="px-4 md:px-6 mt-6">
+            <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative">
+              {/* Shimmer effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              <div className="relative z-10">
                 <SellerCard
                   seller={item.seller}
                   isAnonymous={item.anonymous}
@@ -296,64 +400,54 @@ export default function ItemDetail({
                   onViewProfile={handleViewProfile}
                 />
               </div>
-
-              {/* Desktop Action Buttons */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="space-y-3">
-                  {!isOwnItem && (
-                    <>
-                      <button
-                        onClick={handleInterestClick}
-                        disabled={state.loading.interest}
-                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-blue-300 transition-colors flex items-center justify-center"
-                      >
-                        {state.loading.interest ? (
-                          <LoadingSpinner size="sm" className="mr-2" />
-                        ) : null}
-                        I'm Interested
-                      </button>
-                      <button
-                        onClick={openWhatsApp}
-                        className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center"
-                      >
-                        <MessageCircle size={18} className="mr-2" />
-                        Message Seller
-                      </button>
-                    </>
-                  )}
+            </div>
+          </div>
+          
+          {/* Safety Tips Card - Mobile with premium gradient */}
+          {!isOwnItem && (
+            <div className="px-4 md:px-6 mt-4">
+              <div className="relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-[1px] overflow-hidden">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5">
+                  <div className="flex items-center mb-3">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+                      <span className="text-white text-sm">💡</span>
+                    </div>
+                    <h3 className="ml-3 text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      Safety Tips
+                    </h3>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {[
+                      'Meet in a safe, public location',
+                      'Check the item before payment',
+                      'Never share personal banking details'
+                    ].map((tip, index) => (
+                      <li key={index} className="flex items-start text-xs text-gray-700">
+                        <div className="w-5 h-5 rounded-lg bg-white shadow-sm flex items-center justify-center text-blue-500 font-bold mr-2 flex-shrink-0">
+                          ✓
+                        </div>
+                        <span className="font-medium pt-0.5">{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          )}
 
-      {/* Mobile Layout */}
-      <div className="lg:hidden">
-        {/* Photo Gallery */}
-        <ItemGallery
-          images={photos}
-          title={item.title}
-          isFeatured={item.featured}
-          onImageClick={handleImageClick}
-        />
-
-        {/* Content Container */}
-        <div className="pb-32">
-          {/* Item Information */}
-          <div className="bg-white">
-            <ItemInfo item={item} />
-          </div>
-
-          {/* Seller Card */}
+          {/* Trust Badge - Mobile */}
           <div className="px-4 md:px-6 mt-4">
-            <SellerCard
-              seller={item.seller}
-              isAnonymous={item.anonymous}
-              isOwnItem={!!isOwnItem}
-              onMessageClick={openWhatsApp}
-              onViewProfile={handleViewProfile}
-            />
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                  <span className="text-white">✓</span>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-bold text-emerald-700">Verified Listing</p>
+                  <p className="text-xs text-emerald-600">Safe to browse and purchase</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
