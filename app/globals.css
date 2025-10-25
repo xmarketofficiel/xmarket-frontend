@@ -85,6 +85,20 @@
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     font-display: swap;
   }
+  
+  /* Mobile scroll optimization */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+  
+  /* Prevent mobile bounce/rubber-band on iOS */
+  @media (max-width: 768px) {
+    html, body {
+      position: relative;
+      overflow-x: hidden;
+    }
+  }
 }
 
 /* Custom scrollbar styles */

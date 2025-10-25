@@ -152,7 +152,7 @@ export default function LoginPage() {
 
   return (
     <ApiErrorBoundary>
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
+      <div className="min-h-screen relative overflow-x-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
         <AnimatedBackground />
         
         <div className="relative z-10 min-h-screen flex">

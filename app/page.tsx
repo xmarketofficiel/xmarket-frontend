@@ -54,7 +54,7 @@ export default function HomePage() {
  */
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-gray-50 overflow-hidden">
+    <div className="min-h-screen bg-gray-50">
       {/* Loading Content */}
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">

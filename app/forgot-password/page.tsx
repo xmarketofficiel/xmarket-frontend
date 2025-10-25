@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009F9C]/5 via-white to-blue-50/30 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009F9C]/5 via-white to-blue-50/30 px-4 relative overflow-x-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <motion.div
@@ -205,7 +205,7 @@ function EmailSentConfirmation({ email, onBack }: EmailSentConfirmationProps) {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009F9C]/5 via-white to-blue-50/30 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#009F9C]/5 via-white to-blue-50/30 px-4 relative overflow-x-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <motion.div
