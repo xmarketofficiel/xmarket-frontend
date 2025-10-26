@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Upload, X, Image as ImageIcon, Camera, Sparkles, Lightbulb } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Camera, Sparkles, Lightbulb, Loader2 } from 'lucide-react';
 import { ADD_ITEM_CONFIG, VALIDATION_MESSAGES } from '../constants';
 import { PhotoUploadStepProps } from '../types';
 import Image from 'next/image';
 import { useState, useCallback } from 'react';
+import { compressImages, formatFileSize } from '../../../lib/imageCompression';
 
 export default function PhotoUploadStep({
   photos,
@@ -19,13 +20,15 @@ export default function PhotoUploadStep({
   const [dragCounter, setDragCounter] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [uploadError, setUploadError] = useState<string>('');
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState({ current: 0, total: 0 });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     processFiles(files);
   };
 
-  const processFiles = (files: File[]) => {
+  const processFiles = async (files: File[]) => {
     setUploadError(''); // Clear previous errors
     
     // Validate file count
@@ -38,7 +41,7 @@ export default function PhotoUploadStep({
     const errors: string[] = [];
 
     files.forEach(file => {
-      // Check file size (7MB limit)
+      // Check file size (7MB limit for original file)
       if (file.size > ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB * 1024 * 1024) {
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
         errors.push(`"${file.name}" is too large (${sizeMB}MB). Maximum size is ${ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB`);
@@ -57,12 +60,52 @@ export default function PhotoUploadStep({
     // Show first error if any
     if (errors.length > 0) {
       setUploadError(errors[0]);
+      return;
     }
 
-    // Add valid files
+    // Compress valid files before adding
     if (validFiles.length > 0) {
-      onPhotosChange([...photos, ...validFiles]);
-      setShowPreview(true);
+      try {
+        setIsCompressing(true);
+        setCompressionProgress({ current: 0, total: validFiles.length });
+
+        // Compress all images (target 800KB per image to stay well under 6MB total)
+        const compressionResults = await compressImages(
+          validFiles,
+          {
+            maxSizeMB: 0.8,        // 800KB per image
+            maxWidthOrHeight: 1920, // Good quality for web
+            quality: 0.85          // High quality
+          },
+          (current, total) => {
+            setCompressionProgress({ current, total });
+          }
+        );
+
+        // Extract compressed files
+        const compressedFiles = compressionResults.map(r => r.file);
+        
+        // Calculate total size
+        const totalSize = compressedFiles.reduce((sum, f) => sum + f.size, 0);
+        const totalSizeMB = totalSize / 1024 / 1024;
+        
+        console.log(`✅ Images compressed: ${formatFileSize(totalSize)} total`);
+        
+        // Warn if total size is still large (shouldn't happen with our settings)
+        if (totalSizeMB > 5) {
+          setUploadError(`⚠️ Total size is ${totalSizeMB.toFixed(2)}MB. Consider using fewer or smaller images.`);
+        }
+
+        // Add compressed files
+        onPhotosChange([...photos, ...compressedFiles]);
+        setShowPreview(true);
+      } catch (error) {
+        console.error('Compression error:', error);
+        setUploadError('Failed to compress images. Please try again.');
+      } finally {
+        setIsCompressing(false);
+        setCompressionProgress({ current: 0, total: 0 });
+      }
     }
   };
 
@@ -91,13 +134,13 @@ export default function PhotoUploadStep({
     e.stopPropagation();
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragActive(false);
     setDragCounter(0);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
-    processFiles(droppedFiles);
+    await processFiles(droppedFiles);
   }, [processFiles]);
 
   const removePhoto = (index: number) => {
@@ -158,19 +201,19 @@ export default function PhotoUploadStep({
           {/* Modern Upload Zone - Smaller and mobile-friendly */}
           <div
             className={`relative border-2 border-dashed rounded-lg p-4 md:p-6 text-center transition-all duration-300 ${
-              photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES
+              photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES || isCompressing
                 ? 'border-gray-200 bg-gray-50'
                 : isDragActive
                 ? 'border-[#009F9C] bg-[#009F9C]/10'
                 : 'border-gray-300 hover:border-[#009F9C] hover:bg-[#009F9C]/5'
             }`}
-            onDragEnter={window.innerWidth >= 768 ? handleDragEnter : undefined}
-            onDragLeave={window.innerWidth >= 768 ? handleDragLeave : undefined}
-            onDragOver={window.innerWidth >= 768 ? handleDragOver : undefined}
-            onDrop={window.innerWidth >= 768 ? handleDrop : undefined}
+            onDragEnter={window.innerWidth >= 768 && !isCompressing ? handleDragEnter : undefined}
+            onDragLeave={window.innerWidth >= 768 && !isCompressing ? handleDragLeave : undefined}
+            onDragOver={window.innerWidth >= 768 && !isCompressing ? handleDragOver : undefined}
+            onDrop={window.innerWidth >= 768 && !isCompressing ? handleDrop : undefined}
           >
             {/* Animated Background */}
-            {isDragActive && (
+            {isDragActive && !isCompressing && (
               <motion.div
                 className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#006666]/20 to-blue-500/20"
                 initial={{ opacity: 0 }}
@@ -184,7 +227,7 @@ export default function PhotoUploadStep({
               multiple
               accept={ADD_ITEM_CONFIG.SUPPORTED_FORMATS.join(',')}
               onChange={handleFileUpload}
-              disabled={photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES}
+              disabled={photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES || isCompressing}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
               aria-label="Upload photos"
             />
@@ -192,14 +235,16 @@ export default function PhotoUploadStep({
             <div className="space-y-4 relative z-0">
               <div
                 className={`mx-auto w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center ${
-                  photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES
+                  photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES || isCompressing
                     ? 'bg-gray-200'
                     : isDragActive 
                     ? 'bg-[#009F9C] text-white shadow-lg'
                     : 'bg-[#009F9C]/10'
                 }`}
               >
-                {isDragActive ? (
+                {isCompressing ? (
+                  <Loader2 size={20} className="text-blue-500 animate-spin" />
+                ) : isDragActive ? (
                   <Sparkles size={20} className="text-white" />
                 ) : (
                   <Upload 
@@ -212,11 +257,13 @@ export default function PhotoUploadStep({
               <div>
                 <p 
                   className={`text-base md:text-lg font-medium ${
-                    photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES ? 'text-gray-400' : 
+                    photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES || isCompressing ? 'text-gray-400' : 
                     isDragActive ? 'text-[#009F9C]' : 'text-gray-900'
                   }`}
                 >
-                  {photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES 
+                  {isCompressing
+                    ? 'Compressing images...'
+                    : photos.length >= ADD_ITEM_CONFIG.MAX_IMAGES 
                     ? 'Maximum photos reached' 
                     : isDragActive
                     ? 'Drop your photos here!'
@@ -224,28 +271,38 @@ export default function PhotoUploadStep({
                   }
                 </p>
                 <p className="text-xs md:text-sm text-gray-500 mt-1">
-                  {!isDragActive && (
+                  {isCompressing ? (
+                    <span className="text-blue-600 font-medium">
+                      {compressionProgress.current} of {compressionProgress.total} processed
+                    </span>
+                  ) : !isDragActive ? (
                     <>
                       <span className="flex items-center justify-center gap-1 mb-1">
                         <Camera size={14} />
                         <span className="hidden md:inline">Drag & drop or </span>Tap to browse
                       </span>
+                      Up to {ADD_ITEM_CONFIG.MAX_IMAGES} photos • Max {ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB each
+                      <br />
+                      <span className="text-xs">
+                        {ADD_ITEM_CONFIG.SUPPORTED_FORMATS.map(format => format.replace('image/', '')).join(', ').toUpperCase()}
+                      </span>
+                      <br />
+                      <span className="text-green-600 font-medium">✨ Auto-compressed for faster upload</span>
                     </>
+                  ) : (
+                    <span>Drop to add to your listing</span>
                   )}
-                  Up to {ADD_ITEM_CONFIG.MAX_IMAGES} photos • Max {ADD_ITEM_CONFIG.MAX_FILE_SIZE_MB}MB each
-                  <br />
-                  <span className="text-xs">
-                    {ADD_ITEM_CONFIG.SUPPORTED_FORMATS.map(format => format.replace('image/', '')).join(', ').toUpperCase()}
-                  </span>
                 </p>
               </div>
 
-              {/* Progress indicator for drag state */}
-              {isDragActive && (
+              {/* Progress indicator for drag or compression state */}
+              {(isDragActive || isCompressing) && (
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  className="h-1 bg-[#006666] rounded-full mx-8"
+                  animate={{ width: isCompressing ? `${(compressionProgress.current / compressionProgress.total) * 100}%` : "100%" }}
+                  className={`h-1 rounded-full mx-8 ${
+                    isCompressing ? 'bg-blue-500' : 'bg-[#006666]'
+                  }`}
                 />
               )}
             </div>

@@ -2,8 +2,9 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { Upload, X, ImageIcon } from 'lucide-react';
+import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
+import { compressImages, formatFileSize } from '../lib/imageCompression';
 
 interface ImageUploadProps {
   images: File[];
@@ -17,13 +18,15 @@ export default function ImageUpload({
   images,
   onImagesChange,
   maxImages = 6,
-  maxFileSize = 5, // 5MB default
+  maxFileSize = 7, // 5MB default (per original file, will be compressed)
   className = ''
 }: ImageUploadProps) {
   const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionProgress, setCompressionProgress] = useState({ current: 0, total: 0 });
 
   // Update preview URLs when images change
   React.useEffect(() => {
@@ -53,8 +56,8 @@ export default function ImageUpload({
     return null;
   };
 
-  const handleFileSelect = useCallback((files: FileList) => {
-    const newFiles: File[] = [];
+  const handleFileSelect = useCallback(async (files: FileList) => {
+    const filesToProcess: File[] = [];
     const errors: string[] = [];
 
     // Validate each file
@@ -65,12 +68,12 @@ export default function ImageUpload({
       if (error) {
         errors.push(`${file.name}: ${error}`);
       } else {
-        newFiles.push(file);
+        filesToProcess.push(file);
       }
     }
 
     // Check total count
-    const totalFiles = images.length + newFiles.length;
+    const totalFiles = images.length + filesToProcess.length;
     if (totalFiles > maxImages) {
       errors.push(`Maximum ${maxImages} images allowed. You can add ${maxImages - images.length} more.`);
       return;
@@ -82,8 +85,57 @@ export default function ImageUpload({
       return;
     }
 
-    // Add new files
-    onImagesChange([...images, ...newFiles]);
+    // Compress images before adding them
+    if (filesToProcess.length > 0) {
+      try {
+        setIsCompressing(true);
+        setCompressionProgress({ current: 0, total: filesToProcess.length });
+        
+        // Compress all images (target 800KB per image to stay well under 6MB total)
+        const compressionResults = await compressImages(
+          filesToProcess,
+          {
+            maxSizeMB: 0.8,        // 800KB per image
+            maxWidthOrHeight: 1920, // Good quality for web
+            quality: 0.85          // High quality
+          },
+          (current, total) => {
+            setCompressionProgress({ current, total });
+          }
+        );
+
+        // Extract compressed files
+        const compressedFiles = compressionResults.map(r => r.file);
+        
+        // Calculate total size
+        const totalSize = compressedFiles.reduce((sum, f) => sum + f.size, 0);
+        const totalSizeMB = totalSize / 1024 / 1024;
+        
+        // Show success message with compression stats
+        const avgCompression = compressionResults.reduce((sum, r) => sum + r.compressionRatio, 0) / compressionResults.length;
+        addToast(
+          `✅ ${compressedFiles.length} image(s) compressed (${formatFileSize(totalSize)} total, ${Math.round((1 - avgCompression) * 100)}% reduction)`,
+          'success'
+        );
+        
+        // Warn if total size is still large (shouldn't happen with our settings)
+        if (totalSizeMB > 5) {
+          addToast(
+            `⚠️ Total size is ${totalSizeMB.toFixed(2)}MB. Consider using fewer or smaller images.`,
+            'warning'
+          );
+        }
+
+        // Add compressed files
+        onImagesChange([...images, ...compressedFiles]);
+      } catch (error) {
+        console.error('Compression error:', error);
+        addToast('Failed to compress images. Please try again.', 'error');
+      } finally {
+        setIsCompressing(false);
+        setCompressionProgress({ current: 0, total: 0 });
+      }
+    }
   }, [images, onImagesChange, maxImages, maxFileSize, addToast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +190,7 @@ export default function ImageUpload({
             ? 'border-blue-500 bg-blue-50' 
             : 'border-gray-300 hover:border-gray-400'
           }
-          ${images.length >= maxImages ? 'opacity-50 cursor-not-allowed' : ''}
+          ${images.length >= maxImages || isCompressing ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
         <input
@@ -148,23 +200,40 @@ export default function ImageUpload({
           accept="image/*"
           onChange={handleInputChange}
           className="hidden"
-          disabled={images.length >= maxImages}
+          disabled={images.length >= maxImages || isCompressing}
         />
         
         <div className="text-center">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">
-            {images.length >= maxImages 
-              ? `Maximum ${maxImages} images reached`
-              : `Click to upload or drag and drop images`
-            }
-          </p>
-          <p className="text-xs text-gray-500">
-            PNG, JPG, GIF, WebP up to {maxFileSize}MB each
-          </p>
-          <p className="text-xs text-gray-500">
-            {images.length}/{maxImages} images selected
-          </p>
+          {isCompressing ? (
+            <>
+              <Loader2 className="mx-auto h-12 w-12 text-blue-500 animate-spin" />
+              <p className="mt-2 text-sm text-gray-600 font-medium">
+                Compressing images...
+              </p>
+              <p className="text-xs text-gray-500">
+                {compressionProgress.current} of {compressionProgress.total} processed
+              </p>
+            </>
+          ) : (
+            <>
+              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-2 text-sm text-gray-600">
+                {images.length >= maxImages 
+                  ? `Maximum ${maxImages} images reached`
+                  : `Click to upload or drag and drop images`
+                }
+              </p>
+              <p className="text-xs text-gray-500">
+                PNG, JPG, GIF, WebP up to {maxFileSize}MB each
+              </p>
+              <p className="text-xs text-gray-500">
+                {images.length}/{maxImages} images selected
+              </p>
+              <p className="text-xs text-green-600 mt-1 font-medium">
+                ✨ Auto-compressed for faster upload
+              </p>
+            </>
+          )}
         </div>
       </div>
 

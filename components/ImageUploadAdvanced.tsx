@@ -38,7 +38,7 @@ export default function ImageUploadAdvanced({
   onImagesChange,
   onUploadComplete,
   maxImages = 6,
-  maxFileSize = 5, // 5MB default
+  maxFileSize = 7, // 5MB default
   className = '',
   autoUpload = false,
   showOptimizationInfo = true
