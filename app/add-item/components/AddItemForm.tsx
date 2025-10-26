@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../../contexts/UserContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -26,6 +26,9 @@ export default function AddItemForm({
   const router = useRouter();
   const { user } = useUser();
   const { addToast } = useToast();
+  
+  // Submission guard to prevent duplicate uploads (React Strict Mode protection)
+  const isSubmittingRef = useRef(false);
 
   // Custom form hook
   const { state, actions } = useAddItemForm({
@@ -163,6 +166,12 @@ export default function AddItemForm({
 
   // Handle form submission with Instagram-style background processing
   const handleSubmit = async () => {
+    // Prevent duplicate submissions (React Strict Mode & double-click protection)
+    if (isSubmittingRef.current) {
+      console.log('🛑 Submission already in progress, ignoring duplicate call');
+      return;
+    }
+    
     if (!user) {
       addToast(ERROR_MESSAGES.UNAUTHORIZED, 'error');
       return;
@@ -174,8 +183,11 @@ export default function AddItemForm({
       return;
     }
 
-    // Set loading state immediately
+    // Set loading state immediately and mark as submitting
+    isSubmittingRef.current = true;
     actions.setSubmitting(true);
+    
+    console.log('✅ Starting submission...');
 
     try {
       // Validate numeric fields before conversion
@@ -225,6 +237,9 @@ export default function AddItemForm({
           actions.clearDraft();
           actions.reset();
           
+          // Reset submission guard
+          isSubmittingRef.current = false;
+          
           // Redirect even if images failed
           if (onSuccess) {
             onSuccess(String(newItem.id));
@@ -241,6 +256,9 @@ export default function AddItemForm({
       // Clear draft and reset form
       actions.clearDraft();
       actions.reset();
+      
+      // Reset submission guard
+      isSubmittingRef.current = false;
       
       // Analytics tracking
       if (typeof window !== 'undefined' && window.gtag) {
@@ -263,6 +281,8 @@ export default function AddItemForm({
       console.error('Error creating item:', error);
       addToast(error.message || ERROR_MESSAGES.CREATION_FAILED, 'error');
       actions.setSubmitting(false);
+      // Reset submission guard on error
+      isSubmittingRef.current = false;
       // Clear draft on error to prevent it from affecting next item creation
       actions.clearDraft();
     }

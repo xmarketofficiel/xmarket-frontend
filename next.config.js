@@ -130,6 +130,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'xmarket-images-dev.ams3.cdn.digitaloceanspaces.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'xmarket-images-dev.ams3.digitaloceanspaces.com',
+        port: '',
+        pathname: '/**',
+      },
       // Production API domain - update this to your backend domain
       {
         protocol: 'https',
