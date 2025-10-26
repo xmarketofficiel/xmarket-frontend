@@ -333,11 +333,20 @@ export function Student1337Step({ onBack, onNext }: Student1337StepProps) {
           messageType: 'error'
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle ApiError structure
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.details?.message) {
+        errorMessage = error.details.message;
+      }
+      
       setState(prev => ({
         ...prev,
         isLoading: false,
-        message: 'Network error. Please try again.',
+        message: errorMessage,
         messageType: 'error'
       }));
     }
