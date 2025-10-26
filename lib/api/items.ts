@@ -58,13 +58,50 @@ export const itemsApi = {
     apiClient.delete(`/items/${id}`),
 
   // Image Upload (Backend endpoint: POST /items/:id/images)
-  uploadItemImages: (
+  // Uploads images SEQUENTIALLY to avoid serverless function payload limits
+  uploadItemImages: async (
     itemId: string,
     images: File[]
   ): Promise<ApiResponse<{ message: string; urls?: string[] }>> => {
-    const formData = new FormData();
-    images.forEach((image) => formData.append("images", image));
-    return apiClient.uploadFile(`/items/${itemId}/images`, formData);
+    // Upload images one at a time to prevent FUNCTION_PAYLOAD_TOO_LARGE error
+    // This is necessary because serverless platforms (Railway, Vercel) have ~4-6MB payload limits
+    // Multiple 7MB images in one request would exceed these limits
+    
+    const uploadedUrls: string[] = [];
+    const errors: string[] = [];
+    
+    for (let i = 0; i < images.length; i++) {
+      try {
+        const formData = new FormData();
+        formData.append("images", images[i]);
+        
+        const response = await apiClient.uploadFile(`/items/${itemId}/images`, formData);
+        
+        // Collect uploaded URLs if available
+        if (response.data?.urls) {
+          uploadedUrls.push(...response.data.urls);
+        }
+      } catch (error: any) {
+        const errorMsg = `Failed to upload image ${i + 1}: ${error.message || 'Unknown error'}`;
+        errors.push(errorMsg);
+        console.error(errorMsg, error);
+      }
+    }
+    
+    // Return success if at least one image was uploaded
+    if (uploadedUrls.length > 0) {
+      return {
+        data: { 
+          message: `Successfully uploaded ${uploadedUrls.length}/${images.length} images`,
+          urls: uploadedUrls 
+        },
+        status: 201,
+        message: `Uploaded ${uploadedUrls.length} images`
+      };
+    }
+    
+    // If all uploads failed, throw an error
+    throw new Error(`Failed to upload images: ${errors.join(', ')}`);
   },
 
   // Optimized Image Upload (Backend endpoint: POST /uploads/upload-optimized)

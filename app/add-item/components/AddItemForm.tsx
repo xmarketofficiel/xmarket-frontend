@@ -226,7 +226,7 @@ export default function AddItemForm({
 
       // Upload photos if item creation succeeded
       if (state.data.photos.length > 0) {
-        addToast('Uploading images...', 'info');
+        addToast(`Uploading ${state.data.photos.length} image${state.data.photos.length > 1 ? 's' : ''}...`, 'info');
         try {
           await api.items.uploadItemImages(String(newItem.id), state.data.photos);
         } catch (uploadError: any) {

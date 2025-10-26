@@ -312,6 +312,9 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
 
         // Upload new photos if any
         if (formData.photos.length > 0) {
+          if (formData.photos.length > 1) {
+            addToast(`Uploading ${formData.photos.length} images...`, 'info');
+          }
           await api.items.uploadItemImages(itemId, formData.photos);
         }
 

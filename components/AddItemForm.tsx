@@ -110,7 +110,13 @@ export default function AddItemForm() {
 
       // Upload photos if item creation succeeded
       if (values.photos.length > 0) {
-        console.log(`Uploading ${values.photos.length} images for item ${newItem.id}`);
+        console.log(`Uploading ${values.photos.length} images for item ${newItem.id} (one at a time to avoid payload limits)`);
+        
+        // Show progress toast for better UX
+        if (values.photos.length > 1) {
+          addToast(`Uploading ${values.photos.length} images...`, 'info');
+        }
+        
         await api.items.uploadItemImages(String(newItem.id), values.photos);
       }
 
