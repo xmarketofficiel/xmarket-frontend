@@ -75,7 +75,10 @@ export const itemsApi = {
         const formData = new FormData();
         formData.append("images", images[i]);
         
-        const response = await apiClient.uploadFile(`/items/${itemId}/images`, formData);
+        const response = await apiClient.uploadFile<{ message?: string; urls?: string[] }>(
+          `/items/${itemId}/images`, 
+          formData
+        );
         
         // Collect uploaded URLs if available
         if (response.data?.urls) {
