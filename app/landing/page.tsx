@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
@@ -15,6 +15,8 @@ import {
   FAQ_ITEMS,
   ANIMATION_VARIANTS 
 } from './constants';
+import FeaturedProductsSection from './FeaturedProductsSection';
+import LandingNavbar from './LandingNavbar';
 
 /**
  * Landing Page - Redesigned with modern styling and improved UX
@@ -25,9 +27,6 @@ export default function LandingPage() {
   
   // State for FAQ accordion
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  
-  // Ref for hero section only
-  const heroRef = useRef<HTMLDivElement>(null);
   
   // Redirect authenticated users
   if (user) {
@@ -49,41 +48,46 @@ export default function LandingPage() {
     router.push('/signup');
   };
 
-  const handleLogin = () => {
-    router.push('/login');
-  };
-
   const handleFAQToggle = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
-      {/* Hero Section */}
-      <motion.section 
-        ref={heroRef}
-        className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <HeroBackground />
-        <div className="relative z-10 text-center max-w-7xl mx-auto w-full">
-          {/* Glassmorphism container for hero content */}
-          <div className="relative bg-white/40 backdrop-blur-md rounded-3xl p-8 sm:p-12 lg:p-16 shadow-2xl border border-white/50">
-            {/* Decorative gradient border effect */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#009F9C]/10 via-transparent to-blue-500/10 pointer-events-none"></div>
-            
-            <HeroContent 
-              onGetStarted={handleGetStarted}
-              onLogin={handleLogin}
-            />
-          </div>
+      {/* Landing Navbar */}
+      <LandingNavbar />
+
+      {/* Hero Section - Simplified */}
+      <section id="hero" className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-7xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight">
+              Your Campus
+              <span className="block mt-2 bg-gradient-to-r from-[#009F9C] via-[#008A87] to-[#007B78] bg-clip-text text-transparent">
+                XMarket
+              </span>
+            </h1>
+
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Connect, trade, and thrive within your university community. 
+              Buy, sell, and discover services from verified students.
+            </p>
+          </motion.div>
         </div>
-      </motion.section>
+      </section>
+
+      {/* Featured Products Section */}
+      <section id="products">
+        <FeaturedProductsSection />
+      </section>
 
       {/* Features Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 backdrop-blur-sm relative overflow-hidden">
+      <section id="features" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 backdrop-blur-sm relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-10 w-72 h-72 bg-[#009F9C]/5 rounded-full blur-3xl"></div>
@@ -100,7 +104,7 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100/50 relative overflow-hidden">
+      <section id="faq" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100/50 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVHJhbnNmb3JtPSJyb3RhdGUoNDUpIj48cGF0aCBkPSJNLTEwIDMwaDYwdjFoLTYweiIgZmlsbD0iIzAwOUY5QyIgZmlsbC1vcGFjaXR5PSIuMDMiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-50"></div>
@@ -151,220 +155,6 @@ export default function LandingPage() {
         </div>
       </section>
     </div>
-  );
-}
-
-/**
- * Hero background with animated elements
- */
-function HeroBackground() {
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Dynamic gradient mesh background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#009F9C]/20 via-purple-500/10 to-blue-500/20" />
-      
-      {/* Animated gradient orbs - More vibrant and larger */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          rotate: [0, 10, 0],
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#009F9C]/30 via-[#00C9C5]/20 to-transparent rounded-full blur-3xl"
-      />
-      <motion.div
-        animate={{
-          scale: [1.2, 1, 1.2],
-          rotate: [-10, 0, -10],
-          x: [0, -50, 0],
-          y: [0, 30, 0],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-gradient-to-tr from-blue-500/25 via-purple-500/20 to-transparent rounded-full blur-3xl"
-      />
-      
-      {/* Additional floating gradient spheres */}
-      <motion.div
-        animate={{
-          y: [0, -40, 0],
-          x: [0, 30, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/4 right-1/3 w-80 h-80 bg-gradient-to-br from-cyan-400/20 to-[#009F9C]/15 rounded-full blur-2xl"
-      />
-      <motion.div
-        animate={{
-          y: [0, 40, 0],
-          x: [0, -30, 0],
-          scale: [1.1, 1, 1.1],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-gradient-to-tl from-indigo-400/15 via-purple-400/10 to-transparent rounded-full blur-2xl"
-      />
-      
-      {/* Center ambient glow */}
-      <motion.div
-        animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-[#009F9C]/15 via-transparent to-transparent rounded-full blur-3xl"
-      />
-      
-      {/* Animated grid pattern */}
-      <motion.div
-        animate={{
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gMTAwIDAgTCAwIDAgMCAxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwOUY5QyIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-40"
-      />
-      
-      {/* Floating particles */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            animate={{
-              y: [0, -100, 0],
-              x: [0, Math.sin(i) * 50, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 10 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.3,
-              ease: "easeInOut"
-            }}
-            className="absolute w-2 h-2 bg-[#009F9C]/30 rounded-full blur-sm"
-            style={{
-              left: `${(i * 5) % 100}%`,
-              top: `${(i * 7) % 100}%`,
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Radial gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-white/50" />
-    </div>
-  );
-}
-
-/**
- * Hero content with CTA buttons
- */
-interface HeroContentProps {
-  onGetStarted: () => void;
-  onLogin: () => void;
-}
-
-function HeroContent({ onGetStarted, onLogin }: HeroContentProps) {
-  return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      variants={ANIMATION_VARIANTS.staggerContainer}
-      className="space-y-6 lg:space-y-8"
-    >
-      <motion.div
-        variants={ANIMATION_VARIANTS.fadeInUp}
-        className="mb-1"
-      >
-        <span className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#009F9C]/10 text-[#009F9C] text-sm sm:text-base font-semibold border border-[#009F9C]/20 backdrop-blur-sm">
-          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-          Trusted by 500+ Students
-        </span>
-      </motion.div>
-
-      <motion.h1
-        variants={ANIMATION_VARIANTS.fadeInUp}
-        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight px-4"
-      >
-        Your Campus
-        <span className="block mt-2 bg-gradient-to-r from-[#009F9C] via-[#008A87] to-[#007B78] bg-clip-text text-transparent">
-          XMarket
-        </span>
-      </motion.h1>
-
-      <motion.p
-        variants={ANIMATION_VARIANTS.fadeInUp}
-        className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4"
-      >
-        Connect, trade, and thrive within your university community. 
-        Buy, sell, and discover services from verified students.
-      </motion.p>
-
-      <motion.div
-        variants={ANIMATION_VARIANTS.fadeInUp}
-        className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-2 lg:pt-4 px-4"
-      >
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onGetStarted}
-          className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#009F9C] to-[#007B78] text-white font-semibold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center justify-center group"
-        >
-          Get Started Free
-          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onLogin}
-          className="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 font-semibold text-base sm:text-lg rounded-xl border-2 border-gray-200 hover:border-[#009F9C]/30 hover:bg-gray-50 shadow-lg hover:shadow-2xl transition-all duration-300"
-        >
-          Sign In
-        </motion.button>
-      </motion.div>
-
-      <motion.div
-        variants={ANIMATION_VARIANTS.fadeInUp}
-        className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 pt-6 lg:pt-8 text-sm text-gray-600"
-      >
-        <div className="flex items-center">
-          <CheckCircle className="w-5 h-5 text-[#009F9C] mr-2" />
-          <span>No credit card required</span>
-        </div>
-        <div className="flex items-center">
-          <CheckCircle className="w-5 h-5 text-[#009F9C] mr-2" />
-          <span>Free to join</span>
-        </div>
-        <div className="flex items-center">
-          <CheckCircle className="w-5 h-5 text-[#009F9C] mr-2" />
-          <span>Verified community</span>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }
 

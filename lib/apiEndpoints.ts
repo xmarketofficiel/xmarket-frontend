@@ -31,6 +31,11 @@ export const api = {
       apiClient.post('/join-requests', data)
   },
   
+  featuredProducts: {
+    getFeaturedProducts: (limit?: number) =>
+      apiClient.get(`/featured-products${limit ? `?limit=${limit}` : ''}`)
+  },
+  
   notifications: {
     getNotifications: (params?: any) => Promise.resolve({
       data: { items: [], total: 0, page: 1, totalPages: 0 },
