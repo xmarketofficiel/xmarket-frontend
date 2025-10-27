@@ -194,11 +194,11 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
   const router = useRouter();
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border sm:border-white/50 shadow-none sm:shadow-lg lg:shadow-xl p-6 sm:p-8 lg:p-10 relative min-h-screen sm:min-h-0 flex flex-col justify-center">
+    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border sm:border-white/50 shadow-none sm:shadow-lg lg:shadow-xl px-6 pb-8 pt-6 sm:p-8 lg:p-10 relative min-h-screen sm:min-h-0 flex flex-col justify-start sm:justify-center overflow-y-auto" style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))', paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
       {/* Back to Home Button - Mobile Optimized */}
       <button
         onClick={() => router.push('/')}
-        className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-6 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
+        className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-4 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
       >
         <ArrowLeft className="w-5 h-5 sm:w-5 sm:h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
         <span className="font-medium text-sm sm:text-base">Back to Home</span>
@@ -208,7 +208,7 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
       
       <form
         onSubmit={onSubmit}
-        className="space-y-5 sm:space-y-6"
+        className="space-y-4 sm:space-y-6"
       >
         {/* Email Input */}
         <InputField
