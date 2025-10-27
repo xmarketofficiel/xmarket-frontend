@@ -305,7 +305,7 @@ export default function EditItemForm({ itemId }: EditItemFormProps) {
                 confirmedBuyers: result.warning.confirmedBuyers
               });
               setShowPurchaseWarning(true);
-              return; // Don't proceed with success yet
+              return; // Don't proceed with success yett
             }
           }
         }
