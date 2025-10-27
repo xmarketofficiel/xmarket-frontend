@@ -241,16 +241,16 @@ export default function ItemCard({
           </div>
 
           {/* Content Section - Simplified */}
-          <div className="py-2 px-1 space-y-2">
-            {/* Title - Truncated for grid layout */}
-            <h3 className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
-              {item.title}
-            </h3>
-
-            {/* Price */}
-            <div className="text-base font-bold text-[#009F9C]">
+          <div className="py-2 px-1 space-y-0.2">
+            {/* Price - Facebook Marketplace style: Price first and prominent */}
+            <div className="text-lg font-bold text-[#009F9C]">
               {item.price} DH
             </div>
+
+            {/* Title - Below price, smaller */}
+            <h3 className="font-normal text-gray-900 text-sm line-clamp-2 leading-tight">
+              {item.title}
+            </h3>
           </div>
         </div>
       </div>

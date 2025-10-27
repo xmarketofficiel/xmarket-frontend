@@ -106,7 +106,7 @@ export default function ItemGallery({
 
   return (
     <div 
-      className={`relative aspect-square lg:aspect-[4/3] lg:max-h-96 lg:max-w-lg lg:mx-auto bg-gray-100 overflow-hidden rounded-xl shadow-sm ${className}`}
+      className={`group relative aspect-square lg:aspect-[4/3] w-full bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden lg:rounded-xl shadow-md transition-all duration-300 ${className}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -118,7 +118,7 @@ export default function ItemGallery({
       {/* Main Image */}
       <div
         key={currentIndex}
-        className="relative w-full h-full cursor-pointer transition-opacity duration-300"
+        className="relative w-full h-full cursor-zoom-in transition-all duration-500 hover:scale-[1.02]"
         onClick={handleImageClick}
       >
         <Image
@@ -134,18 +134,28 @@ export default function ItemGallery({
             // Silently handle image load failures
           }}
         />
+        {/* Subtle overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
+      
+      {/* Image Counter Badge - Desktop */}
+      {hasMultipleImages && (
+        <div className="hidden lg:flex absolute top-4 right-4 bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg z-20">
+          {currentIndex + 1}/{validImages.length}
+        </div>
+      )}
       
       {/* Featured Badge */}
       {isFeatured && (
         <div 
-          className="absolute top-4 left-4 bg-[#FF6B35] text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-10 transition-all duration-300"
+          className="absolute top-4 left-4 bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl z-20 flex items-center space-x-2 animate-pulse"
         >
-          ⭐ Featured
+          <span className="text-lg">⭐</span>
+          <span>Featured</span>
         </div>
       )}
       
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows - Enhanced Desktop Style */}
       {hasMultipleImages && (
         <>
           <button
@@ -153,10 +163,10 @@ export default function ItemGallery({
               e.stopPropagation();
               goToPrevious();
             }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm z-10"
+            className="hidden lg:flex absolute left-6 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3.5 rounded-full transition-all duration-300 backdrop-blur-xl shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 z-20 items-center justify-center group/btn"
             aria-label="Previous image"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} className="group-hover/btn:-translate-x-0.5 transition-transform" />
           </button>
           
           <button
@@ -164,15 +174,15 @@ export default function ItemGallery({
               e.stopPropagation();
               goToNext();
             }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm z-10"
+            className="hidden lg:flex absolute right-6 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3.5 rounded-full transition-all duration-300 backdrop-blur-xl shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 z-20 items-center justify-center group/btn"
             aria-label="Next image"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={24} className="group-hover/btn:translate-x-0.5 transition-transform" />
           </button>
         </>
       )}
       
-      {/* Image Indicators */}
+      {/* Image Indicators - Simple Dots */}
       {hasMultipleImages && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
           {validImages.map((_, index) => (
@@ -190,13 +200,6 @@ export default function ItemGallery({
               aria-label={`Go to image ${index + 1}`}
             />
           ))}
-        </div>
-      )}
-
-      {/* Image Counter */}
-      {hasMultipleImages && (
-        <div className="absolute top-4 right-4 bg-black/50 text-white px-2 py-1 rounded-full text-sm backdrop-blur-sm z-10">
-          {currentIndex + 1} / {validImages.length}
         </div>
       )}
 

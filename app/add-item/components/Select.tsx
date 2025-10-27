@@ -29,7 +29,7 @@ export default function Select({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
+      className={className}
     >
       {/* Label */}
       <label 
@@ -41,7 +41,7 @@ export default function Select({
       </label>
 
       {/* Select Container */}
-      <div className="relative">
+      <div className="relative mt-2">
         <motion.select
           id={selectId}
           name={name}
@@ -104,7 +104,7 @@ export default function Select({
 
       {/* Help Text */}
       {helpText && !error && (
-        <p id={helpId} className="text-xs text-gray-500">
+        <p id={helpId} className="text-xs text-gray-500 mt-1">
           {helpText}
         </p>
       )}
@@ -114,7 +114,7 @@ export default function Select({
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center space-x-1 text-red-500"
+          className="flex items-center space-x-1 text-red-500 mt-2"
         >
           <AlertCircle size={14} />
           <p id={errorId} className="text-sm" role="alert" aria-live="polite">

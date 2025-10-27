@@ -115,6 +115,22 @@ export default function AddItemForm({
     console.log('  - Available categories:', categories.map(cat => cat.name).join(', '));
   }
 
+  // Scroll to top when step changes (instant, no smooth scroll)
+  useEffect(() => {
+    // Instant scroll to top for main window (mobile)
+    window.scrollTo(0, 0);
+    
+    // Instant scroll for document elements (fallback)
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    // Instant scroll for main content container (desktop - ConditionalLayout uses overflow-y-auto on main)
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTop = 0;
+    }
+  }, [state.currentStep]);
+
   // Cleanup effect - clear draft if user navigates away without completing
   useEffect(() => {
     return () => {
@@ -326,44 +342,23 @@ export default function AddItemForm({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
         {/* Enhanced Step Indicator */}
         <div className="max-w-4xl mx-auto w-full">
           <StepIndicator
             currentStep={state.currentStep}
             totalSteps={ADD_ITEM_CONFIG.TOTAL_STEPS}
-            className="mb-8 lg:mb-12"
+            className="mb-4 lg:mb-6"
           />
         </div>
 
         {/* Enhanced Step Content Container */}
-        <div className="flex-1 flex items-start justify-center">
+        <div className="flex-1 flex items-start justify-center mt-0">
           <div className="w-full max-w-2xl lg:max-w-4xl">
             {/* Step Content with Enhanced Responsive Layout */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              {/* Content Header */}
-              <div className="bg-gradient-to-r from-[#009F9C] to-[#00C4A7] px-6 sm:px-8 py-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white">
-                  {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? (
-                    <>
-                      📸 Add Photos
-                      <span className="block text-sm font-normal text-white/80 mt-1">
-                        Upload high-quality images to showcase your item
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      📝 Item Details
-                      <span className="block text-sm font-normal text-white/80 mt-1">
-                        Fill in the details about your item
-                      </span>
-                    </>
-                  )}
-                </h2>
-              </div>
-
               {/* Content Body */}
-              <div className="p-6 sm:p-8 lg:p-10">
+              <div className="p-3 sm:p-4 lg:p-5">
                 {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS && (
                   <div className="space-y-6">
                     <PhotoUploadStep
@@ -388,54 +383,6 @@ export default function AddItemForm({
                       onBack={actions.previousStep}
                     />
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Tips Section */}
-            <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                💡 <span className="ml-2">Pro Tips</span>
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                {state.currentStep === ADD_ITEM_CONFIG.STEP_PHOTOS ? (
-                  <>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Use natural lighting for better photo quality</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Show multiple angles of your item</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Include close-ups of important details</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Clear, uncluttered backgrounds work best</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Write clear, detailed descriptions</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Price competitively by checking similar items</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Be honest about condition and defects</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Choose the most accurate category</span>
-                    </div>
-                  </>
                 )}
               </div>
             </div>
@@ -471,52 +418,6 @@ export default function AddItemForm({
               className="bg-gradient-to-r from-[#009F9C] to-[#00C4A7] h-2 rounded-full transition-all duration-500 ease-out shadow-sm"
               style={{ width: `${(state.currentStep / ADD_ITEM_CONFIG.TOTAL_STEPS) * 100}%` }}
             />
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Desktop Progress Sidebar */}
-      <div className="hidden lg:block fixed left-6 top-1/2 transform -translate-y-1/2 z-30">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 max-w-xs">
-          <h3 className="font-bold text-gray-900 mb-4">Progress</h3>
-          <div className="space-y-4">
-            <div className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-              state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS 
-                ? 'bg-green-50 border border-green-200' 
-                : 'bg-gray-50 border border-gray-200'
-            }`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-300 text-gray-600'
-              }`}>
-                {state.currentStep > ADD_ITEM_CONFIG.STEP_PHOTOS ? '✓' : '1'}
-              </div>
-              <span className={`font-medium ${
-                state.currentStep >= ADD_ITEM_CONFIG.STEP_PHOTOS ? 'text-green-700' : 'text-gray-600'
-              }`}>
-                Add Photos
-              </span>
-            </div>
-            
-            <div className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-              state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS 
-                ? 'bg-green-50 border border-green-200' 
-                : 'bg-gray-50 border border-gray-200'
-            }`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-300 text-gray-600'
-              }`}>
-                {state.currentStep > ADD_ITEM_CONFIG.STEP_DETAILS ? '✓' : '2'}
-              </div>
-              <span className={`font-medium ${
-                state.currentStep >= ADD_ITEM_CONFIG.STEP_DETAILS ? 'text-green-700' : 'text-gray-600'
-              }`}>
-                Item Details
-              </span>
-            </div>
           </div>
         </div>
       </div>
