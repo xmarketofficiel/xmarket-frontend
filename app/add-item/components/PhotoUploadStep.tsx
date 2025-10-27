@@ -406,50 +406,7 @@ export default function PhotoUploadStep({
               </motion.button>
             )}
           </motion.div>
-        )}        {/* Enhanced Help Text */}
-        <motion.div 
-          className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-xl p-4"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="text-sm space-y-3">
-            <p className="text-gray-700 font-medium flex items-center gap-2">
-              <Camera className="text-[#006666]" size={18} />
-              <span>Photography Tips for Better Sales</span>
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-600">
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Use natural lighting when possible</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Show item from multiple angles</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Include close-ups of important details</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Clean the item before photographing</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Show any defects honestly</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
-                <span>Use a plain, uncluttered background</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 italic border-t border-gray-200 pt-2">
-              <span className="flex items-center gap-1"><Lightbulb size={12} className="text-blue-500" /> Pro tip:</span> The first photo will be your main display image and appears in search results
-            </p>
-          </div>
-        </motion.div>
-
+        )}
         {/* Error Message */}
         {error && (
           <motion.p

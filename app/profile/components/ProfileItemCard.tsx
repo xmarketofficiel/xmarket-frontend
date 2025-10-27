@@ -51,13 +51,13 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
     return 'Edit item';
   };
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
+  const formatPrice = (price: number | string): string => {
+    // Extract numeric value (remove any currency symbols)
+    const numericPrice = typeof price === 'number' 
+      ? price 
+      : parseFloat(String(price).replace(/[^0-9.-]/g, '')) || 0;
+    // Format with Moroccan Dirham (DH)
+    return `${numericPrice.toLocaleString()} DH`;
   };
 
   const formatDate = (dateString: string): string => {

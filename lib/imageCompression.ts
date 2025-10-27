@@ -66,18 +66,21 @@ export async function compressImage(
 
     // Create canvas and compress
     const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = Math.round(width);
+    canvas.height = Math.round(height);
     const ctx = canvas.getContext('2d');
     
     if (!ctx) {
       throw new Error('Failed to get canvas context');
     }
 
-    // Draw image with high quality
+    // Clear canvas and draw image with high quality (no cropping)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(img, 0, 0, width, height);
+    
+    // Draw the entire image scaled to fit the canvas dimensions
+    ctx.drawImage(img, 0, 0, Math.round(width), Math.round(height));
 
     // Convert to blob with compression
     let compressedBlob = await canvasToBlob(canvas, fileType, quality);

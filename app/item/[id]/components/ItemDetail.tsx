@@ -274,37 +274,29 @@ export default function ItemDetail({
         </div>
 
         {/* Desktop Main Content - Enhanced with animations */}
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Gallery - Enhanced with premium effects */}
-            <div className="lg:col-span-2 space-y-6 animate-fade-in">
-              <div className="group bg-white rounded-3xl shadow-xl border border-gray-100/50 p-5 hover:shadow-2xl transition-all duration-500 hover:border-gray-200 relative overflow-hidden">
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <ItemGallery
-                  images={photos}
-                  title={item.title}
-                  isFeatured={item.featured}
-                  onImageClick={handleImageClick}
-                />
-              </div>
-              
-              {/* Item Info - Below gallery on desktop with slide-up animation */}
-              <div className="group bg-white rounded-3xl shadow-xl border border-gray-100/50 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:border-gray-200 relative animate-slide-up">
-                {/* Top accent line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                <ItemInfo item={item} />
-              </div>
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+            {/* Left Column - Gallery - Full size like Facebook Marketplace */}
+            <div className="animate-fade-in">
+              <ItemGallery
+                images={photos}
+                title={item.title}
+                isFeatured={item.featured}
+                onImageClick={handleImageClick}
+              />
             </div>
 
-            {/* Right Column - Seller Card - Enhanced with premium styling */}
-            <div className="lg:col-span-1 animate-fade-in-delay">
-              <div className="sticky top-24 space-y-6">
-                {/* Seller Card with premium gradient */}
-                <div className="group bg-gradient-to-br from-white via-gray-50/50 to-white rounded-3xl shadow-xl border border-gray-100/50 p-6 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] relative overflow-hidden">
-                  {/* Animated background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-purple-50/0 to-pink-50/0 group-hover:from-blue-50/30 group-hover:via-purple-50/30 group-hover:to-pink-50/30 transition-all duration-700"></div>
-                  <div className="relative z-10">
+            {/* Right Column - Description & Seller Info */}
+            <div className="animate-fade-in-delay">
+              <div className="sticky top-24 space-y-4">
+                {/* Item Info - Description */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                  <ItemInfo item={item} />
+                </div>
+                
+                {/* Seller Card - Hidden for own items */}
+                {!isOwnItem && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
                     <SellerCard
                       seller={item.seller}
                       isAnonymous={item.anonymous}
@@ -313,7 +305,7 @@ export default function ItemDetail({
                       onViewProfile={handleViewProfile}
                     />
                   </div>
-                </div>
+                )}
                 
                 {/* Quick Actions Card with premium design */}
                 {!isOwnItem && (
@@ -347,18 +339,20 @@ export default function ItemDetail({
                   </div>
                 )}
 
-                {/* Trust Badge */}
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                      <span className="text-white text-sm">✓</span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-xs font-bold text-emerald-700">Verified Listing</p>
-                      <p className="text-xs text-emerald-600">Safe to browse</p>
+                {/* Trust Badge - Hidden for own items */}
+                {!isOwnItem && (
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                        <span className="text-white text-sm">✓</span>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-xs font-bold text-emerald-700">Verified Listing</p>
+                        <p className="text-xs text-emerald-600">Safe to browse</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -381,27 +375,27 @@ export default function ItemDetail({
         <div className="pb-32 bg-gradient-to-b from-gray-50 to-white">
           {/* Item Information with enhanced card */}
           <div className="bg-white shadow-lg relative">
-            {/* Top accent gradient */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
             <ItemInfo item={item} />
           </div>
 
-          {/* Seller Card with premium styling */}
-          <div className="px-4 md:px-6 mt-6">
-            <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative">
-              {/* Shimmer effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              <div className="relative z-10">
-                <SellerCard
-                  seller={item.seller}
-                  isAnonymous={item.anonymous}
-                  isOwnItem={!!isOwnItem}
-                  onMessageClick={openWhatsApp}
-                  onViewProfile={handleViewProfile}
-                />
+          {/* Seller Card with premium styling - Hidden for own items */}
+          {!isOwnItem && (
+            <div className="px-4 md:px-6 mt-6">
+              <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative">
+                {/* Shimmer effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                <div className="relative z-10">
+                  <SellerCard
+                    seller={item.seller}
+                    isAnonymous={item.anonymous}
+                    isOwnItem={!!isOwnItem}
+                    onMessageClick={openWhatsApp}
+                    onViewProfile={handleViewProfile}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
           
           {/* Safety Tips Card - Mobile with premium gradient */}
           {!isOwnItem && (
@@ -435,20 +429,22 @@ export default function ItemDetail({
             </div>
           )}
 
-          {/* Trust Badge - Mobile */}
-          <div className="px-4 md:px-6 mt-4">
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                  <span className="text-white">✓</span>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-bold text-emerald-700">Verified Listing</p>
-                  <p className="text-xs text-emerald-600">Safe to browse and purchase</p>
+          {/* Trust Badge - Mobile - Hidden for own items */}
+          {!isOwnItem && (
+            <div className="px-4 md:px-6 mt-4">
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                    <span className="text-white">✓</span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-bold text-emerald-700">Verified Listing</p>
+                    <p className="text-xs text-emerald-600">Safe to browse and purchase</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Mobile Action Buttons */}

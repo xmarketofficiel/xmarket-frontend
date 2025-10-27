@@ -102,7 +102,7 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative touch-pan-y">
       {/* Item Image */}
       <div className="relative aspect-square">
         <Image
@@ -193,7 +193,13 @@ export default function UserItemCard({ item, onItemDeleted, onItemUpdated }: Use
         </h3>
         
         <p className="text-lg font-bold text-[#006666] mb-2">
-          {typeof item.price === 'number' ? `$${item.price.toFixed(2)}` : item.price}
+          {(() => {
+            // Extract numeric value from price (remove currency symbols and parse)
+            const numericPrice = typeof item.price === 'number' 
+              ? item.price 
+              : parseFloat(String(item.price).replace(/[^0-9.-]/g, '')) || 0;
+            return `${numericPrice.toLocaleString()} DH`;
+          })()}
         </p>
         
         <div className="flex items-center justify-between text-xs text-gray-500">
