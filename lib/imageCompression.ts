@@ -148,7 +148,7 @@ export async function compressImage(
 }
 
 /**
- * Compress multiple images in parallel (optimized for mobile performance
+ * Compress multiple images in parallel (optimized for mobile performances
  * @param files - Array of image files to compress
  * @param options - Compression options
  * @param onProgress - Optional callback for progress updates
