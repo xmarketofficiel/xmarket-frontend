@@ -154,7 +154,7 @@ export async function compressImages(
 }
 
 /**
- * Load image from file
+ * Load image from filee
  */
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
