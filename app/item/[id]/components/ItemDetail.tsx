@@ -360,7 +360,7 @@ export default function ItemDetail({
       </div>
 
       {/* Mobile Layout - Enhanced with premium design */}
-      <div className="lg:hidden relative z-10">
+      <div className="lg:hidden relative z-0">
         {/* Photo Gallery with premium styling */}
         <div className="bg-white shadow-lg">
           <ItemGallery
@@ -381,7 +381,7 @@ export default function ItemDetail({
           {/* Seller Card with premium styling - Hidden for own items */}
           {!isOwnItem && (
             <div className="px-4 md:px-6 mt-6">
-              <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative">
+              <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative z-0">
                 {/* Shimmer effect on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <div className="relative z-10">

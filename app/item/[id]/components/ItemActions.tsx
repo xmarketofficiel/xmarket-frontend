@@ -30,7 +30,8 @@ export default function ItemActions({
 
   const handleInterestClick = () => {
     if (isLoading.interest) return;
-    onInterestClick();
+    // Directly call WhatsApp message function instead of showing interest modal
+    onMessageClick();
   };
 
   const handleFavoriteClick = () => {
@@ -41,7 +42,7 @@ export default function ItemActions({
   if (isOwnItem) {
     return (
       <div 
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 ${className}`}
+        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 ${className}`}
       >
         <div className="w-full py-4 px-6 bg-gray-50 rounded-xl text-center">
           <div>
@@ -60,7 +61,7 @@ export default function ItemActions({
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg ${className}`}
+      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50 ${className}`}
     >
       <div className="max-w-md mx-auto">
         {/* Action Buttons - I'm Interested and Share in one line */}
@@ -99,7 +100,7 @@ export default function ItemActions({
         {/* Additional Info */}
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            Express interest to start chatting with the seller
+            Contact the seller directly via WhatsApp
           </p>
         </div>
       </div>
