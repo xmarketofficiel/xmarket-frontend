@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Package, Sparkles } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { api } from '../../lib/apiEndpoints';
 
 interface FeaturedProduct {
@@ -91,31 +90,21 @@ export default function FeaturedProductsSection() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
         {/* Section Title and Description */}
-        <motion.div 
-          className="text-center mb-10 sm:mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className="text-center mb-10 sm:mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4">
             Featured Products
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
             Discover amazing deals from verified students in your community
           </p>
-        </motion.div>
+        </div>
 
         {/* Products Grid with fade effect */}
         <div className="relative">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {products.map((product, index) => (
-              <motion.div
+              <div
                 key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="group relative"
               >
                 {/* Non-clickable card with blur effect */}
@@ -170,7 +159,7 @@ export default function FeaturedProductsSection() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
         
@@ -179,20 +168,14 @@ export default function FeaturedProductsSection() {
       </div>
 
       {/* CTA to sign up */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        className="text-center mt-12"
-      >
+      <div className="text-center mt-12">
         <button
           onClick={() => window.location.href = '/login'}
           className="px-8 py-4 bg-gradient-to-r from-[#009F9C] to-[#007B78] text-white font-semibold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
         >
           See More
         </button>
-      </motion.div>
+      </div>
     </div>
   </section>
 );

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
 import { 
@@ -12,8 +11,7 @@ import {
 // Import constants and components
 import { 
   FEATURES,
-  FAQ_ITEMS,
-  ANIMATION_VARIANTS 
+  FAQ_ITEMS
 } from './constants';
 import FeaturedProductsSection from './FeaturedProductsSection';
 import LandingNavbar from './LandingNavbar';
@@ -60,12 +58,7 @@ export default function LandingPage() {
       {/* Hero Section - Simplified */}
       <section id="hero" className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight">
               Your Campus
               <span className="block mt-2 bg-gradient-to-r from-[#009F9C] via-[#008A87] to-[#007B78] bg-clip-text text-transparent">
@@ -77,7 +70,7 @@ export default function LandingPage() {
               Connect, trade, and thrive within your university community. 
               Buy, sell, and discover services from verified students.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -125,30 +118,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDEzNGg3djFoLTd6bTE0LTE0aDd2MWgtN3oiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
         
         {/* Animated gradient blobs */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
-        />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl opacity-30" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl opacity-20" />
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <CTASection onGetStarted={handleGetStarted} />
@@ -164,37 +135,25 @@ export default function LandingPage() {
 function FeaturesSection() {
   return (
     <div>
-      <motion.div 
-        className="text-center mb-10 sm:mb-12 lg:mb-14"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
+      <div className="text-center mb-10 sm:mb-12 lg:mb-14">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4">
           Everything You Need
         </h2>
         <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
           From marketplace to services, we've built everything students need to thrive
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {FEATURES.map((feature, index) => (
-          <motion.div
-            key={feature.title}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
+          <div key={feature.title}>
             <FeatureCard
               icon={feature.icon}
               title={feature.title}
               description={feature.description}
               color={feature.color}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -212,37 +171,25 @@ interface FAQSectionProps {
 function FAQSection({ openFAQ, onFAQToggle }: FAQSectionProps) {
   return (
     <div>
-      <motion.div 
-        className="text-center mb-10 sm:mb-12 lg:mb-14"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
+      <div className="text-center mb-10 sm:mb-12 lg:mb-14">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4">
           Frequently Asked Questions
         </h2>
         <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
           Got questions? We've got answers to help you get started
         </p>
-      </motion.div>
+      </div>
 
       <div className="space-y-3 sm:space-y-4">
         {FAQ_ITEMS.map((faq, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-          >
+          <div key={index}>
             <FAQItem
               question={faq.question}
               answer={faq.answer}
               isOpen={openFAQ === index}
               onToggle={() => onFAQToggle(index)}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -258,13 +205,7 @@ interface CTASectionProps {
 
 function CTASection({ onGetStarted }: CTASectionProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="max-w-4xl mx-auto"
-    >
+    <div className="max-w-4xl mx-auto">
       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6">
         Ready to Get Started?
       </h2>
@@ -272,16 +213,14 @@ function CTASection({ onGetStarted }: CTASectionProps) {
         Join thousands of students already using XMarket to buy, sell, and connect
       </p>
       
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <button
         onClick={onGetStarted}
-        className="px-10 sm:px-12 py-4 sm:py-5 bg-white text-[#009F9C] font-bold text-lg sm:text-xl rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center group"
+        className="px-10 sm:px-12 py-4 sm:py-5 bg-white text-[#009F9C] font-bold text-lg sm:text-xl rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center group hover:scale-105"
       >
         Join XMarket Today
         <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-      </motion.button>
-    </motion.div>
+      </button>
+    </div>
   );
 }
 
@@ -305,30 +244,20 @@ function FAQItem({ question, answer, isOpen, onToggle }: FAQItemProps) {
         <span className="font-semibold text-gray-900 pr-4 text-sm sm:text-base group-hover:text-[#009F9C] transition-colors">
           {question}
         </span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex-shrink-0"
-        >
+        <div className={`flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
           <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 group-hover:text-[#009F9C] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
-        </motion.div>
+        </div>
       </button>
       
-      <motion.div
-        initial={false}
-        animate={{
-          height: isOpen ? 'auto' : 0,
-          opacity: isOpen ? 1 : 0
-        }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="overflow-hidden"
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
       >
         <div className="px-5 sm:px-6 py-4 sm:py-5 bg-gradient-to-br from-gray-50 via-white to-blue-50/20 border-t border-gray-100">
           <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{answer}</p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -345,10 +274,7 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon: Icon, title, description, color }: FeatureCardProps) {
   return (
-    <motion.div 
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
-      className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-7 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-[#009F9C]/20 transition-all duration-300 h-full overflow-hidden"
-    >
+    <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-7 shadow-lg border border-gray-100 hover:shadow-2xl hover:border-[#009F9C]/20 hover:-translate-y-2 transition-all duration-300 h-full overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-gray-50/30 opacity-50"></div>
       
@@ -368,7 +294,7 @@ function FeatureCard({ icon: Icon, title, description, color }: FeatureCardProps
 
       {/* Decorative gradient on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#009F9C]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </motion.div>
+    </div>
   );
 }
 
