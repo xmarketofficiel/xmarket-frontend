@@ -6,7 +6,7 @@ import { ADD_ITEM_CONFIG, VALIDATION_MESSAGES } from '../constants';
 import { PhotoUploadStepProps } from '../types';
 import Image from 'next/image';
 import { useState, useCallback } from 'react';
-import { compressImages, formatFileSize } from '../../../lib/imageCompression';
+import { compressImages, formatFileSize, getOptimizedCompressionSettings } from '../../../lib/imageCompression';
 
 export default function PhotoUploadStep({
   photos,
@@ -69,14 +69,15 @@ export default function PhotoUploadStep({
         setIsCompressing(true);
         setCompressionProgress({ current: 0, total: validFiles.length });
 
-        // Compress all images (target 800KB per image to stay well under 6MB total)
+        // Get optimized settings based on device (mobile gets faster settings)
+        const compressionSettings = getOptimizedCompressionSettings();
+        
+        console.log('🚀 Using compression settings:', compressionSettings);
+
+        // Compress all images in parallel with optimized settings
         const compressionResults = await compressImages(
           validFiles,
-          {
-            maxSizeMB: 0.8,        // 800KB per image
-            maxWidthOrHeight: 1920, // Good quality for web
-            quality: 0.85          // High quality
-          },
+          compressionSettings,
           (current, total) => {
             setCompressionProgress({ current, total });
           }
