@@ -42,7 +42,8 @@ export default function ItemActions({
   if (isOwnItem) {
     return (
       <div 
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 ${className}`}
+        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 z-50 ${className}`}
+        style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         <div className="w-full py-4 px-6 bg-gray-50 rounded-xl text-center">
           <div>
@@ -61,12 +62,13 @@ export default function ItemActions({
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50 ${className}`}
+      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 shadow-lg z-50 ${className}`}
+      style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
     >
       <div className="max-w-md mx-auto">
-        {/* Action Buttons - I'm Interested and Share in one line */}
+        {/* Action Buttons - Contact Seller and Share in one line */}
         <div className="flex space-x-3 mb-3">
-          {/* Interest Button */}
+          {/* Contact Seller Button */}
           <button
             onClick={handleInterestClick}
             disabled={isLoading.interest}
@@ -104,9 +106,6 @@ export default function ItemActions({
           </p>
         </div>
       </div>
-
-      {/* Bottom Safe Area */}
-      <div className="h-safe-bottom" />
     </div>
   );
 }
