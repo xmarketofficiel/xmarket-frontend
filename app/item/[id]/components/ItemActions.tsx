@@ -42,12 +42,7 @@ export default function ItemActions({
   if (isOwnItem) {
     return (
       <div 
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 z-50 ${className}`}
-        style={{ 
-          paddingBottom: 'env(safe-area-inset-bottom, 1rem)',
-          bottom: '0',
-          position: 'fixed'
-        }}
+        className={`mobile-bottom-safe fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 z-50 ${className}`}
       >
         <div className="w-full py-4 px-6 bg-gray-50 rounded-xl text-center">
           <div>
@@ -66,12 +61,7 @@ export default function ItemActions({
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 shadow-lg z-50 ${className}`}
-      style={{ 
-        paddingBottom: 'env(safe-area-inset-bottom, 1rem)',
-        bottom: '0',
-        position: 'fixed'
-      }}
+      className={`mobile-bottom-safe fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pt-4 px-4 shadow-lg z-50 ${className}`}
     >
       <div className="max-w-md mx-auto">
         {/* Action Buttons - Contact Seller and Share in one line */}
