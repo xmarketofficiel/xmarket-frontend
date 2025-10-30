@@ -148,19 +148,6 @@
   .animate-slideDown {
     animation: slideDown 0.5s ease-out;
   }
-  
-  /* Mobile browser-safe bottom fixed elements */
-  .mobile-bottom-safe {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-  
-  /* Ensure fixed elements stick to actual viewport bottom on mobile */
-  @supports (bottom: env(safe-area-inset-bottom)) {
-    .mobile-bottom-safe {
-      bottom: 0;
-      padding-bottom: max(1rem, env(safe-area-inset-bottom));
-    }
-  }
 }
 
 @keyframes slideDown {
