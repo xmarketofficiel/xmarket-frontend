@@ -208,7 +208,7 @@ export default function ItemDetail({
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30" style={{ minHeight: '-webkit-fill-available' }}>
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl"></div>
@@ -461,20 +461,6 @@ export default function ItemDetail({
           }}
         />
       </div>
-
-      {/* Action Buttons */}
-      <ItemActions
-        isOwnItem={!!isOwnItem}
-        isFavorited={isItemFavorite}
-        onInterestClick={handleInterestClick}
-        onFavoriteClick={handleFavoriteClick}
-        onShareClick={handleShareClick}
-        onMessageClick={openWhatsApp}
-        isLoading={{
-          interest: state.loading.interest,
-          favorite: state.loading.favorite,
-        }}
-      />
 
       {/* Modals */}
       <ShareModal

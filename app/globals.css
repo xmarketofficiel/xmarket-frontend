@@ -92,6 +92,16 @@
     overscroll-behavior-y: none;
   }
   
+  /* Fix for mobile browser chrome/address bar issue */
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
   /* Prevent mobile bounce/rubber-band on iOS */
   @media (max-width: 768px) {
     html, body {
