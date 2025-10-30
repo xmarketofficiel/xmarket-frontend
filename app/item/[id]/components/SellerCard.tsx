@@ -132,17 +132,6 @@ export default function SellerCard({
             </div>
           )}
         </div>
-        
-        {/* Message Button */}
-        {!isOwnItem && (
-          <button
-            onClick={onMessageClick}
-            className="bg-[#006666] hover:bg-[#005555] text-white p-2 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-            aria-label="Send message to seller"
-          >
-            <MessageCircle size={18} />
-          </button>
-        )}
       </div>
 
       {/* Anonymous Seller Info */}

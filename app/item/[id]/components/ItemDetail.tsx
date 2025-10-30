@@ -338,21 +338,6 @@ export default function ItemDetail({
                     </div>
                   </div>
                 )}
-
-                {/* Trust Badge - Hidden for own items */}
-                {!isOwnItem && (
-                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                        <span className="text-white text-sm">✓</span>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-xs font-bold text-emerald-700">Verified Listing</p>
-                        <p className="text-xs text-emerald-600">Safe to browse</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -424,23 +409,6 @@ export default function ItemDetail({
                       </li>
                     ))}
                   </ul>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Trust Badge - Mobile - Hidden for own items */}
-          {!isOwnItem && (
-            <div className="px-4 md:px-6 mt-4">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 shadow-md">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                    <span className="text-white">✓</span>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-bold text-emerald-700">Verified Listing</p>
-                    <p className="text-xs text-emerald-600">Safe to browse and purchase</p>
-                  </div>
                 </div>
               </div>
             </div>
