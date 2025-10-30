@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageCircle, Heart, Share, ShoppingCart } from 'lucide-react';
+import { Share, ShoppingCart } from 'lucide-react';
 import { ACTION_BUTTONS } from '../constants';
 
 interface ItemActionsProps {
@@ -9,7 +9,7 @@ interface ItemActionsProps {
   onInterestClick: () => void;
   onFavoriteClick: () => void;
   onShareClick: () => void;
-  onMessageClick: () => void; // Add direct WhatsApp message function
+  onMessageClick: () => void;
   isLoading?: {
     interest?: boolean;
     favorite?: boolean;
@@ -30,23 +30,15 @@ export default function ItemActions({
 
   const handleInterestClick = () => {
     if (isLoading.interest) return;
-    // Directly call WhatsApp message function instead of showing interest modal
     onMessageClick();
   };
 
-  const handleFavoriteClick = () => {
-    if (isLoading.favorite) return;
-    onFavoriteClick();
-  };
-
+  // Own item version - simple message bar
   if (isOwnItem) {
     return (
-      <div 
-        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 z-50 shadow-lg ${className}`}
-        style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}
-      >
-        <div className="w-full py-4 px-6 bg-gray-50 rounded-xl text-center">
-          <div>
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 shadow-lg">
+        <div className="flex items-center justify-center max-w-lg mx-auto h-full min-h-[4rem]">
+          <div className="w-full py-3 px-6 bg-gray-50 rounded-xl text-center">
             <p className="text-gray-600 font-medium flex items-center justify-center space-x-2">
               <ShoppingCart size={18} />
               <span>This is your item</span>
@@ -56,23 +48,21 @@ export default function ItemActions({
             </p>
           </div>
         </div>
-      </div>
+      </nav>
     );
   }
 
+  // Contact seller version - action buttons
   return (
-    <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-4 shadow-lg z-50 ${className}`}
-      style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}
-    >
-      <div className="max-w-md mx-auto">
-        {/* Action Buttons - Contact Seller and Share in one line */}
-        <div className="flex space-x-3 mb-3">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 shadow-lg">
+      <div className="flex flex-col max-w-lg mx-auto min-h-[4rem] justify-center">
+        {/* Action Buttons */}
+        <div className="flex space-x-3 mb-2">
           {/* Contact Seller Button */}
           <button
             onClick={handleInterestClick}
             disabled={isLoading.interest}
-            className={`flex-1 ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
+            className={`flex-1 ${ACTION_BUTTONS.interested.bgColor} ${ACTION_BUTTONS.interested.hoverColor} ${ACTION_BUTTONS.interested.textColor} py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md ${
               isLoading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-lg hover:scale-[1.02]'
             }`}
           >
@@ -92,7 +82,7 @@ export default function ItemActions({
           {/* Share Button */}
           <button
             onClick={onShareClick}
-            className={`flex-1 py-4 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${ACTION_BUTTONS.favorite.bgColor} ${ACTION_BUTTONS.favorite.textColor} ${ACTION_BUTTONS.favorite.hoverColor} border border-gray-200 hover:scale-[1.02] shadow-md`}
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${ACTION_BUTTONS.favorite.bgColor} ${ACTION_BUTTONS.favorite.textColor} ${ACTION_BUTTONS.favorite.hoverColor} border border-gray-200 hover:scale-[1.02] shadow-md`}
           >
             <Share size={18} />
             <span>Share</span>
@@ -106,6 +96,6 @@ export default function ItemActions({
           </p>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
