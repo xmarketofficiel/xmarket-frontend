@@ -323,21 +323,11 @@ export default function ItemDetail({
                     <div className="space-y-3">
                       {/* Contact Seller Button */}
                       <button
-                        onClick={handleInterestClick}
-                        disabled={state.loading.interest}
-                        className="w-full bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3.5 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed"
+                        onClick={openWhatsApp}
+                        className="w-full bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3.5 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
                       >
-                        {state.loading.interest ? (
-                          <>
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Connecting...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-lg">📱</span>
-                            <span>Contact Seller</span>
-                          </>
-                        )}
+                        <span className="text-lg">📱</span>
+                        <span>Contact Seller</span>
                       </button>
                       
                       <p className="text-xs text-center text-gray-500">
