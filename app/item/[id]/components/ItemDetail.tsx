@@ -274,7 +274,7 @@ export default function ItemDetail({
         </div>
 
         {/* Desktop Main Content - Enhanced with animations */}
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-8 pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
             {/* Left Column - Gallery - Full size like Facebook Marketplace */}
             <div className="animate-fade-in">
@@ -306,38 +306,41 @@ export default function ItemDetail({
                     />
                   </div>
                 )}
-                
-                {/* Contact Seller / Own Item Card - Desktop */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-                  {isOwnItem ? (
-                    <div className="text-center py-4">
-                      <div className="flex items-center justify-center space-x-2 mb-2">
-                        <MessageCircle size={20} className="text-gray-600" />
-                        <p className="text-gray-700 font-semibold">This is your item</p>
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        You can edit or manage it from your profile
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {/* Contact Seller Button */}
-                      <button
-                        onClick={openWhatsApp}
-                        className="w-full bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3.5 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
-                      >
-                        <span className="text-lg">📱</span>
-                        <span>Contact Seller</span>
-                      </button>
-                      
-                      <p className="text-xs text-center text-gray-500">
-                        Contact the seller directly via WhatsApp
-                      </p>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Desktop Contact Seller / Own Item Bar - Sticky Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 px-6 py-4 z-50 shadow-2xl">
+          <div className="max-w-7xl mx-auto">
+            {isOwnItem ? (
+              <div className="text-center py-2">
+                <div className="flex items-center justify-center space-x-2">
+                  <MessageCircle size={20} className="text-gray-600" />
+                  <p className="text-gray-700 font-semibold">This is your item</p>
+                  <span className="text-gray-400">•</span>
+                  <p className="text-sm text-gray-500">
+                    You can edit or manage it from your profile
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500">
+                    Contact the seller directly via WhatsApp
+                  </p>
+                </div>
+                <button
+                  onClick={openWhatsApp}
+                  className="bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3 px-8 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                >
+                  <span className="text-lg">📱</span>
+                  <span>Contact Seller</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
