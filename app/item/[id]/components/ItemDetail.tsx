@@ -326,19 +326,29 @@ export default function ItemDetail({
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-500">
-                    Contact the seller directly via WhatsApp
-                  </p>
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <div className="flex space-x-3">
+                  {/* Contact Seller Button */}
+                  <button
+                    onClick={openWhatsApp}
+                    className="bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                  >
+                    <span className="text-lg">📱</span>
+                    <span>Contact Seller</span>
+                  </button>
+
+                  {/* Share Button */}
+                  <button
+                    onClick={handleShareClick}
+                    className="py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 hover:scale-[1.02] shadow-md"
+                  >
+                    <Share2 size={18} />
+                    <span>Share</span>
+                  </button>
                 </div>
-                <button
-                  onClick={openWhatsApp}
-                  className="bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3 px-8 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
-                >
-                  <span className="text-lg">📱</span>
-                  <span>Contact Seller</span>
-                </button>
+                <p className="text-xs text-gray-500">
+                  Contact the seller directly via WhatsApp
+                </p>
               </div>
             )}
           </div>
