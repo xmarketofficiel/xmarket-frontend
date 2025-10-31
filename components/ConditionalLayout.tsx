@@ -27,7 +27,10 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
       pathname === '/signup/external' || 
       pathname === '/auth/register' || 
       pathname === '/auth/discord/callback' ||
-      pathname === '/coming-soon') {
+      pathname === '/coming-soon' ||
+      pathname === '/forgot-password' ||
+      pathname === '/forgot-password/verify' ||
+      pathname === '/forgot-password/reset') {
     return (
       <main className={pathname === '/coming-soon' ? 'min-h-screen' : 'min-h-screen bg-gray-50'}>
         {children}

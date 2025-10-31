@@ -236,6 +236,17 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
           label="Password"
         />
 
+        {/* Forgot Password Link */}
+        <div className="text-right -mt-2 mb-2">
+          <button
+            type="button"
+            onClick={() => router.push('/forgot-password')}
+            className="text-sm text-[#009F9C] hover:text-[#007B78] font-medium transition-colors"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
         {/* Message Display */}
         {state.message && (
           <MessageDisplay 

@@ -192,5 +192,15 @@ export const authApi = {
       status: response.status,
       message: 'Token refreshed successfully'
     };
-  }
+  },
+
+  // Password Reset Flow
+  forgotPassword: (email: string): Promise<ApiResponse<{ message: string; email: string }>> =>
+    apiClient.post("/auth/forgot-password", { email }),
+
+  verifyResetOtp: (email: string, code: string): Promise<ApiResponse<{ message: string; verified: boolean }>> =>
+    apiClient.post("/auth/verify-reset-otp", { email, code }),
+
+  resetPassword: (email: string, code: string, newPassword: string): Promise<ApiResponse<{ message: string }>> =>
+    apiClient.post("/auth/reset-password", { email, code, newPassword })
 };

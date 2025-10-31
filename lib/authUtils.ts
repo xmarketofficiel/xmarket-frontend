@@ -51,6 +51,14 @@ export function isForbiddenError(error: any): boolean {
  * Check if current path is a public route that doesn't require authentication
  */
 export function isPublicRoute(pathname: string): boolean {
-  const publicRoutes = ['/login', '/signup', '/coming-soon', '/'];
+  const publicRoutes = [
+    '/login', 
+    '/signup', 
+    '/coming-soon', 
+    '/',
+    '/forgot-password',
+    '/forgot-password/verify',
+    '/forgot-password/reset'
+  ];
   return publicRoutes.includes(pathname);
 }
