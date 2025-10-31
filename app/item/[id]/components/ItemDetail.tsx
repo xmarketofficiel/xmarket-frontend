@@ -307,6 +307,34 @@ export default function ItemDetail({
                   </div>
                 )}
                 
+                {/* Contact Seller Action Button - Desktop */}
+                {!isOwnItem && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                    <button
+                      onClick={handleInterestClick}
+                      disabled={state.loading.interest}
+                      className={`w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                        state.loading.interest ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-xl hover:scale-[1.02]'
+                      }`}
+                    >
+                      {state.loading.interest ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle size={20} />
+                          <span>Contact Seller</span>
+                        </>
+                      )}
+                    </button>
+                    <p className="text-xs text-gray-500 text-center mt-3">
+                      Contact the seller directly via WhatsApp
+                    </p>
+                  </div>
+                )}
+
                 {/* Quick Actions Card with premium design */}
                 {!isOwnItem && (
                   <div className="group relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-xl p-[1px] hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] overflow-hidden">
@@ -318,7 +346,7 @@ export default function ItemDetail({
                           <span className="text-white text-xl">⚡</span>
                         </div>
                         <h3 className="ml-3 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                          Quick Actions
+                          Safety Tips
                         </h3>
                       </div>
                       <div className="space-y-3">
