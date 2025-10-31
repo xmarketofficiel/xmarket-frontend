@@ -307,37 +307,45 @@ export default function ItemDetail({
                   </div>
                 )}
                 
-                {/* Quick Actions Card with premium design */}
-                {!isOwnItem && (
-                  <div className="group relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-xl p-[1px] hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] overflow-hidden">
-                    {/* Animated border gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
-                    <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-6">
-                      <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                          <span className="text-white text-xl">⚡</span>
-                        </div>
-                        <h3 className="ml-3 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                          Quick Actions
-                        </h3>
+                {/* Contact Seller / Own Item Card - Desktop */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                  {isOwnItem ? (
+                    <div className="text-center py-4">
+                      <div className="flex items-center justify-center space-x-2 mb-2">
+                        <MessageCircle size={20} className="text-gray-600" />
+                        <p className="text-gray-700 font-semibold">This is your item</p>
                       </div>
-                      <div className="space-y-3">
-                        {[
-                          { icon: '🔒', text: 'Safe and secure messaging' },
-                          { icon: '✓', text: 'Verified seller information' },
-                          { icon: '⚡', text: 'Fast response time' }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-start group/item">
-                            <div className="w-6 h-6 rounded-lg bg-white shadow-sm flex items-center justify-center text-sm group-hover/item:scale-110 transition-transform">
-                              {item.icon}
-                            </div>
-                            <span className="ml-3 text-sm text-gray-700 font-medium">{item.text}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <p className="text-sm text-gray-500">
+                        You can edit or manage it from your profile
+                      </p>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="space-y-3">
+                      {/* Contact Seller Button */}
+                      <button
+                        onClick={handleInterestClick}
+                        disabled={state.loading.interest}
+                        className="w-full bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3.5 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed"
+                      >
+                        {state.loading.interest ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Connecting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-lg">📱</span>
+                            <span>Contact Seller</span>
+                          </>
+                        )}
+                      </button>
+                      
+                      <p className="text-xs text-center text-gray-500">
+                        Contact the seller directly via WhatsApp
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -377,38 +385,6 @@ export default function ItemDetail({
                     onMessageClick={openWhatsApp}
                     onViewProfile={handleViewProfile}
                   />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Safety Tips Card - Mobile with premium gradient */}
-          {!isOwnItem && (
-            <div className="px-4 md:px-6 mt-4">
-              <div className="relative bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-[1px] overflow-hidden">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5">
-                  <div className="flex items-center mb-3">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
-                      <span className="text-white text-sm">💡</span>
-                    </div>
-                    <h3 className="ml-3 text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                      Safety Tips
-                    </h3>
-                  </div>
-                  <ul className="space-y-2.5">
-                    {[
-                      'Meet in a safe, public location',
-                      'Check the item before payment',
-                      'Never share personal banking details'
-                    ].map((tip, index) => (
-                      <li key={index} className="flex items-start text-xs text-gray-700">
-                        <div className="w-5 h-5 rounded-lg bg-white shadow-sm flex items-center justify-center text-blue-500 font-bold mr-2 flex-shrink-0">
-                          ✓
-                        </div>
-                        <span className="font-medium pt-0.5">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             </div>
