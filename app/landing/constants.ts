@@ -1,11 +1,11 @@
 // Landing page constants and data
 import { 
   ShoppingBag, 
-  Wrench, 
   MessageCircle, 
   Shield, 
-  GraduationCap, 
-  Users,
+  Heart,
+  Search,
+  Zap,
   TrendingUp,
   Clock,
   Star,
@@ -22,49 +22,49 @@ export const FEATURES = [
   {
     icon: ShoppingBag,
     title: "University Marketplace",
-    description: "Buy and sell items within your verified university community with secure transactions",
+    description: "Browse thousands of items from textbooks to electronics. Buy and sell safely within your verified university community.",
     color: "from-[#009F9C] to-[#007B78]",
     delay: 0.1
   },
   {
-    icon: Wrench,
-    title: "Services Hub",
-    description: "Find tutoring, cleaning, delivery, maintenance, and pet care services from fellow students",
-    color: "from-[#FF6B35] to-[#E55A2B]",
+    icon: MessageCircle,
+    title: "Real-Time Messaging",
+    description: "Chat instantly with buyers and sellers. Negotiate prices, ask questions, and coordinate meetups seamlessly.",
+    color: "from-[#8B5CF6] to-[#7C3AED]",
     delay: 0.2
   },
   {
-    icon: MessageCircle,
-    title: "Direct Messaging",
-    description: "Connect instantly with buyers and sellers through our integrated chat system",
-    color: "from-[#8B5CF6] to-[#7C3AED]",
+    icon: Heart,
+    title: "Save Favorites",
+    description: "Bookmark items you love and get notified when prices drop. Never miss a great deal on campus.",
+    color: "from-[#EF4444] to-[#DC2626]",
     delay: 0.3
   },
   {
     icon: Shield,
     title: "Verified Community",
-    description: "All users are verified with university email addresses for safety and trust",
+    description: "Every user is verified with a university email. Buy and sell with confidence in a trusted student network.",
     color: "from-[#10B981] to-[#059669]",
     delay: 0.4
   },
   {
-    icon: GraduationCap,
-    title: "Academic Focus",
-    description: "Find textbooks, study materials, and academic services tailored for university life",
+    icon: Search,
+    title: "Smart Search & Filters",
+    description: "Find exactly what you need with advanced search, category filters, and price ranges. Save time browsing.",
     color: "from-[#F59E0B] to-[#D97706]",
     delay: 0.5
   },
   {
-    icon: Users,
-    title: "Community Driven",
-    description: "Built by students, for students - creating connections that matter",
-    color: "from-[#EF4444] to-[#DC2626]",
+    icon: Zap,
+    title: "Lightning Fast",
+    description: "Optimized for speed with instant load times, smooth scrolling, and responsive design on any device.",
+    color: "from-[#06B6D4] to-[#0891B2]",
     delay: 0.6
   }
 ] as const;
 
 export const STATISTICS = [
-  { number: "500+", label: "Active Students", icon: Users },
+  { number: "500+", label: "Active Students", icon: ShoppingBag },
   { number: "1,200+", label: "Items Listed", icon: ShoppingBag },
   { number: "98%", label: "Success Rate", icon: TrendingUp },
   { number: "24/7", label: "Support", icon: Clock }
@@ -89,7 +89,7 @@ export const TESTIMONIALS = [
     name: "Fatima El Mansouri",
     role: "Business Student",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    content: "The service marketplace helped me find a reliable tutor for calculus. Highly recommend!",
+    content: "The messaging system is super convenient. I sold my furniture in just two days!",
     rating: 5
   }
 ] as const;
@@ -106,19 +106,23 @@ export const CATEGORIES = [
 export const FAQ_ITEMS = [
   {
     question: "How do I verify my university email?",
-    answer: "Simply sign up with your university email address and we'll send you a verification link. Only verified students can access the marketplace."
+    answer: "Simply sign up with your university email address and we'll send you a verification link. Click the link in your email to activate your account. Only verified students can access the marketplace."
   },
   {
     question: "Is it safe to buy from other students?",
-    answer: "Yes! All users are verified university students. We also provide secure payment options and have a rating system for added trust."
+    answer: "Absolutely! All users are verified university students with confirmed email addresses. We also have a rating system and secure messaging to help you communicate safely. Always meet in public places on campus for transactions."
   },
   {
-    question: "What types of services can I offer?",
-    answer: "You can offer tutoring, cleaning, delivery, tech support, writing assistance, and many other services that fellow students might need."
+    question: "How do I list an item for sale?",
+    answer: "Click 'Add Item' from your dashboard, fill in the details (title, description, price, category), upload photos, and publish. Your listing will be visible to all verified students in your university."
   },
   {
-    question: "How do payments work?",
-    answer: "We support multiple secure payment methods. For services, payment is held in escrow until both parties confirm completion."
+    question: "Can I negotiate prices with sellers?",
+    answer: "Yes! Use our built-in messaging system to chat with sellers and negotiate prices directly. Many sellers are open to reasonable offers, especially for bulk purchases or quick sales."
+  },
+  {
+    question: "What categories are available?",
+    answer: "We support a wide range of categories including Electronics, Books, Furniture, Clothing, Sports Equipment, Transportation, Health & Beauty, and many more. Browse by category to find exactly what you need."
   }
 ] as const;
 

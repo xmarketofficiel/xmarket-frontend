@@ -2,57 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../../lib/apiEndpoints';
-import { useUser } from '../../contexts/UserContext';
+import { ArrowLeft } from 'lucide-react';
 import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
 
 // Components
 import { AnimatedBackground } from './components/AnimatedBackground';
 import { BrandingPanel } from './components/BrandingPanel';
 import { StepHeader } from './components/StepHeader';
-import { EmailStep } from './components/EmailStep';
-import { OtpStep } from './components/OtpStep';
-import { DetailsStep } from './components/DetailsStep';
-import { CompleteStep } from './components/CompleteStep';
-import { RequestAccessStep } from './components/RequestAccessStep';
-import { RequestSuccessStep } from './components/RequestSuccessStep';
-import { NavigationFooter } from './components/NavigationFooter';
+import { UserTypeStep } from './components/UserTypeStep';
 
 // Constants and Types
-import { SIGNUP_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES } from './constants';
+import { SIGNUP_CONFIG } from './constants';
 import type { 
   SignupState, 
   FloatingElement, 
-  SignupFormData, 
-  RequestAccessData,
-  SignupHandlers 
+  SignupFormData 
 } from './types';
 
 /**
- * Signup Page - Optimized with clean component architecture
- * Features multi-step signup flow, request access alternative, and comprehensive error handling
+ * Main Signup Page - User Type Selection Only
+ * Routes users to appropriate signup flows based on their selection
  */
 export default function SignupPage() {
   const router = useRouter();
-  const { refreshUser } = useUser();
 
   // Initialize floating elements for background animation
   const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
 
-  // Consolidated state management
+  // Minimal state for user type selection
   const [state, setState] = useState<SignupState>({
     signupMode: SIGNUP_CONFIG.DEFAULT_SIGNUP_MODE,
     formData: {
-      step: 'email',
+      step: 'user-type',
+      userType: undefined,
       email: '',
       otp: '',
+      firstName: '',
+      lastName: '',
+      department: '',
+      role: 'student',
+      address: '',
       fullName: '',
       whatsappNumber: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      loginName: ''
     },
     requestAccessData: {
+      firstName: '',
+      lastName: '',
+      department: '',
+      role: 'seller',
+      address: '',
       fullName: '',
       email: '',
       whatsappNumber: '',
@@ -84,473 +85,43 @@ export default function SignupPage() {
     setFloatingElements(elements);
   }, []);
 
-  /**
-   * Handle resend timer countdown
-   */
-  useEffect(() => {
-    if (state.resendTimer <= 0) {
-      setState(prev => ({ ...prev, canResend: true }));
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setState(prev => ({
-        ...prev,
-        resendTimer: prev.resendTimer > 0 ? prev.resendTimer - 1 : 0
-      }));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [state.resendTimer]);
-
-  /**
-   * Update state helper function
-   */
-  const updateState = (updates: Partial<SignupState>) => {
-    setState(prev => ({ ...prev, ...updates }));
-  };
-
-  /**
-   * Start resend timer
-   */
-  const startResendTimer = () => {
-    updateState({ 
-      resendTimer: SIGNUP_CONFIG.RESEND_TIMER, 
-      canResend: false 
-    });
-  };
-
-  /**
-   * Validate phone number format (Moroccan numbers)
-   */
-  const isValidPhoneNumber = (phone: string) => {
-    // Remove all spaces, dashes, and other non-digit characters except +
-    const cleanPhone = phone.replace(/[^\d+]/g, '');
-    
-    // Case 1: Numbers starting with 06 or 07 (local format)
-    if (cleanPhone.startsWith('06') || cleanPhone.startsWith('07')) {
-      return cleanPhone.length === 10; // Exactly 10 digits including 06/07
-    }
-    
-    // Case 2: Numbers starting with +212 (international format)
-    if (cleanPhone.startsWith('+212')) {
-      const afterCode = cleanPhone.substring(4); // Remove +212
-      return afterCode.length === 9; // Exactly 9 digits after +212
-    }
-    
-    // All other cases are invalid
-    return false;
-  };
-
-  /**
-   * Get error message based on error response
-   */
-  const getErrorMessage = (error: any): string => {
-    const errorMessage = error?.message || '';
-    
-    if (errorMessage.includes('Invalid email format')) {
-      return ERROR_MESSAGES.INVALID_EMAIL;
-    }
-    if (errorMessage.includes('Cette adresse email est déjà enregistrée') || 
-        errorMessage.includes('already registered') || 
-        errorMessage.includes('déjà enregistrée')) {
-      return ERROR_MESSAGES.EMAIL_ALREADY_EXISTS;
-    }
-    if (errorMessage.includes('not authorized') || errorMessage.includes('unauthorized')) {
-      return ERROR_MESSAGES.EMAIL_NOT_AUTHORIZED;
-    }
-    if (errorMessage.includes('Invalid OTP') || errorMessage.includes('incorrect')) {
-      return ERROR_MESSAGES.OTP_INCORRECT;
-    }
-    if (errorMessage.includes('expired')) {
-      return ERROR_MESSAGES.OTP_EXPIRED;
-    }
-    if (errorMessage.includes('Network Error') || errorMessage.includes('fetch')) {
-      return ERROR_MESSAGES.NETWORK_ERROR;
-    }
-    return ERROR_MESSAGES.GENERIC_ERROR;
-  };
-
-  /**
-   * Handle sending OTP
-   */
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    updateState({ isLoading: true, message: '', messageType: 'error' });
-
-    // Validate email format
-    if (!SIGNUP_CONFIG.EMAIL_REGEX.test(state.formData.email)) {
-      updateState({ 
-        message: ERROR_MESSAGES.INVALID_EMAIL,
-        isLoading: false
-      });
-      return;
-    }
-
-    try {
-      const response = await api.auth.sendOtp(state.formData.email);
-      
-      updateState({
-        message: SUCCESS_MESSAGES.OTP_SENT,
-        messageType: 'success',
-        formData: { ...state.formData, step: 'otp' },
-        otpSent: true
-      });
-      startResendTimer();
-    } catch (error: any) {
-      const errorMessage = getErrorMessage(error);
-      updateState({ message: errorMessage });
-    } finally {
-      updateState({ isLoading: false });
-    }
-  };
-
-  /**
-   * Handle resending OTP
-   */
-  const handleResendOtp = async () => {
-    if (!state.canResend) return;
-
-    updateState({ isLoading: true, message: '', messageType: 'error' });
-
-    try {
-      await api.auth.sendOtp(state.formData.email);
-      
-      updateState({
-        message: SUCCESS_MESSAGES.RESEND_SUCCESS,
-        messageType: 'success'
-      });
-      startResendTimer();
-    } catch (error: any) {
-      const errorMessage = getErrorMessage(error);
-      updateState({ message: errorMessage });
-    } finally {
-      updateState({ isLoading: false });
-    }
-  };
-
-  /**
-   * Handle OTP verification
-   */
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    updateState({ isLoading: true, message: '', messageType: 'error' });
-
-    // Validate OTP format
-    if (state.formData.otp.length !== 6) {
-      updateState({ 
-        message: ERROR_MESSAGES.INVALID_OTP,
-        isLoading: false
-      });
-      return;
-    }
-
-    try {
-      const response = await api.auth.verifyOtp(state.formData.email, state.formData.otp);
-      
-      updateState({
-        message: SUCCESS_MESSAGES.OTP_VERIFIED,
-        messageType: 'success',
-        formData: { ...state.formData, step: 'details' }
-      });
-    } catch (error: any) {
-      const errorMessage = getErrorMessage(error);
-      updateState({ message: errorMessage });
-    } finally {
-      updateState({ isLoading: false });
-    }
-  };
-
-  /**
-   * Handle completing signup
-   */
-  const handleCompleteSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    updateState({ isLoading: true, message: '', messageType: 'error' });
-
-    // Validate form data
-    const { fullName, whatsappNumber, password, confirmPassword } = state.formData;
-    
-    if (!fullName) {
-      updateState({ message: ERROR_MESSAGES.NAME_REQUIRED, isLoading: false });
-      return;
-    }
-    
-    if (!whatsappNumber) {
-      updateState({ message: ERROR_MESSAGES.PHONE_REQUIRED, isLoading: false });
-      return;
-    }
-    
-    if (!isValidPhoneNumber(whatsappNumber)) {
-      updateState({ message: ERROR_MESSAGES.PHONE_INVALID, isLoading: false });
-      return;
-    }
-    
-    if (password.length < SIGNUP_CONFIG.PASSWORD_MIN_LENGTH) {
-      updateState({ message: ERROR_MESSAGES.PASSWORD_TOO_SHORT, isLoading: false });
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      updateState({ message: ERROR_MESSAGES.PASSWORD_MISMATCH, isLoading: false });
-      return;
-    }
-
-    try {
-      const response = await api.auth.completeRegistration({
-        email: state.formData.email,
-        fullName,
-        whatsappNumber,
-        password
-      });
-
-      if (response.data) {
-        await refreshUser();
-        
-        updateState({
-          formData: { ...state.formData, step: 'complete' },
-          message: SUCCESS_MESSAGES.SIGNUP_SUCCESS,
-          messageType: 'success'
-        });
-
-        // Redirect after delay
-        setTimeout(() => {
-          router.push('/marketplace');
-        }, SIGNUP_CONFIG.REDIRECT_DELAY);
-      }
-    } catch (error: any) {
-      const errorMessage = getErrorMessage(error);
-      updateState({ message: errorMessage });
-    } finally {
-      updateState({ isLoading: false });
-    }
-  };
-
-  /**
-   * Handle request access submission
-   */
-  const handleRequestAccess = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    updateState({ isLoading: true, message: '', messageType: 'error' });
-
-    const { fullName, email, whatsappNumber, reason } = state.requestAccessData;
-    
-    // Validate form data
-    if (!fullName || !email || !whatsappNumber || !reason) {
-      updateState({ 
-        message: 'Please fill in all required fields',
-        isLoading: false 
-      });
-      return;
-    }
-
-    if (!isValidPhoneNumber(whatsappNumber)) {
-      updateState({ message: ERROR_MESSAGES.PHONE_INVALID, isLoading: false });
-      return;
-    }
-
-    if (!SIGNUP_CONFIG.EMAIL_REGEX.test(email)) {
-      updateState({ 
-        message: ERROR_MESSAGES.INVALID_EMAIL,
-        isLoading: false 
-      });
-      return;
-    }
-
-    try {
-      const response = await api.joinRequests.create({
-        fullName,
-        email,
-        whatsappNumber
-      });
-
-      updateState({
-        message: SUCCESS_MESSAGES.REQUEST_SUBMITTED,
-        messageType: 'success',
-        formData: { ...state.formData, step: 'request-success' },
-        requestSubmitted: true
-      });
-    } catch (error: any) {
-      const errorMessage = getErrorMessage(error);
-      updateState({ message: errorMessage });
-    } finally {
-      updateState({ isLoading: false });
-    }
-  };
-
-  /**
-   * Handle go to landing page
-   */
-  const handleGoToLanding = () => {
-    router.push('/');
-  };
-
-  /**
-   * Create handlers object for components
-   */
-  const handlers: SignupHandlers = {
-    handleSendOtp,
-    handleResendOtp,
-    handleVerifyOtp,
-    handleCompleteSignup,
-    handleRequestAccess,
-    handleFieldFocus: (field: string) => updateState({ focusedField: field }),
-    handleFieldBlur: () => updateState({ focusedField: '' }),
-    handleTogglePassword: (field: 'password' | 'confirmPassword') => {
-      if (field === 'password') {
-        updateState({ showPassword: !state.showPassword });
-      } else {
-        updateState({ showConfirmPassword: !state.showConfirmPassword });
-      }
-    },
-    switchToSignup: () => updateState({ 
-      signupMode: 'signup',
-      formData: { ...state.formData, step: 'email' },
-      message: ''
-    }),
-    switchToRequestAccess: () => updateState({ 
-      signupMode: 'request-access',
-      formData: { ...state.formData, step: 'request-access' },
-      message: ''
-    }),
-    updateFormData: (updates: Partial<SignupFormData>) => {
-      updateState({ formData: { ...state.formData, ...updates } });
-    },
-    updateRequestData: (updates: Partial<RequestAccessData>) => {
-      updateState({ requestAccessData: { ...state.requestAccessData, ...updates } });
-    }
-  };
-
   return (
     <ApiErrorBoundary>
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-cyan-50">
         <AnimatedBackground floatingElements={floatingElements} />
         
         <div className="relative z-10 min-h-screen flex">
+          {/* Hide branding panel on mobile, show only on desktop */}
           <BrandingPanel 
             currentStep={state.formData.step} 
             signupMode={state.signupMode}
           />
           
-          {/* Main Content Panel */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: SIGNUP_CONFIG.ANIMATION_DURATION }}
-              className="max-w-md w-full"
-            >
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 relative">
+          {/* Main Content Panel - Full width on mobile, responsive padding */}
+          <div className="w-full lg:w-1/2 lg:ml-auto flex justify-center p-4 sm:p-6 lg:p-8">
+            <div className="w-full max-w-md">
+              <div className="relative">
+                {/* Back to Home Button - Mobile optimized with better touch target */}
+                <button
+                  onClick={() => router.push('/')}
+                  className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-6 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+                  <span className="font-medium text-sm sm:text-base">Back to Home</span>
+                </button>
+
                 <StepHeader 
-                  step={state.requestSubmitted ? 'request-success' : state.formData.step} 
+                  step={state.formData.step} 
                   signupMode={state.signupMode}
                 />
                 
-                <AnimatePresence mode="wait">
-                  {/* Email Step */}
-                  {state.signupMode === 'signup' && state.formData.step === 'email' && (
-                    <EmailStep
-                      key="email"
-                      formData={state.formData}
-                      isLoading={state.isLoading}
-                      message={state.message}
-                      messageType={state.messageType}
-                      focusedField={state.focusedField}
-                      onSubmit={handlers.handleSendOtp}
-                      onFieldFocus={handlers.handleFieldFocus}
-                      onFieldBlur={handlers.handleFieldBlur}
-                      onUpdateFormData={handlers.updateFormData}
-                      onSwitchToRequestAccess={handlers.switchToRequestAccess}
-                    />
-                  )}
-
-                  {/* OTP Step */}
-                  {state.signupMode === 'signup' && state.formData.step === 'otp' && (
-                    <OtpStep
-                      key="otp"
-                      formData={state.formData}
-                      isLoading={state.isLoading}
-                      message={state.message}
-                      messageType={state.messageType}
-                      resendTimer={state.resendTimer}
-                      canResend={state.canResend}
-                      focusedField={state.focusedField}
-                      onSubmit={handlers.handleVerifyOtp}
-                      onResend={handlers.handleResendOtp}
-                      onFieldFocus={handlers.handleFieldFocus}
-                      onFieldBlur={handlers.handleFieldBlur}
-                      onUpdateFormData={handlers.updateFormData}
-                    />
-                  )}
-
-                  {/* Details Step */}
-                  {state.signupMode === 'signup' && state.formData.step === 'details' && (
-                    <DetailsStep
-                      key="details"
-                      formData={state.formData}
-                      isLoading={state.isLoading}
-                      message={state.message}
-                      messageType={state.messageType}
-                      focusedField={state.focusedField}
-                      showPassword={state.showPassword}
-                      showConfirmPassword={state.showConfirmPassword}
-                      onSubmit={handlers.handleCompleteSignup}
-                      onFieldFocus={handlers.handleFieldFocus}
-                      onFieldBlur={handlers.handleFieldBlur}
-                      onTogglePassword={handlers.handleTogglePassword}
-                      onUpdateFormData={handlers.updateFormData}
-                    />
-                  )}
-
-                  {/* Complete Step */}
-                  {state.formData.step === 'complete' && (
-                    <CompleteStep
-                      key="complete"
-                      formData={state.formData}
-                    />
-                  )}
-
-                  {/* Request Access Step */}
-                  {state.signupMode === 'request-access' && !state.requestSubmitted && (
-                    <RequestAccessStep
-                      key="request-access"
-                      requestData={state.requestAccessData}
-                      isLoading={state.isLoading}
-                      message={state.message}
-                      messageType={state.messageType}
-                      focusedField={state.focusedField}
-                      onSubmit={handlers.handleRequestAccess}
-                      onFieldFocus={handlers.handleFieldFocus}
-                      onFieldBlur={handlers.handleFieldBlur}
-                      onUpdateRequestData={handlers.updateRequestData}
-                      onSwitchToSignup={handlers.switchToSignup}
-                    />
-                  )}
-
-                  {/* Request Success Step */}
-                  {state.signupMode === 'request-access' && state.requestSubmitted && (
-                    <RequestSuccessStep
-                      key="request-success"
-                      requestData={state.requestAccessData}
-                      onGoToLanding={handleGoToLanding}
-                    />
-                  )}
-                </AnimatePresence>
-
-                {!state.requestSubmitted && (
-                  <NavigationFooter
-                    currentStep={state.formData.step}
-                    signupMode={state.signupMode}
-                    onSwitchToSignup={handlers.switchToSignup}
-                    onSwitchToRequestAccess={handlers.switchToRequestAccess}
-                  />
-                )}
+                {/* User Type Selection Step */}
+                <UserTypeStep
+                  key="user-type"
+                  isLoading={state.isLoading}
+                />
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

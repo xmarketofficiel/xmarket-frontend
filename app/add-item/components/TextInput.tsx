@@ -33,7 +33,7 @@ export default function TextInput({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
+      className={className}
     >
       {/* Label */}
       <label 
@@ -56,7 +56,7 @@ export default function TextInput({
         min={min}
         max={max}
         step={step}
-        className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] transition-colors ${
+        className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] transition-colors mt-2 ${
           error 
             ? 'border-red-500 focus:ring-red-500' 
             : 'border-gray-300 focus:border-[#006666]'
@@ -66,10 +66,27 @@ export default function TextInput({
         whileFocus={{ scale: 1.01 }}
       />
 
-      {/* Character count for text inputs */}
+      {/* Character count and Help Text/Error on same line for text inputs */}
       {type === 'text' && maxLength && (
-        <div className="flex justify-between items-center text-xs">
-          <div /> {/* Spacer */}
+        <div className="flex justify-between items-center text-xs mt-1">
+          {error ? (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center space-x-1 text-red-500"
+            >
+              <AlertCircle size={14} />
+              <p id={errorId} className="text-sm" role="alert" aria-live="polite">
+                {error}
+              </p>
+            </motion.div>
+          ) : helpText ? (
+            <p id={helpId} className="text-gray-500">
+              {helpText}
+            </p>
+          ) : (
+            <div></div>
+          )}
           <span className={`${
             value.length > maxLength * 0.9 
               ? value.length >= maxLength ? 'text-red-500' : 'text-yellow-600'
@@ -80,19 +97,19 @@ export default function TextInput({
         </div>
       )}
 
-      {/* Help Text */}
-      {helpText && !error && (
-        <p id={helpId} className="text-xs text-gray-500">
+      {/* Help Text for non-text inputs (no character count) */}
+      {type !== 'text' && helpText && !error && (
+        <p id={helpId} className="text-xs text-gray-500 mt-1">
           {helpText}
         </p>
       )}
 
-      {/* Error Message */}
-      {error && (
+      {/* Error Message for non-text inputs */}
+      {type !== 'text' && error && (
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center space-x-1 text-red-500"
+          className="flex items-center space-x-1 text-red-500 mt-2"
         >
           <AlertCircle size={14} />
           <p id={errorId} className="text-sm" role="alert" aria-live="polite">

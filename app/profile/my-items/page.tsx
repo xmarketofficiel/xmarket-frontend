@@ -108,7 +108,7 @@ export default function MyItemsPage() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-none" style={{ overscrollBehaviorX: 'none', touchAction: 'pan-y' }}>
         {/* Filter Tabs */}
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
@@ -156,7 +156,7 @@ export default function MyItemsPage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-6" style={{ overflow: 'visible' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-6 overscroll-none" style={{ overscrollBehaviorX: 'none', touchAction: 'pan-y' }}>
               {filteredItems.map((item) => (
                 <UserItemCard
                   key={item.id}

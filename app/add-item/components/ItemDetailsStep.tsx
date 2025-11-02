@@ -162,8 +162,6 @@ export default function ItemDetailsStep({
 
         {/* Privacy Settings */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Privacy Settings</h3>
-          
           <Toggle
             label={PRIVACY_CONFIG.showIdentity.title}
             name="showIdentity"
@@ -222,24 +220,6 @@ export default function ItemDetailsStep({
             </>
           )}
         </motion.button>
-
-        {/* Tips Section - Moved after submit button */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <div className="flex items-start space-x-2">
-            <div className="text-blue-500 mt-0.5">
-              <Lightbulb className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="font-medium text-blue-900 mb-1 text-sm">Tips for a great listing</h4>
-              <ul className="text-xs text-blue-700 space-y-0.5">
-                <li>• Write a clear, descriptive title</li>
-                <li>• Include all relevant details</li>
-                <li>• Be honest about the condition</li>
-                <li>• Set a fair, competitive price</li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
         {/* Legal Notice */}
         <motion.div

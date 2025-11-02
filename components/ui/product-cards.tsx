@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { ChevronRight, MoreVertical, Heart, Share2, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -40,7 +41,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     asChild = false,
     children,
     ...props 
-  }, ref) => {
+  }: any, ref: any) => {
     const motionProps: HTMLMotionProps<'div'> = interactive ? {
       whileHover: hover ? { 
         y: -2,
@@ -71,7 +72,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           ref={ref}
           className={cn(
             'rounded-lg p-6 animate-pulse',
-            cardVariants[variant],
+            cardVariants[variant as keyof typeof cardVariants],
             className
           )}
           {...props}
@@ -91,7 +92,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           ref={ref}
           className={cn(
             'rounded-lg transition-all cursor-pointer',
-            cardVariants[variant],
+            cardVariants[variant as keyof typeof cardVariants],
             hover && 'hover:shadow-md',
             className
           )}
@@ -108,7 +109,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           'rounded-lg',
-          cardVariants[variant],
+          cardVariants[variant as keyof typeof cardVariants],
           className
         )}
         {...props}
@@ -126,7 +127,7 @@ interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ className, action, children, ...props }, ref) => (
+  ({ className, action, children, ...props }: any, ref: any) => (
     <div
       ref={ref}
       className={cn(
@@ -153,7 +154,7 @@ CardHeader.displayName = 'CardHeader';
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: any, ref: any) => (
   <h3
     ref={ref}
     className={cn(
@@ -169,7 +170,7 @@ CardTitle.displayName = 'CardTitle';
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: any, ref: any) => (
   <p
     ref={ref}
     className={cn('text-sm text-muted-foreground', className)}
@@ -182,7 +183,7 @@ CardDescription.displayName = 'CardDescription';
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: any, ref: any) => (
   <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
@@ -191,7 +192,7 @@ CardContent.displayName = 'CardContent';
 const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: any, ref: any) => (
   <div
     ref={ref}
     className={cn('flex items-center p-6 pt-0', className)}
@@ -252,9 +253,10 @@ export function ProductCard({
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
-        <img
-          src={imageUrl}
+        <Image
+          src={imageUrl || '/placeholder-item.jpg'}
           alt={imageAlt || title}
+          fill
           className="w-full h-full object-cover transition-transform group-hover:scale-105"
         />
         
@@ -493,9 +495,10 @@ export function ProfileCard({
       {/* Cover Image */}
       {coverUrl && (
         <div className="h-32 bg-gradient-to-r from-primary to-blue-600 relative">
-          <img
+          <Image
             src={coverUrl}
             alt="Cover"
+            fill
             className="w-full h-full object-cover"
           />
         </div>
@@ -514,9 +517,10 @@ export function ProfileCard({
             )}
           >
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt={name}
+                fill
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

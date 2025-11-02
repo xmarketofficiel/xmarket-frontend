@@ -51,21 +51,21 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
 
   return (
     <div 
-      className={`p-6 space-y-6 ${className}`}
+      className={`p-6 pb-8 space-y-6 ${className}`}
     >
-      {/* Price and Title */}
-      <div className="space-y-3">
-        <div 
-          className="text-3xl font-bold text-[#006666]"
-        >
-          {formatPrice(item.price)} DH
-        </div>
-        
+      {/* Title and Price - Facebook Marketplace style */}
+      <div className="space-y-1.5">
         <h1 
-          className="text-xl font-bold text-gray-900 leading-tight"
+          className="text-2xl font-bold text-gray-900 leading-tight"
         >
           {item.title}
         </h1>
+        
+        <div 
+          className="text-xl font-bold text-[#006666]"
+        >
+          {formatPrice(item.price)} DH
+        </div>
         
         <div 
           className="flex items-center space-x-4 text-sm text-gray-600"
@@ -152,7 +152,7 @@ export default function ItemInfo({ item, className = '' }: ItemInfoProps) {
 
       {/* Stats */}
       <div
-        className="flex items-center space-x-6 pt-4 border-t border-gray-200"
+        className="flex items-center space-x-6 pt-4 pb-2 border-t border-gray-200"
       >
         <div className="flex items-center space-x-2 text-sm text-gray-500">
           <Calendar size={16} />

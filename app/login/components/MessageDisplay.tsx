@@ -41,18 +41,18 @@ export function MessageDisplay({ message, type }: MessageDisplayProps) {
         }}
         className={`design-card rounded-lg ${containerClass}`}
       >
-        <div className="flex items-start space-x-3 p-4">
-          <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">{message}</p>
+        <div className="flex items-start space-x-3 p-3.5 sm:p-4">
+          <Icon className="w-5 h-5 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-medium leading-relaxed">{message}</p>
             {isSuspended && (
               <div className="mt-3 pt-3 border-t border-orange-200">
                 <p className="text-xs text-orange-700 mb-2 font-medium">Need help? Contact support:</p>
                 <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4" />
+                  <Mail className="w-4 h-4 flex-shrink-0" />
                   <a 
                     href="mailto:support@xmarket.com" 
-                    className="text-xs text-orange-700 hover:text-orange-900 underline"
+                    className="text-xs text-orange-700 hover:text-orange-900 active:text-orange-950 underline break-all"
                   >
                     support@xmarket.com
                   </a>

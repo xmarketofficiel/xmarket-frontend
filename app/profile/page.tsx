@@ -1,7 +1,7 @@
 'use client';
 
-import { OptimizedProfilePage } from './components';
+import { ProfilePage as ProfileComponent } from './components';
 
 export default function ProfilePage() {
-  return <OptimizedProfilePage />;
+  return <ProfileComponent />;
 }

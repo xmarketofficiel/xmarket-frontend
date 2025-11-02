@@ -59,10 +59,10 @@ export const CONDITION_CONFIG = {
 // Action button configurations
 export const ACTION_BUTTONS = {
   interested: {
-    label: 'I\'m Interested',
-    loadingLabel: 'Adding Interest...',
-    successLabel: 'Interest Added!',
-    icon: '💝',
+    label: 'Contact Seller',
+    loadingLabel: 'Opening WhatsApp...',
+    successLabel: 'Opening WhatsApp!',
+    icon: '📱',
     bgColor: 'bg-gradient-to-r from-[#009F9C] to-[#00B8B5]',
     hoverColor: 'hover:from-[#008A87] hover:to-[#009F9C]',
     textColor: 'text-white'

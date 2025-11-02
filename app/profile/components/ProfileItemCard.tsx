@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { 
   Edit,
   Trash2,
@@ -13,8 +14,8 @@ import {
   TrendingUp,
   Calendar
 } from 'lucide-react';
-import { getSafeImageUrl } from '../../../utils/imageUtils';
-import { getItemImageUrlWithSize } from '../../../lib/imageUtils';
+import { getProfileItemImageUrl } from '@/lib/imageUtils';
+import { getSafeImageUrl, DEFAULT_IMAGE_PLACEHOLDER } from '@/lib/urlUtils';
 import { useToast } from '../../../contexts/ToastContext';
 import { PROFILE_CONSTANTS } from './constants';
 import type { ProfileItemCardProps } from './types';
@@ -50,13 +51,13 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
     return 'Edit item';
   };
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
+  const formatPrice = (price: number | string): string => {
+    // Extract numeric value (remove any currency symbols)
+    const numericPrice = typeof price === 'number' 
+      ? price 
+      : parseFloat(String(price).replace(/[^0-9.-]/g, '')) || 0;
+    // Format with Moroccan Dirham (DH)
+    return `${numericPrice.toLocaleString()} DH`;
   };
 
   const formatDate = (dateString: string): string => {
@@ -72,7 +73,7 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
   };
 
   const getStatusBadge = () => {
-    const statusConfig = {
+    const statusConfig: Record<string, { color: string; label: string }> = {
       active: { color: 'bg-green-100 text-green-800', label: 'Active' },
       sold: { color: 'bg-blue-100 text-blue-800', label: 'Sold' },
       pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
@@ -118,22 +119,27 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
       onClick={handleItemClick}
       className={`
         bg-white rounded-xl border border-gray-200 hover:border-[#009F9C] transition-all duration-200 
-        cursor-pointer group overflow-hidden
+        cursor-pointer group overflow-hidden w-full max-w-full
         ${compact ? 'p-3' : 'p-4'}
       `}
+      style={{ minWidth: 0 }}
     >
       {/* Image Section */}
       <div className={`relative ${compact ? 'h-32' : 'h-48'} bg-gray-100 rounded-lg overflow-hidden mb-3`}>
         {(() => {
           // Get the appropriate sized image URL (small for profile cards)
-          const imageUrl = getItemImageUrlWithSize(item, compact ? 'small' : 'medium');
+          const imageUrl = getProfileItemImageUrl(item, compact ? 'small' : 'medium');
 
           if (imageUrl !== PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM) {
             return (
-              <img
+              <Image
                 src={imageUrl}
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-200"
+                fill
+                className="object-cover transition-transform duration-200"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                placeholder="blur"
+                blurDataURL={DEFAULT_IMAGE_PLACEHOLDER}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = PROFILE_CONSTANTS.IMAGE_SETTINGS.PLACEHOLDER_ITEM;
@@ -219,13 +225,13 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
       </div>
 
       {/* Content Section */}
-      <div className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className={`font-semibold text-gray-900 line-clamp-2 group-hover:text-[#009F9C] transition-colors ${compact ? 'text-sm' : 'text-base'}`}>
+      <div className="space-y-2 w-full max-w-full overflow-hidden">
+        <div className="flex items-start justify-between gap-2 w-full min-w-0">
+          <h3 className={`font-semibold text-gray-900 line-clamp-2 group-hover:text-[#009F9C] transition-colors break-words overflow-hidden flex-1 min-w-0 ${compact ? 'text-sm' : 'text-base'}`} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
             {item.title}
           </h3>
-          <div className={`text-right flex-shrink-0 ${compact ? 'text-sm' : 'text-base'}`}>
-            <p className="font-bold text-[#009F9C]">
+          <div className={`text-right flex-shrink-0 ${compact ? 'text-sm' : 'text-base'}`} style={{ minWidth: 0 }}>
+            <p className="font-bold text-[#009F9C] whitespace-nowrap">
               {formatPrice(item.price)}
             </p>
             {item.negotiable && (
@@ -235,41 +241,41 @@ const ProfileItemCard: React.FC<ProfileItemCardProps> = ({
         </div>
 
         {!compact && item.description && (
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-2 break-words overflow-hidden" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
             {item.description}
           </p>
         )}
 
         {/* Item Details */}
-        <div className={`flex items-center justify-between text-xs text-gray-500 ${compact ? 'gap-2' : 'gap-4'}`}>
-          <div className="flex items-center gap-1">
-            <Tag className="w-3 h-3" />
+        <div className={`flex items-center justify-between text-xs text-gray-500 w-full min-w-0 ${compact ? 'gap-2' : 'gap-4'}`}>
+          <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+            <Tag className="w-3 h-3 flex-shrink-0" />
             <span className="truncate">{item.category}</span>
           </div>
           
           {item.condition && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-shrink-0">
               <span className="truncate">{item.condition}</span>
             </div>
           )}
         </div>
 
         {item.location && (
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <MapPin className="w-3 h-3" />
-            <span className="truncate">{item.location}</span>
+          <div className="flex items-center gap-1 text-xs text-gray-500 w-full min-w-0 overflow-hidden">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate flex-1 min-w-0">{item.location}</span>
           </div>
         )}
 
         {/* Date and Additional Info */}
-        <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDate(item.createdAt)}</span>
+        <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-100 w-full min-w-0">
+          <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+            <Calendar className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{formatDate(item.createdAt)}</span>
           </div>
           
           {item.interestedBuyers !== undefined && item.interestedBuyers > 0 && (
-            <div className="flex items-center gap-1 text-[#009F9C]">
+            <div className="flex items-center gap-1 text-[#009F9C] flex-shrink-0 whitespace-nowrap">
               <Clock className="w-3 h-3" />
               <span>{item.interestedBuyers} interested</span>
             </div>

@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { api } from '../../lib/apiEndpoints';
 import { useUser } from '../../contexts/UserContext';
 import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
-import { ANIMATION_SYSTEM } from '../../lib/design-system';
 
 // Components
 import { AnimatedBackground } from './components/AnimatedBackground';
@@ -137,7 +136,7 @@ export default function LoginPage() {
         });
         
         setTimeout(() => {
-          router.push('/marketplace');
+          router.push('/');
         }, LOGIN_CONFIG.REDIRECT_DELAY);
       }
     } catch (error: any) {
@@ -153,30 +152,22 @@ export default function LoginPage() {
 
   return (
     <ApiErrorBoundary>
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
+      <div className="min-h-screen relative overflow-x-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50">
         <AnimatedBackground />
         
         <div className="relative z-10 min-h-screen flex">
           <BrandingPanel />
           
-          {/* Login Form Panel */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ 
-                duration: ANIMATION_SYSTEM.duration.slow / 1000,
-                ease: 'easeOut'
-              }}
-              className="max-w-md w-full"
-            >
+          {/* Login Form Panel - Enhanced Mobile Responsiveness */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div className="w-full max-w-md">
               <LoginCard onSubmit={handleLogin} state={state} handlers={{
                 updateState,
                 handleFieldFocus,
                 handleFieldBlur,
                 handleTogglePassword
               }} />
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,24 +191,24 @@ interface LoginCardProps {
 
 function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
   const { updateState, handleFieldFocus, handleFieldBlur, handleTogglePassword } = handlers;
+  const router = useRouter();
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm design-card rounded-3xl border border-white/50 shadow-xl p-8 relative hover:shadow-2xl transition-shadow"
-         style={{ 
-           transitionDuration: ANIMATION_SYSTEM.duration.slow + 'ms',
-           transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
-         }}>
+    <div className="bg-white/95 backdrop-blur-sm design-card rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border sm:border-white/50 shadow-none sm:shadow-lg lg:shadow-xl px-6 pb-8 pt-6 sm:p-8 lg:p-10 relative min-h-screen sm:min-h-0 flex flex-col justify-start sm:justify-center overflow-y-auto" style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))', paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
+      {/* Back to Home Button - Mobile Optimized */}
+      <button
+        onClick={() => router.push('/')}
+        className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-4 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
+      >
+        <ArrowLeft className="w-5 h-5 sm:w-5 sm:h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+        <span className="font-medium text-sm sm:text-base">Back to Home</span>
+      </button>
+
       <LoginHeader />
       
-      <motion.form
+      <form
         onSubmit={onSubmit}
-        className="space-y-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ 
-          duration: ANIMATION_SYSTEM.duration.slow / 1000, 
-          delay: 0.2 
-        }}
+        className="space-y-4 sm:space-y-6"
       >
         {/* Email Input */}
         <InputField
@@ -245,6 +236,17 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
           label="Password"
         />
 
+        {/* Forgot Password Link */}
+        <div className="text-right -mt-2 mb-2">
+          <button
+            type="button"
+            onClick={() => router.push('/forgot-password')}
+            className="text-sm text-[#009F9C] hover:text-[#007B78] font-medium transition-colors"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
         {/* Message Display */}
         {state.message && (
           <MessageDisplay 
@@ -258,7 +260,7 @@ function LoginCard({ onSubmit, state, handlers }: LoginCardProps) {
           isLoading={state.isLoading}
           onClick={() => {}} // Form submission handled by onSubmit
         />
-      </motion.form>
+      </form>
 
       <LoginFooter />
     </div>

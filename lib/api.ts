@@ -88,7 +88,10 @@ class ApiClient {
     for (let attempt = 0; attempt <= this.config.retries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+        const timeoutId = setTimeout(() => {
+          console.warn(`⚠️ API request timeout after ${this.config.timeout}ms:`, url);
+          controller.abort();
+        }, this.config.timeout);
 
         const response = await fetch(url, {
           ...requestOptions,
@@ -133,8 +136,11 @@ class ApiClient {
             // Other client errors
             apiError.name = 'ClientError';
           } else if (response.status >= 500) {
-            // Server errors should be logged
-            console.error(`API Server Error [${response.status}]:`, errorData);
+            // Server errors should be logged, except for logout which is expected to sometimes fail
+            const isLogoutEndpoint = url.includes('/auth/logout');
+            if (!isLogoutEndpoint && process.env.NODE_ENV === 'development') {
+              console.error(`API Server Error [${response.status}]:`, errorData);
+            }
             apiError.name = 'ServerError';
           }
           
@@ -151,7 +157,9 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              
+              if (process.env.NODE_ENV === 'development') {
+                console.warn('JSON parse error:', e);
+              }
               data = { message: 'Operation completed successfully' };
             }
           } else {
@@ -207,10 +215,20 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, {
+    const options: RequestInit = {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    };
+    
+    if (data) {
+      options.body = JSON.stringify(data);
+      // Content-Type will be set by makeRequest
+    } else {
+      // For requests with no body, don't set Content-Type to avoid JSON parsing
+      options.headers = { 'Content-Type': 'text/plain' };
+      options.body = undefined;
+    }
+    
+    return this.makeRequest<T>(endpoint, options);
   }
 
   async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
@@ -285,7 +303,9 @@ class ApiClient {
             }
           } catch (parseError) {
             // If we can't parse the error response, use the default message
-            console.warn('Failed to parse error response:', parseError);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to parse error response:', parseError);
+            }
           }
           
           throw new ApiError({
@@ -306,7 +326,9 @@ class ApiClient {
             try {
               data = JSON.parse(text);
             } catch (e) {
-              
+              if (process.env.NODE_ENV === 'development') {
+                console.warn('JSON parse error in upload:', e);
+              }
               data = { message: 'File uploaded successfully' };
             }
           } else {
@@ -340,45 +362,53 @@ class ApiClient {
   }
 }
 
-// Use environment variable for API base URL with fallback
+// Use SSR proxy route for all API calls
 const getApiBaseUrl = () => {
-  // Priority: environment variable > fallback based on NODE_ENV
-  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
-    return process.env.NEXT_PUBLIC_API_BASE_URL;
-  }
-  
-  // Fallback for when env var is not set
-  return process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '/api';
+  // Always use the Next.js API proxy route for SSR
+  // This hides backend API calls from the browser's network tab
+  return '/api/proxy';
 };
 
 const apiClient = new ApiClient({
   baseUrl: getApiBaseUrl(),
-  timeout: 10000,
-  retries: 3,
+  timeout: 15000, // 15 seconds to handle Railway's slower response times
+  retries: 1, // Single retry to avoid long waits
 });
 
-// Debug function to test backend connectivity
+// Debug function to test backend connectivity via SSR proxy
 export const testBackendConnection = async () => {
   const baseUrl = getApiBaseUrl();
-  console.log('🔍 Testing backend connection...');
-  console.log('📡 API Base URL:', baseUrl);
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Testing backend connection via SSR proxy...');
+    console.log('📡 Proxy URL:', baseUrl);
+  }
   
   try {
-    // Test basic connectivity
+    // Test basic connectivity through the proxy
     const response = await fetch(`${baseUrl}/health`);
-    console.log('✅ Backend response status:', response.status);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Proxy response status:', response.status);
+    }
     
     if (response.ok) {
       const data = await response.text();
-      console.log('✅ Backend is reachable. Response:', data);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Backend is reachable via SSR proxy. Response:', data);
+      }
       return true;
     } else {
-      console.warn('⚠️ Backend returned non-200 status:', response.status);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Proxy returned non-200 status:', response.status);
+      }
       return false;
     }
   } catch (error) {
-    console.error('❌ Backend connection failed:', error);
-    console.error('💡 Make sure the backend URL is correct and accessible');
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ SSR proxy connection failed:', error);
+      console.error('💡 Check if the Next.js server and backend are running');
+    }
     return false;
   }
 };

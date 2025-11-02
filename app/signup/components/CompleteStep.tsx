@@ -50,9 +50,14 @@ export function CompleteStep({ formData }: CompleteStepProps) {
       >
         <h3 className="font-semibold text-gray-900 mb-3">Account Details</h3>
         <div className="space-y-2 text-sm text-gray-600">
-          <p><span className="font-medium">Name:</span> {formData.fullName}</p>
+          <p><span className="font-medium">Name:</span> {formData.firstName} {formData.lastName}</p>
           <p><span className="font-medium">Email:</span> {formData.email}</p>
-          <p><span className="font-medium">WhatsApp:</span> {formData.whatsappNumber}</p>
+          <p><span className="font-medium">Role:</span> {formData.role === 'student' ? 'Student' : 'Staff'}</p>
+          <p><span className="font-medium">Department:</span> {formData.department}</p>
+          <p><span className="font-medium">Address:</span> {formData.address}</p>
+          {formData.whatsappNumber && formData.whatsappNumber !== 'Not provided' && (
+            <p><span className="font-medium">WhatsApp:</span> {formData.whatsappNumber}</p>
+          )}
         </div>
       </motion.div>
 

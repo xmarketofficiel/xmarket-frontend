@@ -2,23 +2,49 @@
 
 export type SignupMode = 'signup' | 'request-access';
 
-export type SignupStepType = 'email' | 'otp' | 'details' | 'complete' | 'request-access' | 'request-success';
+export type UserType = 'um6p' | '1337' | 'external';
+
+export type SignupStepType = 'user-type' | 'email' | 'otp' | 'details' | 'complete' | 'request-access' | 'request-success' | '1337-student';
+
+export interface DiscordData {
+  discordUsername: string;
+  discordUserId: string;
+  avatarUrl?: string;
+  isGuildMember: boolean;
+  guildName?: string;
+}
 
 export interface SignupFormData {
   step: SignupStepType;
+  userType?: UserType;
   email: string;
   otp: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: 'student' | 'staff';
+  address: string;
   whatsappNumber: string;
   password: string;
   confirmPassword: string;
+  loginName?: string; // For 1337 students
+  studentType?: 'um6p' | '1337'; // Track which student verification was used
+  discordData?: DiscordData; // Discord verification data for 1337 students
+  // Legacy field for backward compatibility
+  fullName?: string;
 }
 
 export interface RequestAccessData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  role: 'seller';
+  address: string;
   email: string;
   whatsappNumber: string;
   reason: string;
+  // Legacy field for backward compatibility
+  fullName?: string;
 }
 
 export interface SignupState {
@@ -64,6 +90,10 @@ export interface SignupHandlers {
   handleVerifyOtp: (e: React.FormEvent) => Promise<void>;
   handleCompleteSignup: (e: React.FormEvent) => Promise<void>;
   handleRequestAccess: (e: React.FormEvent) => Promise<void>;
+  handleUserTypeSelection: (userType: UserType) => void;
+  handleBackToUserType: () => void;
+  handleDiscordOAuth: () => void;
+  handle1337Registration: (e: React.FormEvent) => Promise<void>;
   handleFieldFocus: (field: string) => void;
   handleFieldBlur: () => void;
   handleTogglePassword: (field: 'password' | 'confirmPassword') => void;
@@ -169,6 +199,7 @@ export interface InputFieldProps {
   maxLength?: number;
   error?: string;
   isValid?: boolean;
+  disabled?: boolean;
 }
 
 export interface SubmitButtonProps {

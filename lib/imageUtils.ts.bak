@@ -1,0 +1,245 @@
+// Utility functions for handling image URLs safely
+import { Item } from '../types';
+
+/**
+ * Gets the API base URL from environment variables
+ */
+const getApiBaseUrl = (): string => {
+  // In production, use the SSR API routes
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+  }
+  // In development, use the environment variable or fallback
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+};
+
+/**
+ * Validates if a string is a valid URL
+ */
+export const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Gets a safe image URL from an item, with fallback to placeholder
+ */
+export const getItemImageUrl = (item: Item): string => {
+  const fallbackImage = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=";
+
+  // Safety check - return fallback if item is null/undefined
+  if (!item) {
+    return fallbackImage;
+  }
+
+  // Check for photos array (new structure with Cloudinary URLs)
+  if (item.photos && Array.isArray(item.photos) && item.photos.length > 0) {
+    const photo = item.photos[0];
+    if (typeof photo === 'string' && photo.trim()) {
+      const trimmedPhoto = photo.trim();
+      
+      // If it's already a full URL (e.g., Cloudinary), validate and use
+      if (trimmedPhoto.startsWith('http')) {
+        return isValidUrl(trimmedPhoto) ? trimmedPhoto : fallbackImage;
+      } else {
+        // If it's a relative path, construct full URL
+        const fullUrl = `${getApiBaseUrl()}${trimmedPhoto}`;
+        return isValidUrl(fullUrl) ? fullUrl : fallbackImage;
+      }
+    }
+  }
+
+  // Check for images array (legacy structure)
+  if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+    const image = item.images[0];
+    if (image && image.imageUrl && typeof image.imageUrl === 'string') {
+      const imageUrl = image.imageUrl.trim();
+      
+      // Skip obviously invalid URLs
+      if (!imageUrl || imageUrl.includes('undefined') || imageUrl.includes('null')) {
+        return fallbackImage;
+      }
+
+      // If it's already a full URL (e.g., Cloudinary), validate and use
+      if (imageUrl.startsWith('http')) {
+        return isValidUrl(imageUrl) ? imageUrl : fallbackImage;
+      } else {
+        // If it's a relative path, construct full URL
+        const fullUrl = `${getApiBaseUrl()}${imageUrl}`;
+        return isValidUrl(fullUrl) ? fullUrl : fallbackImage;
+      }
+    }
+  }
+
+  return fallbackImage;
+};
+
+/**
+ * Gets all image URLs from an item
+ */
+export const getItemImageUrls = (item: Item): string[] => {
+  const validUrls: string[] = [];
+
+  // Check for photos array (new structure)
+  if (item.photos && Array.isArray(item.photos)) {
+    item.photos.forEach(photo => {
+      if (typeof photo === 'string' && photo.trim()) {
+        const trimmedPhoto = photo.trim();
+        
+        if (trimmedPhoto.startsWith('http')) {
+          if (isValidUrl(trimmedPhoto)) {
+            validUrls.push(trimmedPhoto);
+          }
+        } else {
+          const fullUrl = `${getApiBaseUrl()}${trimmedPhoto}`;
+          if (isValidUrl(fullUrl)) {
+            validUrls.push(fullUrl);
+          }
+        }
+      }
+    });
+  }
+
+  // Check for images array (legacy structure)
+  if (item.images && Array.isArray(item.images)) {
+    item.images.forEach(image => {
+      if (image && image.imageUrl && typeof image.imageUrl === 'string') {
+        const imageUrl = image.imageUrl.trim();
+        
+        if (!imageUrl || imageUrl.includes('undefined') || imageUrl.includes('null')) {
+          return; // Skip invalid URLs
+        }
+
+        if (imageUrl.startsWith('http')) {
+          if (isValidUrl(imageUrl)) {
+            validUrls.push(imageUrl);
+          }
+        } else {
+          const fullUrl = `${getApiBaseUrl()}${imageUrl}`;
+          if (isValidUrl(fullUrl)) {
+            validUrls.push(fullUrl);
+          }
+        }
+      }
+    });
+  }
+
+  return validUrls;
+};
+
+/**
+ * Default placeholder image data URL
+ */
+import { Item } from '@/types';
+import { sanitizeImageUrl, DEFAULT_IMAGE_PLACEHOLDER } from './urlUtils';
+
+export const PLACEHOLDER_IMAGE = '/placeholder-image.jpg';
+
+/**
+ * Gets the appropriate image variant URL from an item image
+ * @param image - Item image object
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'
+ * @returns URL for the requested size or fallback
+ */
+export const getImageVariantUrl = (
+  image: any, 
+  preferredSize: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'
+): string => {
+  if (!image) return PLACEHOLDER_IMAGE;
+
+  // Check for variants first (new structure)
+  if (image.imageVariants && typeof image.imageVariants === 'object') {
+    const variantUrl = image.imageVariants[preferredSize];
+    if (variantUrl) {
+      const sanitizedUrl = sanitizeImageUrl(variantUrl);
+      if (sanitizedUrl && isValidUrl(sanitizedUrl)) {
+        return sanitizedUrl;
+      }
+    }
+    
+    // Fallback to other available variants if preferred size not found
+    const fallbackSizes = ['large', 'medium', 'small', 'thumbnail'];
+    for (const size of fallbackSizes) {
+      if (size !== preferredSize && image.imageVariants[size]) {
+        const fallbackUrl = image.imageVariants[size];
+        if (isValidUrl(fallbackUrl)) {
+          return fallbackUrl;
+        }
+      }
+    }
+  }
+
+  // Fallback to original URLs
+  const fallbackUrl = image.cloudinaryUrl || image.spacesUrl || image.imageUrl;
+  if (fallbackUrl && isValidUrl(fallbackUrl)) {
+    return fallbackUrl;
+  }
+
+  return PLACEHOLDER_IMAGE;
+};
+
+/**
+ * Gets item image URL with preferred size
+ * @param item - Item object (supports both Item and ProfileItem types)
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'  
+ * @returns URL for the requested size or fallback
+ */
+export function getItemImageUrlWithSize(item: Item, width?: number): string {
+  if (!item?.images || item.images.length === 0) {
+    return PLACEHOLDER_IMAGE;
+  }
+
+  // Get the first image
+  const image = item.images[0];
+  
+  if (!image?.url) {
+    return PLACEHOLDER_IMAGE;
+  }
+
+  let finalUrl: string;
+
+  // If width is specified and we have variant URLs, try to get the best fit
+  if (width && image.variantUrls) {
+    const variantUrl = getImageVariantUrl(image.variantUrls, width);
+    finalUrl = variantUrl || image.url;
+  } else {
+    finalUrl = image.url;
+  }
+
+  // Sanitize the URL to prevent malformed URLs
+  const sanitizedUrl = sanitizeImageUrl(finalUrl);
+  return sanitizedUrl || PLACEHOLDER_IMAGE;
+}
+
+/**
+ * Gets all image URLs from an item with preferred size
+ * @param item - Item object
+ * @param preferredSize - Desired size: 'thumbnail', 'small', 'medium', 'large'
+ * @returns Array of URLs for the requested size
+ */
+export const getItemImageUrlsWithSize = (
+  item: Item,
+  preferredSize: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'  
+): string[] => {
+  if (!item) return [];
+
+  const validUrls: string[] = [];
+
+  // Check for images array
+  if (item.images && Array.isArray(item.images)) {
+    item.images.forEach(image => {
+      const variantUrl = getImageVariantUrl(image, preferredSize);
+      if (variantUrl !== PLACEHOLDER_IMAGE) {
+        validUrls.push(variantUrl);
+      }
+    });
+  }
+
+  return validUrls;
+};
+
+

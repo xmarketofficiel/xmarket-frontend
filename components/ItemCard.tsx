@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getItemImageUrlWithSize } from "../lib/imageUtils";
+import { getItemImageUrlWithSize } from '@/lib/imageUtils';
+import { getSafeImageUrl, DEFAULT_IMAGE_PLACEHOLDER } from '@/lib/urlUtils';
 import {
   Heart,
   CheckCircle,
@@ -39,7 +41,8 @@ const getCategoryDisplayName = (category: any): string => {
     }
 
     // Check if it exists in CATEGORY_CONFIG
-    const config = CATEGORY_CONFIG[category.toLowerCase() as keyof typeof CATEGORY_CONFIG];
+    const config =
+      CATEGORY_CONFIG[category.toLowerCase() as keyof typeof CATEGORY_CONFIG];
     if (config) {
       return config.name;
     }
@@ -148,12 +151,12 @@ export default function ItemCard({
 
   const handleCardClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     // Use instant navigation without loading state for better UX
     try {
       router.push(`/item/${item.id}`);
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error("Navigation error:", error);
     }
   };
 
@@ -164,54 +167,67 @@ export default function ItemCard({
 
   const getImageUrl = () => {
     // Use the new size-aware function (small size for card thumbnails)
-    return getItemImageUrlWithSize(item, 'small');
+    const imageUrl = getItemImageUrlWithSize(item, "small");
+    return imageUrl;
   };
 
   return (
     <>
-      <div 
-        onClick={handleCardClick}
-        className="block group cursor-pointer"
-      >
-        <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+      <div onClick={handleCardClick} className="block group cursor-pointer">
+        <div className="rounded-xl overflow-hidden">
           {/* Image Section - Fixed aspect ratio for grid layout */}
-          <div className="relative aspect-[4/3] bg-gray-100">
+          <div className="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
             {getImageUrl() ? (
-              <img
+              <Image
                 src={getImageUrl()!}
                 alt={item.title}
-                className="w-full h-full object-cover"
-                loading="lazy"
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                priority={priority}
+                placeholder="blur"
+                blurDataURL={DEFAULT_IMAGE_PLACEHOLDER}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                <svg
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
             )}
-            
-            {/* Favorite Button - Top left (only show for other users' items) */}
-            {!isOwnItem && (
-              <button
-                onClick={handleFavoriteClick}
-                className="absolute top-2 left-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
-                aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
-              >
-                <Heart 
-                  className={`w-4 h-4 transition-colors ${
-                    isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'
-                  }`} 
-                />
-              </button>
-            )}
 
             {/* Condition Badge - Top right */}
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 left-2">
               <span className="px-2 py-1 text-xs font-medium bg-white/90 text-gray-700 rounded-md shadow-sm">
                 {item.condition}
               </span>
             </div>
+
+            {/* Favorite Button - Top left (only show for other users' items) */}
+            {!isOwnItem && (
+              <button
+                onClick={handleFavoriteClick}
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
+                aria-label={
+                  isFavorited ? "Remove from favorites" : "Add to favorites"
+                }
+              >
+                <Heart
+                  className={`w-4 h-4 transition-colors ${
+                    isFavorited ? "text-red-500 fill-current" : "text-gray-600"
+                  }`}
+                />
+              </button>
+            )}
 
             {/* Sold Badge */}
             {item.isSold && (
@@ -225,16 +241,16 @@ export default function ItemCard({
           </div>
 
           {/* Content Section - Simplified */}
-          <div className="p-3 space-y-2">
-            {/* Title - Truncated for grid layout */}
-            <h3 className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
-              {item.title}
-            </h3>
-
-            {/* Price */}
+          <div className="py-2 px-1 space-y-0.2">
+            {/* Price - Facebook Marketplace style: Price first and prominent */}
             <div className="text-lg font-bold text-[#009F9C]">
               {item.price} DH
             </div>
+
+            {/* Title - Below price, smaller */}
+            <h3 className="font-normal text-gray-900 text-sm line-clamp-2 leading-tight">
+              {item.title}
+            </h3>
           </div>
         </div>
       </div>

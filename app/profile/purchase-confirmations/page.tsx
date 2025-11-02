@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, XCircle, Clock, Package, MessageSquare } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -31,13 +31,7 @@ export default function PurchaseConfirmationsPage() {
   const { addToast } = useToast();
   const { user } = useUser();
 
-  useEffect(() => {
-    if (user) {
-      fetchPendingConfirmations();
-    }
-  }, [user]);
-
-  const fetchPendingConfirmations = async () => {
+  const fetchPendingConfirmations = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.items.getPendingConfirmations();
@@ -51,7 +45,13 @@ export default function PurchaseConfirmationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
+
+  useEffect(() => {
+    if (user) {
+      fetchPendingConfirmations();
+    }
+  }, [user, fetchPendingConfirmations]);
 
   const handleConfirmPurchase = async (purchaseId: number, confirmed: boolean, notes?: string) => {
     setProcessingIds(prev => new Set(prev).add(purchaseId));

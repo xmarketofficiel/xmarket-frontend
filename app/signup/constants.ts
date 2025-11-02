@@ -29,8 +29,8 @@ export const SIGNUP_CONFIG = {
 
 // Brand messaging and features
 export const BRAND_FEATURES = {
-  MAIN_TITLE: "Join the Future of Student Commerce",
-  SUBTITLE: "Connect with students, trade textbooks, gadgets, and more",
+  MAIN_TITLE: "Join XMarket Today",
+  SUBTITLE: "Connect, trade, and thrive within your university community",
   
   FEATURES: [
     {
@@ -108,6 +108,13 @@ export const SUCCESS_MESSAGES = {
 
 // Step configuration
 export const STEP_CONFIG = {
+  USER_TYPE: {
+    title: "Choose Your Access Type",
+    subtitle: "",
+    buttonText: "Continue",
+    loadingText: "Loading..."
+  },
+
   EMAIL: {
     title: "Welcome to XMarket",
     subtitle: "Enter your student email to get started",
@@ -133,6 +140,13 @@ export const STEP_CONFIG = {
     title: "Welcome Aboard!",
     subtitle: "Your account has been created successfully",
     redirectText: "Redirecting to marketplace..."
+  },
+
+  "1337_STUDENT": {
+    title: "1337 Student Registration",
+    subtitle: "Connect with Discord to verify your 1337 membership and complete your registration.",
+    buttonText: "Continue",
+    loadingText: "Processing..."
   },
   
   REQUEST_ACCESS: {

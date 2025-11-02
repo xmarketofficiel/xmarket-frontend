@@ -9,6 +9,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --navbar-height: 4rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +85,30 @@
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     font-display: swap;
   }
+  
+  /* Mobile scroll optimization */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+  
+  /* Fix for mobile browser chrome/address bar issue */
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Prevent mobile bounce/rubber-band on iOS */
+  @media (max-width: 768px) {
+    html, body {
+      position: relative;
+      overflow-x: hidden;
+    }
+  }
 }
 
 /* Custom scrollbar styles */
@@ -109,5 +134,39 @@
   /* Font optimization */
   .font-inter {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+  
+  /* Animated gradient backgrounds */
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+  
+  .bg-pos-0 {
+    background-position: 0% 0%;
+  }
+  
+  .bg-pos-100 {
+    background-position: 100% 0%;
+  }
+  
+  /* Smooth color transitions */
+  .transition-bg-pos {
+    transition: background-position 0.6s ease;
+  }
+  
+  /* Simple slide down animation for navbar */
+  .animate-slideDown {
+    animation: slideDown 0.5s ease-out;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

@@ -26,7 +26,7 @@ export function BrandingPanel({ currentStep, signupMode }: BrandingPanelProps) {
         }} />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center items-center text-white p-12 text-center">
+      <div className="relative z-10 w-full flex flex-col justify-center items-center text-white p-12 text-center">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -43,7 +43,7 @@ export function BrandingPanel({ currentStep, signupMode }: BrandingPanelProps) {
         <motion.div
           {...ANIMATION_VARIANTS.fadeInUp}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-12"
+          className="mb-12 max-w-lg mx-auto"
         >
           <h1 className="text-4xl font-bold mb-4 leading-tight">
             {isRequestAccess ? BRAND_FEATURES.REQUEST_ACCESS.TITLE : BRAND_FEATURES.MAIN_TITLE}

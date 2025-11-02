@@ -129,17 +129,17 @@ const DialogTrigger = DialogPrimitive.Trigger;
 
 const DialogPortal = DialogPrimitive.Portal;
 
-const DialogClose = DialogPrimitive.Close;
+const DialogClose: any = DialogPrimitive.Close;
 
 // Enhanced Dialog Overlay
-interface DialogOverlayProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> {
+interface DialogOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
   blur?: boolean;
 }
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   DialogOverlayProps
->(({ className, blur = true, ...props }, ref) => (
+>(({ className, blur = true, ...props }: any, ref: any) => (
   <AnimatePresence>
     <DialogPrimitive.Overlay
       ref={ref}
@@ -163,7 +163,7 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 // Enhanced Dialog Content
-interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'scale' | 'slideUp' | 'slideDown' | 'fade';
   size?: 'sm' | 'default' | 'lg' | 'xl' | 'full';
   showCloseButton?: boolean;
@@ -181,7 +181,7 @@ const DialogContent = React.forwardRef<
   showCloseButton = true,
   closeOnOverlayClick = true,
   ...props 
-}, ref) => {
+}: any, ref: any) => {
   const sizeClasses = {
     sm: 'max-w-sm',
     default: 'max-w-lg',
@@ -195,7 +195,7 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
-        onPointerDownOutside={closeOnOverlayClick ? undefined : (e) => e.preventDefault()}
+        onPointerDownOutside={closeOnOverlayClick ? undefined : (e: PointerEvent) => (e as PointerEvent).preventDefault()}
         asChild
         {...props}
       >
@@ -204,7 +204,7 @@ const DialogContent = React.forwardRef<
             'fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%]',
             'gap-4 border bg-background p-6 shadow-lg duration-200',
             'rounded-lg md:w-full',
-            sizeClasses[size],
+            sizeClasses[size as keyof typeof sizeClasses],
             className
           )}
           variants={modalVariants[variant]}
@@ -214,7 +214,7 @@ const DialogContent = React.forwardRef<
         >
           {children}
           {showCloseButton && (
-            <DialogPrimitive.Close asChild>
+            <DialogClose asChild>
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -223,7 +223,7 @@ const DialogContent = React.forwardRef<
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
               </Button>
-            </DialogPrimitive.Close>
+            </DialogClose>
           )}
         </motion.div>
       </DialogPrimitive.Content>
@@ -263,10 +263,7 @@ const DialogFooter = ({
 DialogFooter.displayName = 'DialogFooter';
 
 // Dialog Title
-const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
+const DialogTitle = React.forwardRef<any, any>(({ className, ...props }: any, ref: any) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
@@ -279,10 +276,7 @@ const DialogTitle = React.forwardRef<
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 // Dialog Description
-const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+const DialogDescription = React.forwardRef<any, any>(({ className, ...props }: any, ref: any) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn('text-sm text-muted-foreground', className)}

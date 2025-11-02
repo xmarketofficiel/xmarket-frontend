@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import Script from 'next/script';
 import ConditionalLayout from '../components/ConditionalLayout';
 import { UserProvider } from '../contexts/UserContext';
 import { FavoritesProvider } from '../contexts/FavoritesContext';
@@ -54,8 +55,9 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#3b82f6" />
         {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1E8HSY14EQ"></script>
-        <script
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-1E8HSY14EQ" />
+        <Script
+          id="google-analytics"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useUser } from '../contexts/UserContext';
 import { api } from '../lib/apiEndpoints';
@@ -51,7 +52,6 @@ export default function FavoritesList() {
           const response = await api.items.getFavorites();
           setFavoriteItems(response.data.items || []);
         } catch (error) {
-          console.error('Failed to load favorites from backend:', error);
           // Fallback to localStorage-based loading
           if (favorites.length > 0) {
             const itemPromises = favorites.map(async (itemId: string) => {
@@ -98,12 +98,12 @@ export default function FavoritesList() {
         </div>
         <h3 className="text-xl font-bold text-gray-900 mb-3">No favorites yet</h3>
         <p className="text-gray-600 mb-6 max-w-md">Start browsing the marketplace and save items you like by tapping the heart icon!</p>
-        <a 
+        <Link 
           href="/" 
           className="bg-[#009F9C] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#007A77] transition-colors"
         >
           Browse Items
-        </a>
+        </Link>
       </div>
     );
   }
