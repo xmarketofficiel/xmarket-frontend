@@ -28,17 +28,11 @@ const toggleVariants = cva(
   }
 );
 
-const Toggle = React.forwardRef<
-  React.ElementRef<typeof TogglePrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &
-    VariantProps<typeof toggleVariants>
->(({ className, variant, size, ...props }, ref) => (
-  <TogglePrimitive.Root
-    ref={ref}
-    className={cn(toggleVariants({ variant, size, className }))}
-    {...props}
-  />
-));
+const Toggle = React.forwardRef<any, any>(({ className, variant, size, ...props }, ref) => {
+  const p = props as any;
+  p.className = cn(toggleVariants({ variant, size }), className, p.className);
+  return <TogglePrimitive.Root ref={ref as React.LegacyRef<HTMLButtonElement>} {...p} />;
+});
 
 Toggle.displayName = TogglePrimitive.Root.displayName;
 

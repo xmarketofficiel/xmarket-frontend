@@ -13,6 +13,8 @@ export interface MarketplaceState {
   items: Item[];
   totalItems: number;
   currentPage: number;
+  // Current page used across the marketplace hooks and components
+  page: number;
   hasMore: boolean;
   loading: boolean;
   error: string | null;

@@ -17,8 +17,8 @@ export function useAuthErrorHandler() {
       await logout();
     } catch (error) {
       console.error('Error during logout:', error);
-      // Even if logout fails, redirect to landing page
-      router.push('/landing');
+      // Even if logout fails, redirect to home page (which shows landing for non-authenticated users)
+      router.push('/');
     }
   };
 
@@ -51,6 +51,14 @@ export function isForbiddenError(error: any): boolean {
  * Check if current path is a public route that doesn't require authentication
  */
 export function isPublicRoute(pathname: string): boolean {
-  const publicRoutes = ['/login', '/signup', '/landing', '/coming-soon', '/'];
-  return publicRoutes.includes(pathname) || pathname.startsWith('/landing');
+  const publicRoutes = [
+    '/login', 
+    '/signup', 
+    '/coming-soon', 
+    '/',
+    '/forgot-password',
+    '/forgot-password/verify',
+    '/forgot-password/reset'
+  ];
+  return publicRoutes.includes(pathname);
 }

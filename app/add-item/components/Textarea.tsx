@@ -37,7 +37,7 @@ export default function Textarea({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`space-y-2 ${className}`}
+      className={className}
     >
       {/* Label */}
       <label 
@@ -58,7 +58,7 @@ export default function Textarea({
         placeholder={placeholder}
         rows={rows}
         maxLength={maxLength}
-        className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] transition-colors resize-none ${
+        className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006666] transition-colors resize-none mt-2 ${
           error 
             ? 'border-red-500 focus:ring-red-500' 
             : 'border-gray-300 focus:border-[#006666]'
@@ -69,10 +69,27 @@ export default function Textarea({
         style={{ minHeight: `${rows * 1.5}rem` }}
       />
 
-      {/* Character count */}
+      {/* Character count and Help Text/Error on same line */}
       {maxLength && (
         <div className="flex justify-between items-center text-xs">
-          <div /> {/* Spacer */}
+          {error ? (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center space-x-1 text-red-500"
+            >
+              <AlertCircle size={14} />
+              <p id={errorId} className="text-sm" role="alert" aria-live="polite">
+                {error}
+              </p>
+            </motion.div>
+          ) : helpText ? (
+            <p id={helpId} className="text-gray-500">
+              {helpText}
+            </p>
+          ) : (
+            <div></div>
+          )}
           <span className={`${
             value.length > maxLength * 0.9 
               ? value.length >= maxLength ? 'text-red-500' : 'text-yellow-600'
@@ -81,27 +98,6 @@ export default function Textarea({
             {value.length}/{maxLength}
           </span>
         </div>
-      )}
-
-      {/* Help Text */}
-      {helpText && !error && (
-        <p id={helpId} className="text-xs text-gray-500">
-          {helpText}
-        </p>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center space-x-1 text-red-500"
-        >
-          <AlertCircle size={14} />
-          <p id={errorId} className="text-sm" role="alert" aria-live="polite">
-            {error}
-          </p>
-        </motion.div>
       )}
     </motion.div>
   );

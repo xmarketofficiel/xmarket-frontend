@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useUser } from "../../../contexts/UserContext";
 import { useToast } from "../../../contexts/ToastContext";
 import {
@@ -28,6 +29,7 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileStats from "./ProfileStats";
 import ProfileContent from "./ProfileContent";
 import { ExtendedUser } from "./types";
+import { ProfilePageSkeleton } from "../../../components/skeletons/ProfilePageSkeleton";
 import { useProfile } from "./useProfile";
 import { PROFILE_CONSTANTS } from "./constants";
 import type { ProfileItem, ProfileTab } from "./types";
@@ -323,34 +325,15 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   // Show loading state
   if (loading && !profileData) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-2xl mx-auto px-4 py-4">
-            <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
-          </div>
-        </div>
-        <div className="max-w-2xl mx-auto px-4 py-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse"></div>
-              <div className="flex-1 space-y-2">
-                <div className="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-48 animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <ProfilePageSkeleton />;
   }
 
   // Render sub-page view
   if (currentView !== "main") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 overflow-x-hidden max-w-full" style={{ touchAction: 'pan-y', overscrollBehaviorX: 'none' }}>
         {/* Header with back button */}
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-white border-b border-gray-200 w-full max-w-full overflow-x-hidden">
           <div className="max-w-2xl mx-auto px-4 py-4">
             <div className="flex items-center gap-4">
               <button
@@ -367,7 +350,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
         </div>
 
         {/* Content */}
-        <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="max-w-2xl mx-auto px-4 py-6 w-full max-w-full overflow-x-hidden">
           <ProfileContent
             activeTab={currentView as ProfileTab}
             items={profileData?.items[currentView as ProfileTab] || []}
@@ -388,7 +371,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
 
   // Main profile view
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-x-hidden max-w-full" style={{ touchAction: 'pan-y', overscrollBehaviorX: 'none' }}>
       {/* Fixed Header */}
       <div className="bg-white border-b border-gray-200 flex-shrink-0 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4">
@@ -397,7 +380,7 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-20 w-full max-w-full" style={{ touchAction: 'pan-y', overscrollBehaviorX: 'none' }}>
         <div className="max-w-2xl mx-auto px-4 py-6">
           {/* Profile Info Card - Simple Design */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -407,17 +390,16 @@ const OptimizedProfilePage: React.FC<OptimizedProfilePageProps> = ({
                 <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
                   {profileData?.user?.profileImageUrl ||
                   currentUser?.profileImageUrl ? (
-                    <img
+                    <Image
                       src={
                         profileData?.user?.profileImageUrl ||
-                        currentUser?.profileImageUrl
+                        currentUser?.profileImageUrl ||
+                        '/placeholder-avatar.jpg'
                       }
                       alt="Profile"
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">

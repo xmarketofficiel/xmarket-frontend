@@ -44,7 +44,7 @@ export default function PresignedImageUpload({
   onImagesChange,
   onUploadComplete,
   maxImages = 6,
-  maxFileSize = 5,
+  maxFileSize = 7,
   className = '',
   autoUpload = false,
   showOptimizationInfo = true,

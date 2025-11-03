@@ -1,7 +1,7 @@
 'use client';
 
-import { OptimizedAddItemForm } from './components';
+import { AddItemForm } from './components';
 
 export default function AddItemPage() {
-  return <OptimizedAddItemForm />;
+  return <AddItemForm />;
 }

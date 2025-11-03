@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { ChevronLeft, Heart, Share2, Flag, MessageCircle } from "lucide-react";
 import { useUser } from "../../../../contexts/UserContext";
 import { useFavorites } from "../../../../contexts/FavoritesContext";
 import { useToast } from "../../../../contexts/ToastContext";
@@ -19,6 +19,7 @@ import ItemActions from "./ItemActions";
 import ShareModal from "./ShareModal";
 import LoadingSpinner from "./LoadingSpinner";
 import ReportModal from "../../../../components/ReportModal";
+import PurchaseConfirmationModal from "../../../../components/PurchaseConfirmationModal";
 
 // Hooks and utilities
 import { useItemDetail } from "../hooks/useItemDetail";
@@ -28,7 +29,7 @@ interface OptimizedItemDetailProps {
   item: Item;
 }
 
-export default function OptimizedItemDetail({
+export default function ItemDetail({
   item,
 }: OptimizedItemDetailProps) {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function OptimizedItemDetail({
     }
   };
 
-  const handleInterestClick = async () => {
+  const handleInterestClick = () => {
     if (!user) {
       addToast(STATUS_MESSAGES.error.unauthorized, "error");
       return;
@@ -125,37 +126,41 @@ export default function OptimizedItemDetail({
       return;
     }
 
+    // Show the purchase confirmation modal
+    actions.openModal("purchase");
+  };
+
+  const handlePurchaseConfirmed = async () => {
     try {
-      await api.items.expressInterest(String(item.id));
-      addToast(
-        "Interest added! Contact the seller on WhatsApp to negotiate.",
-        "success",
-        5000
+      // Call the backend API to express interest
+      const response = await api.items.expressInterest(
+        String(item.id), 
+        "I am interested in purchasing this item!"
       );
 
-      // Open WhatsApp automatically
-      openWhatsApp();
+      if (response.data) {
+        addToast(
+          "Interest expressed! You will receive a confirmation request in your profile.",
+          "success",
+          5000
+        );
 
-      // Analytics
-      if (typeof window !== "undefined" && window.gtag) {
-        window.gtag("event", ANALYTICS_EVENTS.INTEREST_ADDED, {
-          item_id: item.id,
-        });
+        // Open WhatsApp automatically after expressing interest
+        openWhatsApp();
+
+        // Analytics
+        if (typeof window !== "undefined" && window.gtag) {
+          window.gtag("event", ANALYTICS_EVENTS.INTEREST_ADDED, {
+            item_id: item.id,
+          });
+        }
       }
     } catch (error: any) {
-      if (
-        error.name === "DuplicateInterestError" ||
-        error.message?.includes("already shown interest") ||
-        error.message?.includes("already expressed interest")
-      ) {
-        addToast(
-          "You have already shown interest in this item. Opening WhatsApp...",
-          "info"
-        );
-        openWhatsApp();
-      } else {
-        addToast(error.message || STATUS_MESSAGES.error.interest, "error");
-      }
+      console.error('Error expressing interest:', error);
+      addToast(
+        error.message || "Failed to express interest. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -200,72 +205,209 @@ export default function OptimizedItemDetail({
     }
   };
 
-  // Loading state
-  if (state.loading.item) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <LoadingSpinner size="lg" text={STATUS_MESSAGES.loading.item} />
-      </div>
-    );
-  }
+
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-white"
-    >
-      {/* Header */}
-      <ItemHeader
-        onBack={handleBack}
-        onFavoriteClick={handleFavoriteClick}
-        onShareClick={handleShareClick}
-        onReportClick={handleReportClick}
-        isFavorited={isItemFavorite}
-        isOwnItem={!!isOwnItem}
-        isLoading={{
-          favorite: state.loading.favorite,
-        }}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30" style={{ minHeight: '-webkit-fill-available' }}>
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-purple-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-100/20 rounded-full blur-3xl"></div>
+      </div>
 
-      {/* Photo Gallery */}
-      <ItemGallery
-        images={photos}
-        title={item.title}
-        isFeatured={item.featured}
-        onImageClick={handleImageClick}
-      />
+      {/* Header - Mobile only */}
+      <div className="lg:hidden relative z-10">
+        <ItemHeader
+          onBack={handleBack}
+          onFavoriteClick={handleFavoriteClick}
+          onShareClick={handleShareClick}
+          onReportClick={handleReportClick}
+          isFavorited={isItemFavorite}
+          isOwnItem={!!isOwnItem}
+          isLoading={{
+            favorite: state.loading.favorite,
+          }}
+        />
+      </div>
 
-      {/* Content Container */}
-      <div className="pb-32">
-        {/* Item Information */}
-        <ItemInfo item={item} />
+      {/* Desktop Layout */}
+      <div className="hidden lg:block relative z-10">
+        {/* Desktop Header - Enhanced with glassmorphism */}
+        <div className="bg-white/90 backdrop-blur-xl border-b border-gray-200/50 px-6 py-4 sticky top-0 z-50 shadow-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <button
+              onClick={handleBack}
+              className="group flex items-center text-gray-700 hover:text-gray-900 transition-all duration-300 px-4 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md"
+            >
+              <ChevronLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="font-semibold">Back to listings</span>
+            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleFavoriteClick}
+                disabled={state.loading.favorite}
+                className={`p-3.5 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 ${
+                  isItemFavorite
+                    ? 'bg-gradient-to-br from-red-50 to-pink-50 text-red-600 shadow-md shadow-red-100'
+                    : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 hover:from-gray-100 hover:to-gray-200 hover:shadow-md'
+                }`}
+              >
+                <Heart size={20} className={`${isItemFavorite ? 'fill-current animate-pulse' : ''} transition-all`} />
+              </button>
+              <button
+                onClick={handleShareClick}
+                className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-md shadow-blue-100"
+              >
+                <Share2 size={20} />
+              </button>
+              {!isOwnItem && (
+                <button
+                  onClick={handleReportClick}
+                  className="p-3.5 rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 text-orange-600 hover:from-orange-100 hover:to-amber-100 transition-all duration-300 hover:scale-110 active:scale-95 hover:shadow-md shadow-orange-100"
+                >
+                  <Flag size={20} />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
 
-        {/* Seller Card */}
-        <div className="px-6 mb-6">
-          <SellerCard
-            seller={item.seller}
-            isAnonymous={item.anonymous}
-            isOwnItem={!!isOwnItem}
-            onMessageClick={openWhatsApp}
-            onViewProfile={handleViewProfile}
-          />
+        {/* Desktop Main Content - Enhanced with animations */}
+        <div className="max-w-7xl mx-auto px-6 py-8 pb-32">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+            {/* Left Column - Gallery - Full size like Facebook Marketplace */}
+            <div className="animate-fade-in">
+              <ItemGallery
+                images={photos}
+                title={item.title}
+                isFeatured={item.featured}
+                onImageClick={handleImageClick}
+              />
+            </div>
+
+            {/* Right Column - Description & Seller Info */}
+            <div className="animate-fade-in-delay">
+              <div className="sticky top-24 space-y-4">
+                {/* Item Info - Description */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                  <ItemInfo item={item} />
+                </div>
+                
+                {/* Seller Card - Hidden for own items */}
+                {!isOwnItem && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                    <SellerCard
+                      seller={item.seller}
+                      isAnonymous={item.anonymous}
+                      isOwnItem={!!isOwnItem}
+                      onMessageClick={openWhatsApp}
+                      onViewProfile={handleViewProfile}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Contact Seller / Own Item Bar - Sticky Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 px-6 py-4 z-50 shadow-2xl">
+          <div className="max-w-7xl mx-auto">
+            {isOwnItem ? (
+              <div className="text-center py-2">
+                <div className="flex items-center justify-center space-x-2">
+                  <MessageCircle size={20} className="text-gray-600" />
+                  <p className="text-gray-700 font-semibold">This is your item</p>
+                  <span className="text-gray-400">•</span>
+                  <p className="text-sm text-gray-500">
+                    You can edit or manage it from your profile
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <div className="flex space-x-3">
+                  {/* Contact Seller Button */}
+                  <button
+                    onClick={openWhatsApp}
+                    className="bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
+                  >
+                    <span className="text-lg">📱</span>
+                    <span>Contact Seller</span>
+                  </button>
+
+                  {/* Share Button */}
+                  <button
+                    onClick={handleShareClick}
+                    className="py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 hover:scale-[1.02] shadow-md"
+                  >
+                    <Share2 size={18} />
+                    <span>Share</span>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Contact the seller directly via WhatsApp
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <ItemActions
-        isOwnItem={!!isOwnItem}
-        isFavorited={isItemFavorite}
-        onInterestClick={handleInterestClick}
-        onFavoriteClick={handleFavoriteClick}
-        onShareClick={handleShareClick}
-        onMessageClick={openWhatsApp}
-        isLoading={{
-          interest: state.loading.interest,
-          favorite: state.loading.favorite,
-        }}
-      />
+      {/* Mobile Layout - Enhanced with premium design */}
+      <div className="lg:hidden relative z-0">
+        {/* Photo Gallery with premium styling */}
+        <div className="bg-white shadow-lg">
+          <ItemGallery
+            images={photos}
+            title={item.title}
+            isFeatured={item.featured}
+            onImageClick={handleImageClick}
+          />
+        </div>
+
+        {/* Content Container */}
+        <div className="pb-32 bg-gradient-to-b from-gray-50 to-white">
+          {/* Item Information with enhanced card */}
+          <div className="bg-white shadow-lg relative">
+            <ItemInfo item={item} />
+          </div>
+
+          {/* Seller Card with premium styling - Hidden for own items */}
+          {!isOwnItem && (
+            <div className="px-4 md:px-6 mt-6">
+              <div className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-500 relative z-0">
+                {/* Shimmer effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                <div className="relative z-10">
+                  <SellerCard
+                    seller={item.seller}
+                    isAnonymous={item.anonymous}
+                    isOwnItem={!!isOwnItem}
+                    onMessageClick={openWhatsApp}
+                    onViewProfile={handleViewProfile}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Action Buttons */}
+        <ItemActions
+          isOwnItem={!!isOwnItem}
+          isFavorited={isItemFavorite}
+          onInterestClick={handleInterestClick}
+          onFavoriteClick={handleFavoriteClick}
+          onShareClick={handleShareClick}
+          onMessageClick={openWhatsApp}
+          isLoading={{
+            interest: state.loading.interest,
+            favorite: state.loading.favorite,
+          }}
+        />
+      </div>
 
       {/* Modals */}
       <ShareModal
@@ -280,7 +422,22 @@ export default function OptimizedItemDetail({
         itemId={String(item.id)}
         itemTitle={item.title}
       />
-    </motion.div>
+
+      <PurchaseConfirmationModal
+        isOpen={state.modals.purchase}
+        onClose={() => actions.closeModal("purchase")}
+        item={{
+          id: String(item.id),
+          title: item.title,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+          seller: {
+            fullName: item.seller?.fullName || item.seller?.name || 'Unknown Seller',
+            whatsappNumber: item.seller?.whatsappNumber
+          }
+        }}
+        onConfirmed={handlePurchaseConfirmed}
+      />
+    </div>
   );
 }
 

@@ -46,7 +46,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <motion.input
           type={type}
           className={cn(baseClasses, stateClasses, className)}
-          ref={ref}
+          ref={ref as React.LegacyRef<HTMLInputElement>}
           onFocus={handleFocus}
           onBlur={handleBlur}
           whileFocus={{
@@ -72,7 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(baseClasses, stateClasses, className)}
-        ref={ref}
+        ref={ref as React.LegacyRef<HTMLInputElement>}
         onFocus={handleFocus}
         onBlur={handleBlur}
         {...props}

@@ -33,7 +33,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
       const { ...restProps } = props;
       return (
         <motion.div
-          ref={ref}
+          ref={ref as React.LegacyRef<HTMLDivElement>}
           className={cn(baseClasses, variantClasses[variant], className)}
           animate={pulseAnimation}
           {...(restProps as any)}
@@ -43,7 +43,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
 
     return (
       <div
-        ref={ref}
+        ref={ref as React.LegacyRef<HTMLDivElement>}
         className={cn(baseClasses, variantClasses[variant], 'animate-pulse', className)}
         {...props}
       />
@@ -74,7 +74,7 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
 
     return (
       <motion.div
-        ref={ref}
+        ref={ref as React.LegacyRef<HTMLDivElement>}
         className={cn(
           'border-2 rounded-full',
           sizeClasses[size],
@@ -133,7 +133,7 @@ const PulseLoader = React.forwardRef<HTMLDivElement, PulseLoaderProps>(
 
     return (
       <motion.div
-        ref={ref}
+        ref={ref as React.LegacyRef<HTMLDivElement>}
         className={containerClasses}
         variants={containerVariants}
         animate="animate"
@@ -240,7 +240,7 @@ const StateIndicator: React.FC<StateIndicatorProps> = ({
     }
   };
 
-  const config = stateConfig[state];
+  const config = stateConfig[state as keyof typeof stateConfig];
 
   if (!isVisible) return null;
 

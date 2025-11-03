@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 
 interface LoginHeaderProps {
@@ -6,23 +5,18 @@ interface LoginHeaderProps {
 }
 
 /**
- * Login form header with logo and title
+ * Login form header with logo and title (static, no animations for better performance)
  */
 export function LoginHeader({ showMobileLogo = true }: LoginHeaderProps) {
   return (
-    <motion.div 
-      className="text-center mb-8"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
+    <div className="text-center mb-4 sm:mb-8">
       {showMobileLogo && (
-        <div className="lg:hidden inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#009F9C] to-[#40E0D0] rounded-2xl mb-6 shadow-lg">
-          <ShoppingBag className="w-8 h-8 text-white" />
+        <div className="lg:hidden inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#009F9C] to-[#40E0D0] rounded-2xl mb-3 sm:mb-6 shadow-lg">
+          <ShoppingBag className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
         </div>
       )}
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
-      <p className="text-gray-600">Welcome back to your campus marketplace</p>
-    </motion.div>
+      <h1 className="text-2xl sm:text-3xl lg:text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
+      <p className="text-sm sm:text-base text-gray-600 px-2">Welcome back to your campus marketplace</p>
+    </div>
   );
 }

@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
 import { api } from '../../lib/apiEndpoints';
 import { Item } from '../../types';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
+import { useConditionalLoading, getOptimalSkeletonCount } from '../../hooks/useConditionalLoading';
 
 // Components
 import { MarketplaceHeader } from './components/MarketplaceHeader';
-import { EnhancedSearchBar } from './components/EnhancedSearchBar';
+import { SearchBar } from './components/SearchBar';
 import { AdvancedFilterPanel } from './components/AdvancedFilterPanel';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ViewControls } from './components/ViewControls';
@@ -26,6 +27,7 @@ import {
   SkeletonResultsCounter,
   SkeletonGrid 
 } from '../../components/skeletons/SkeletonComponents';
+import { MarketplaceGridSkeleton } from '../../components/skeletons/MarketplacePageSkeleton';
 
 // Constants and Types
 import { MARKETPLACE_CONFIG, CATEGORY_CONFIG } from './constants';
@@ -64,6 +66,7 @@ export default function MarketplacePage() {
     items: [],
     totalItems: 0,
     currentPage: 1,
+    page: 1,
     hasMore: true,
     loading: true,
     error: null,
@@ -94,6 +97,9 @@ export default function MarketplacePage() {
 
   // Categories list
   const [categories, setCategories] = useState<string[]>([]);
+
+  // Ref to prevent multiple simultaneous loadItems calls
+  const loadItemsInProgress = useRef(false);
 
   /**
    * Update state helper function
@@ -142,7 +148,7 @@ export default function MarketplacePage() {
       console.error('Error loading pending confirmations count:', error);
       updateState({ pendingSalesCount: 0 });
     }
-  }, [user]); // Only depend on user, not updateState
+  }, [user, updateState]);
 
   /**
    * Load categories
@@ -336,6 +342,12 @@ export default function MarketplacePage() {
    * Load items with current filters
    */
   const loadItems = useCallback(async (page: number = 1, replaceItems: boolean = true) => {
+    // Prevent multiple simultaneous calls
+    if (loadItemsInProgress.current) {
+      return;
+    }
+    
+    loadItemsInProgress.current = true;
     updateState({ loading: true, error: null });
 
     try {
@@ -370,14 +382,21 @@ export default function MarketplacePage() {
       }
     } catch (error: any) {
       console.error('Failed to load items:', error);
-      updateState({ 
-        error: error.message || 'Failed to load items',
-        items: replaceItems ? [] : state.items
-      });
+      if (replaceItems) {
+        updateState({ 
+          error: error.message || 'Failed to load items',
+          items: []
+        });
+      } else {
+        updateState({ 
+          error: error.message || 'Failed to load items'
+        });
+      }
     } finally {
       updateState({ loading: false });
+      loadItemsInProgress.current = false;
     }
-  }, [buildSearchParams]); // Only depend on buildSearchParams, not updateState or state.items
+  }, [buildSearchParams, updateState]);
 
   /**
    * Handle search query change
@@ -452,7 +471,7 @@ export default function MarketplacePage() {
       loadPendingSalesCount(),
       loadCategories()
     ]);
-  }, [loadItems, loadPendingSalesCount, loadCategories]);
+  }, [loadPendingSalesCount, loadCategories]);
 
   // Initialize data on mount
   useEffect(() => {
@@ -464,14 +483,14 @@ export default function MarketplacePage() {
     if (savedViewMode && ['grid', 'list'].includes(savedViewMode)) {
       updateState({ viewMode: savedViewMode });
     }
-  }, []); // Empty dependency array - only run on mount
+  }, [loadCategories, loadPendingSalesCount, updateState]);
 
   // Load initial items once categories are loaded
   useEffect(() => {
     if (categories.length > 0) {
       loadItems(1, true);
     }
-  }, [categories]); // Load items when categories are available
+  }, [categories]);
 
   // Load items when filters change
   useEffect(() => {
@@ -486,13 +505,19 @@ export default function MarketplacePage() {
     state.sortBy, 
     state.priceRange, 
     state.conditionFilter
-  ]); // Removed loadItems from dependencies
+  ]);
 
   // Pull to refresh
   usePullToRefresh({
     onRefresh: handleRefresh,
     threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD
   });
+
+  // Smart loading management
+  const { showSkeleton } = useConditionalLoading(
+    state.loading, 
+    state.items.length > 0
+  );
 
   // Memoized computed values
   const isEmpty = useMemo(() => 
@@ -530,7 +555,7 @@ export default function MarketplacePage() {
             categories={categories}
             selectedCategory={state.selectedCategory}
             onChange={handleCategoryChange}
-            loading={!categories.length}
+            loading={!categories.length && showSkeleton}
           />
         )}
 
@@ -538,7 +563,7 @@ export default function MarketplacePage() {
         <div className="bg-white border-b border-gray-100 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              {state.loading && state.items.length === 0 ? (
+              {showSkeleton ? (
                 <SkeletonResultsCounter />
               ) : (
                 <span>
@@ -585,10 +610,8 @@ export default function MarketplacePage() {
           )}
 
           {/* Loading State */}
-          {state.loading && state.items.length === 0 && (
-            <div className="px-4 pt-4">
-              <SkeletonGrid count={8} />
-            </div>
+          {showSkeleton && (
+            <MarketplaceGridSkeleton count={getOptimalSkeletonCount(state.items.length > 0)} />
           )}
 
           {/* Empty State */}

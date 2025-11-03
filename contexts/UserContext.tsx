@@ -16,7 +16,8 @@ interface UserContextType {
   refreshUser: () => Promise<void>;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+// Use React.createContext to avoid any local symbol conflicts with other imports
+const UserContext: any = (React.createContext as any)();
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
@@ -33,8 +34,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const currentPath = window.location.pathname;
     const isPublicPage = currentPath === '/' || 
                         currentPath.includes('/login') || 
-                        currentPath.includes('/signup') ||
-                        currentPath.includes('/landing');
+                        currentPath.includes('/signup');
     
     if (!isPublicPage) {
       router.push('/login'); // Redirect to login page
@@ -56,8 +56,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const currentPath = window.location.pathname;
       const isPublicPage = currentPath === '/' || 
                           currentPath.includes('/login') || 
-                          currentPath.includes('/signup') ||
-                          currentPath.includes('/landing');
+                          currentPath.includes('/signup');
       
       if (!isPublicPage) {
         handleAuthError();
@@ -95,7 +94,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       );
       
       const response = await Promise.race([
-        api.auth.getCurrentUser(),
+        api.users.getProfile(),
         timeoutPromise
       ]);
       setUser(response.data);
@@ -133,14 +132,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await api.auth.logout();
-    } catch (error) {
-      // Logout errors are non-critical, continue with client-side cleanup
-    } finally {
-      // Clear user state and tokens
+      // First, clear tokens and user state immediately
       setUser(null);
       TokenManager.clearTokens();
-      // Redirect to home page (which will show landing for non-authenticated users)
+      
+      // Wait a moment to ensure tokens are fully cleared
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Try to call the logout API (non-critical if it fails)
+      try {
+        await api.auth.logout();
+      } catch (error: any) {
+        // Logout API errors are non-critical since tokens are already cleared
+        // Only log if it's not a server error to avoid console spam
+        if (!error?.name?.includes('ServerError')) {
+          console.warn('Logout API call failed, but tokens cleared locally:', error.message);
+        }
+      }
+      
+    } catch (error) {
+      // Even if something fails, ensure tokens are cleared
+      setUser(null);
+      TokenManager.clearTokens();
+      console.error('Error during logout:', error);
+    } finally {
+      // Always redirect to home page after token cleanup
       router.push('/');
     }
   }, [router]);
@@ -169,7 +185,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const response = await api.auth.getCurrentUser();
+      const response = await api.users.getProfile();
       setUser(response.data);
     } catch (error: any) {
       if (error?.status === 401) {
@@ -194,7 +210,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useUser() {
+export function useUser(): any {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');

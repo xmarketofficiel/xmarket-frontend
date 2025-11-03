@@ -70,7 +70,7 @@ export function Grid({
       >
         {animated ? (
           <AnimatePresence>
-            {React.Children.map(children, (child, index) => (
+            {React.Children.toArray(children).map((child, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -103,7 +103,7 @@ export function Grid({
     >
       {animated ? (
         <AnimatePresence>
-          {React.Children.map(children, (child, index) => (
+          {React.Children.toArray(children).map((child, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -347,7 +347,7 @@ export function Flex({
         flexAlign[align],
         wrap && 'flex-wrap',
         gapClasses[gap],
-        ...responsiveClasses,
+        ...(responsiveClasses as string[]),
         className
       )}
       {...props}

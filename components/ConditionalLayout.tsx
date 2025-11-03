@@ -20,7 +20,17 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   }
   
   // Public pages - no navbar, no authentication required
-  if (pathname === '/login' || pathname === '/signup' || pathname === '/coming-soon' || pathname === '/landing') {
+  if (pathname === '/login' || 
+      pathname === '/signup' || 
+      pathname === '/signup/um6p-student' || 
+      pathname === '/signup/1337-student' || 
+      pathname === '/signup/external' || 
+      pathname === '/auth/register' || 
+      pathname === '/auth/discord/callback' ||
+      pathname === '/coming-soon' ||
+      pathname === '/forgot-password' ||
+      pathname === '/forgot-password/verify' ||
+      pathname === '/forgot-password/reset') {
     return (
       <main className={pathname === '/coming-soon' ? 'min-h-screen' : 'min-h-screen bg-gray-50'}>
         {children}
@@ -33,8 +43,8 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     // For home page, let the page itself handle authentication and layout
     // Only show Navbar if user is authenticated
     return user ? (
-      <div className="h-screen flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+        <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
           {children}
         </main>
         <Navbar />
@@ -58,8 +68,8 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   
   // User is authenticated - show navbar and content with proper fixed layout
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <main className="flex-1 overflow-y-auto bg-gray-50">
+    <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+      <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
         {children}
       </main>
       <Navbar />

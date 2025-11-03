@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, Phone, Lock } from 'lucide-react';
+import { User, Phone, Lock, Building, MapPin, Users, Mail } from 'lucide-react';
 import { InputField } from './InputField';
 import { MessageDisplay } from './MessageDisplay';
 import { SubmitButton } from './SubmitButton';
@@ -50,12 +50,34 @@ export function DetailsStep({
   const isPasswordValid = formData.password.length >= 8;
   const doPasswordsMatch = formData.password === formData.confirmPassword;
   const isPhoneValid = isValidPhoneNumber(formData.whatsappNumber);
-  const isFormValid = formData.fullName && isPhoneValid && isPasswordValid && doPasswordsMatch;
+  
+  // Email validation
+  const isEmailValid = formData.email ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) : false;
+  
+  // Department is automatically set for 1337 and UM6P users
+  const isDepartmentDisabled = formData.userType === '1337' || formData.userType === 'um6p';
+  const isDepartmentValid = isDepartmentDisabled || formData.department;
+  
+  const isFormValid = formData.firstName && 
+                     formData.lastName && 
+                     isEmailValid &&
+                     isDepartmentValid && 
+                     formData.role && 
+                     formData.address && 
+                     isPhoneValid && 
+                     isPasswordValid && 
+                     doPasswordsMatch;
 
   // Error messages
   const getPhoneError = () => {
     if (!formData.whatsappNumber) return '';
     if (!isPhoneValid) return 'Enter a valid Moroccan number: 06/07 (10 digits) or +212 (9 digits after)';
+    return '';
+  };
+
+  const getEmailError = () => {
+    if (!formData.email) return '';
+    if (!isEmailValid) return 'Please enter a valid email address';
     return '';
   };
 
@@ -72,17 +94,128 @@ export function DetailsStep({
           Personal Information
         </h3>
         
+        {/* Name Fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField
+            type="text"
+            value={formData.firstName || ''}
+            onChange={(value) => onUpdateFormData({ firstName: value })}
+            onFocus={() => onFieldFocus('firstName')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'firstName'}
+            placeholder="Enter your first name"
+            label="First Name"
+            required
+            icon={<User className="w-5 h-5" />}
+          />
+
+          <InputField
+            type="text"
+            value={formData.lastName || ''}
+            onChange={(value) => onUpdateFormData({ lastName: value })}
+            onFocus={() => onFieldFocus('lastName')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'lastName'}
+            placeholder="Enter your last name"
+            label="Last Name"
+            required
+            icon={<User className="w-5 h-5" />}
+          />
+        </div>
+
+        {/* Email Field */}
+        <div className="space-y-1">
+          <InputField
+            type="email"
+            value={formData.email || ''}
+            onChange={(value) => onUpdateFormData({ email: value })}
+            onFocus={() => onFieldFocus('email')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'email'}
+            placeholder="Enter your email address"
+            label="Email Address"
+            required
+            icon={<Mail className="w-5 h-5" />}
+            error={formData.email && !isEmailValid ? getEmailError() : ''}
+            isValid={formData.email ? isEmailValid : undefined}
+            disabled={true}
+          />
+          {formData.email && formData.userType && (formData.userType === '1337' || formData.userType === 'um6p') && (
+            <p className="text-xs text-gray-500 px-1">
+              💡 This email was auto-filled from your authentication, but you can change it if needed.
+            </p>
+          )}
+        </div>
+
+        {/* Role Selection */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 px-1">
+            Role <span className="text-red-500 ml-1">*</span>
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <motion.button
+              type="button"
+              onClick={() => onUpdateFormData({ role: 'student' })}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                formData.role === 'student'
+                  ? 'border-[#009F9C] bg-[#009F9C]/10 text-[#009F9C]'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Users className="w-6 h-6" />
+                <span className="font-medium">Student</span>
+              </div>
+            </motion.button>
+
+            <motion.button
+              type="button"
+              onClick={() => onUpdateFormData({ role: 'staff' })}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                formData.role === 'staff'
+                  ? 'border-[#009F9C] bg-[#009F9C]/10 text-[#009F9C]'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Building className="w-6 h-6" />
+                <span className="font-medium">Staff</span>
+              </div>
+            </motion.button>
+          </div>
+        </div>
+
+        {/* Department */}
         <InputField
           type="text"
-          value={formData.fullName}
-          onChange={(value) => onUpdateFormData({ fullName: value })}
-          onFocus={() => onFieldFocus('fullName')}
+          value={formData.department || ''}
+          onChange={(value) => onUpdateFormData({ department: value })}
+          onFocus={() => onFieldFocus('department')}
           onBlur={onFieldBlur}
-          focused={focusedField === 'fullName'}
-          placeholder="Enter your full name"
-          label="Full Name"
+          focused={focusedField === 'department'}
+          placeholder={formData.userType === '1337' ? '1337 School' : formData.userType === 'um6p' ? 'UM6P' : 'e.g., Computer Science, Engineering, Administration'}
+          label="Department"
           required
-          icon={<User className="w-5 h-5" />}
+          icon={<Building className="w-5 h-5" />}
+          disabled={formData.userType === '1337' || formData.userType === 'um6p'}
+        />
+
+        {/* Address */}
+        <InputField
+          type="text"
+          value={formData.address || ''}
+          onChange={(value) => onUpdateFormData({ address: value })}
+          onFocus={() => onFieldFocus('address')}
+          onBlur={onFieldBlur}
+          focused={focusedField === 'address'}
+          placeholder="Enter your address"
+          label="Address"
+          required
+          icon={<MapPin className="w-5 h-5" />}
         />
 
         <InputField
@@ -106,6 +239,7 @@ export function DetailsStep({
         <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
           Security
         </h3>
+        
         
         <InputField
           type="password"

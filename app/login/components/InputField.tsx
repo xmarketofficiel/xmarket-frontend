@@ -37,7 +37,7 @@ export function InputField({
 
   return (
     <div className="relative">
-      <label htmlFor={type} className="block text-sm font-medium text-gray-700 mb-2">
+      <label htmlFor={type} className="block text-sm sm:text-sm font-medium text-gray-700 mb-2">
         {label}
       </label>
       <motion.div
@@ -51,12 +51,12 @@ export function InputField({
         whileHover={{ scale: 1.01 }}
         transition={{ duration: ANIMATION_SYSTEM.duration.fast / 1000 }}
       >
-        <div className="design-card flex items-center bg-gray-50 border border-gray-200 rounded-xl p-4 focus-within:border-[#009F9C] focus-within:bg-white transition-all" 
+        <div className="design-card flex items-center bg-gray-50 border border-gray-200 rounded-xl p-3.5 sm:p-4 focus-within:border-[#009F9C] focus-within:bg-white transition-all min-h-[50px] sm:min-h-[52px]" 
              style={{ 
                transitionDuration: ANIMATION_SYSTEM.durationString.normal,
                transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
              }}>
-          <Icon className="w-5 h-5 text-gray-400 mr-3 transition-colors" 
+          <Icon className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 mr-3 flex-shrink-0 transition-colors" 
                 style={{ 
                   transitionDuration: ANIMATION_SYSTEM.durationString.normal,
                   transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
@@ -69,18 +69,19 @@ export function InputField({
             onFocus={onFocus}
             onBlur={onBlur}
             placeholder={placeholder}
-            className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none"
+            className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none text-base sm:text-base"
             required={required}
           />
           {type === 'password' && onTogglePassword && (
             <button
               type="button"
               onClick={onTogglePassword}
-              className="ml-3 text-gray-400 hover:text-[#009F9C] transition-colors p-1 rounded-md focus:ring-2 focus:ring-[#009F9C]/20 focus:outline-none"
+              className="ml-3 text-gray-400 hover:text-[#009F9C] active:text-[#007B78] transition-colors p-2 rounded-md focus:ring-2 focus:ring-[#009F9C]/20 focus:outline-none touch-manipulation flex-shrink-0"
               style={{ 
                 transitionDuration: ANIMATION_SYSTEM.durationString.normal,
                 transitionTimingFunction: ANIMATION_SYSTEM.easing.easeOut
               }}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? (
                 <EyeOff className="w-5 h-5" />

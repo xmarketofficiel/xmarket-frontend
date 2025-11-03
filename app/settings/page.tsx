@@ -1,7 +1,7 @@
 'use client';
 
-import { OptimizedSettingsPage } from './components';
+import { SettingsPage } from './components';
 
-export default function SettingsPage() {
-  return <OptimizedSettingsPage />;
+export default function Settings() {
+  return <SettingsPage />;
 }

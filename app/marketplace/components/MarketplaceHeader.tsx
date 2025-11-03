@@ -105,8 +105,8 @@ export function MarketplaceHeader({
                   />
                 </div>
                 
-                {/* Filter Button */}
-                {onToggleFilters && (
+                {/* Filter Button - COMMENTED OUT - Functionality not implemented yet */}
+                {/* {onToggleFilters && (
                   <motion.button
                     type="button"
                     onClick={onToggleFilters}
@@ -120,7 +120,7 @@ export function MarketplaceHeader({
                   >
                     <Filter className="w-5 h-5" />
                   </motion.button>
-                )}
+                )} */}
               </div>
 
               {/* Close Button */}

@@ -5,7 +5,7 @@ export { default as ProfileTabs } from './ProfileTabs';
 export { default as ProfileContent } from './ProfileContent';
 export { default as ProfileItemCard } from './ProfileItemCard';
 export { default as ProfileQuickActions } from './ProfileQuickActions';
-export { default as OptimizedProfilePage } from './ProfilePage';
+export { default as ProfilePage } from './ProfilePage';
 
 // Hooks
 export { useProfile } from './useProfile';

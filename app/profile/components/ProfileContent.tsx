@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import ProfileItemCard from './ProfileItemCard';
 import { PROFILE_CONSTANTS } from './constants';
-import type { ProfileContentProps, ProfileTab } from './types';
+import type { ProfileContentProps, ProfileTab, ProfileItem } from './types';
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
   activeTab,
@@ -106,8 +106,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   );
 
   const ControlsBar = () => (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+    <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full">
         {/* Search */}
         <div className="flex-1 max-w-md">
           <div className="relative">
@@ -194,19 +194,19 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       {/* Controls */}
       <ControlsBar />
 
       {/* Items Grid/List */}
       <div className={`
-        grid gap-4
+        grid gap-4 w-full max-w-full
         ${viewMode === 'grid' 
           ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
           : 'grid-cols-1'
         }
       `}>
-        {items.map((item) => (
+        {items.map((item: ProfileItem) => (
           <ProfileItemCard
             key={item.id}
             item={item}

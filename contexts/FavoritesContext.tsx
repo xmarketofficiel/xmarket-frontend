@@ -14,7 +14,8 @@ interface FavoritesContextType {
   loading: boolean;
 }
 
-const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+// Use React.createContext to avoid any local symbol conflicts with other imports
+const FavoritesContext: any = (React.createContext as any)();
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = React.useState<string[]>([]);
@@ -51,8 +52,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const response = await api.items.getFavorites();
-      const favoriteIds = response.data.items.map(item => String(item.id));
-      setFavorites(favoriteIds);
+      
+      if (response.data && response.data.items) {
+        const favoriteIds = response.data.items.map(item => String(item.id));
+        setFavorites(favoriteIds);
+      } else {
+        setFavorites([]);
+      }
     } catch (error) {
       // Fallback to localStorage
       loadFavoritesFromLocalStorage();
@@ -79,7 +85,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           addToast('Added to favorites!', 'success');
         }
       } catch (error: any) {
-        console.log('[Favorites] Error details:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[Favorites] Error details:', error);
+        }
         
         // Handle specific error cases
         if (error?.message?.includes('Cannot favorite your own item') || error?.message?.includes('cannot favorite your own')) {
@@ -168,7 +176,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useFavorites() {
+export function useFavorites(): any {
   const context = useContext(FavoritesContext);
   if (context === undefined) {
     throw new Error('useFavorites must be used within a FavoritesProvider');

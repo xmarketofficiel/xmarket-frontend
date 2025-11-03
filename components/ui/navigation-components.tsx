@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -22,6 +23,7 @@ import {
   Star,
   HelpCircle
 } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { COLOR_SYSTEM, ANIMATION_SYSTEM, SPACING_SYSTEM } from '@/lib/design-system';
 import { useUser } from '@/contexts/UserContext';
@@ -29,6 +31,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { Button } from './button';
 import { Badge } from './badge';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +39,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuTriggerAny,
 } from './dropdown-menu';
+
+const AnyDropdownMenuContent: any = DropdownMenuPrimitive.Content;
 
 // Navigation item types
 interface NavItem {
@@ -84,6 +90,7 @@ interface MobileNavProps {
 }
 
 function MobileNav({ className }: MobileNavProps) {
+  // import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
   const pathname = usePathname();
   const { user } = useUser();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -113,7 +120,7 @@ function MobileNav({ className }: MobileNavProps) {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           const isMessages = item.href === '/messages';
-          
+
           return (
             <Link
               key={item.href}
@@ -288,7 +295,6 @@ function UserMenu() {
   const { user, logout } = useUser();
   const { addToast } = useToast();
   const router = useRouter();
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -299,50 +305,45 @@ function UserMenu() {
     }
   };
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.profileImageUrl} alt={user?.fullName} />
-            <AvatarFallback>
-              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.fullName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        
-        <DropdownMenuSeparator />
-        
-        {userMenuItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <DropdownMenuItem key={item.href} asChild>
-              <Link href={item.href} className="flex items-center space-x-2">
+    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+      <button onClick={() => setMenuOpen((s) => !s)} className="relative h-8 w-8 rounded-full inline-flex items-center justify-center overflow-hidden bg-muted">
+        {user?.profileImageUrl ? (
+          <Image src={user.profileImageUrl} alt={user?.fullName || 'User'} width={32} height={32} className="h-8 w-8 object-cover rounded-full" />
+        ) : (
+          <span className="text-sm font-medium text-foreground">{user?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
+        )}
+      </button>
+
+      <div className="w-56 p-2">
+        <div className="font-normal p-2">
+          <p className="text-sm font-medium leading-none">{user?.fullName}</p>
+          <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+        </div>
+
+        <div className="border-t my-2" />
+
+        <div className="flex flex-col">
+          {userMenuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link key={item.href} href={item.href} className="flex items-center space-x-2 px-3 py-2 hover:bg-accent rounded">
                 <Icon size={16} />
                 <span>{item.label}</span>
               </Link>
-            </DropdownMenuItem>
-          );
-        })}
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-          <LogOut size={16} className="mr-2" />
+            );
+          })}
+        </div>
+
+        <div className="border-t my-2" />
+
+        <button onClick={handleLogout} className="w-full text-left px-3 py-2 text-red-600 hover:bg-accent rounded">
+          <LogOut size={16} className="mr-2 inline-block" />
           <span>Log out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+        </button>
+      </div>
     </DropdownMenu>
   );
 }
