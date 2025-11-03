@@ -142,7 +142,7 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Production DigitalOcean Spaces
+      // Production DigitalOcean Spaes
       {
         protocol: 'https',
         hostname: 'xmarket-images-prod.ams3.cdn.digitaloceanspaces.com',
