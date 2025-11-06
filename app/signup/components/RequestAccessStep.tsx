@@ -48,7 +48,7 @@ export function RequestAccessStep({
   const isPhoneValid = isValidPhoneNumber(requestData.whatsappNumber);
   const isFormValid = requestData.firstName && requestData.lastName && requestData.email && 
                      isPhoneValid && requestData.reason && requestData.role && 
-                     requestData.department && requestData.address;
+                     requestData.department;
 
   // Error messages
   const getPhoneError = () => {
@@ -167,19 +167,8 @@ export function RequestAccessStep({
           required
         /> */}
 
-        {/* Address Field */}
-        <InputField
-          label="Address"
-          type="text"
-          value={requestData.address || ''}
-          onChange={(value) => onUpdateRequestData({ address: value })}
-          onFocus={() => onFieldFocus('address')}
-          onBlur={onFieldBlur}
-          focused={focusedField === 'address'}
-          icon={<MapPin className="w-5 h-5" />}
-          placeholder="Enter your address"
-          required
-        />
+        {/* Address Field - Hidden, automatically set to UM6P Ben Guerir */}
+        {/* The address is automatically set to "UM6P Ben Guerir" in the backend submission */}
 
         <InputField
           type="email"

@@ -35,7 +35,7 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
     lastName: '',
     department: 'UM6P',
     role: 'student',
-    address: '',
+    address: 'UM6P Ben Guerir',
     whatsappNumber: '',
     password: '',
     confirmPassword: '',

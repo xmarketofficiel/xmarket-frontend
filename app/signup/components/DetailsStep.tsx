@@ -58,12 +58,14 @@ export function DetailsStep({
   const isDepartmentDisabled = formData.userType === '1337' || formData.userType === 'um6p';
   const isDepartmentValid = isDepartmentDisabled || formData.department;
   
+  // Address is automatically set to "UM6P Ben Guerir" for UM6P and 1337 users
+  const isAddressAutoFilled = formData.userType === '1337' || formData.userType === 'um6p';
+  
   const isFormValid = formData.firstName && 
                      formData.lastName && 
                      isEmailValid &&
                      isDepartmentValid && 
                      formData.role && 
-                     formData.address && 
                      isPhoneValid && 
                      isPasswordValid && 
                      doPasswordsMatch;
@@ -204,19 +206,21 @@ export function DetailsStep({
           disabled={formData.userType === '1337' || formData.userType === 'um6p'}
         />
 
-        {/* Address */}
-        <InputField
-          type="text"
-          value={formData.address || ''}
-          onChange={(value) => onUpdateFormData({ address: value })}
-          onFocus={() => onFieldFocus('address')}
-          onBlur={onFieldBlur}
-          focused={focusedField === 'address'}
-          placeholder="Enter your address"
-          label="Address"
-          required
-          icon={<MapPin className="w-5 h-5" />}
-        />
+        {/* Address - Hidden for UM6P and 1337 users, automatically set to "UM6P Ben Guerir" */}
+        {!isAddressAutoFilled && (
+          <InputField
+            type="text"
+            value={formData.address || ''}
+            onChange={(value) => onUpdateFormData({ address: value })}
+            onFocus={() => onFieldFocus('address')}
+            onBlur={onFieldBlur}
+            focused={focusedField === 'address'}
+            placeholder="Enter your address"
+            label="Address"
+            required
+            icon={<MapPin className="w-5 h-5" />}
+          />
+        )}
 
         <InputField
           type="tel"

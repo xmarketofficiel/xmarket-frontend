@@ -27,7 +27,7 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
     lastName: '',
     department: 'External',
     role: 'seller',
-    address: '',
+    address: 'UM6P Ben Guerir',
     email: '',
     whatsappNumber: '',
     reason: '',
@@ -87,7 +87,9 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
     
     updateState({ isLoading: true, message: '', messageType: 'error' });
 
-    const { email, firstName, lastName, department, role, address, whatsappNumber } = requestData;
+    const { email, firstName, lastName, department, role, whatsappNumber } = requestData;
+    // Always set address to "UM6P Ben Guerir"
+    const address = 'UM6P Ben Guerir';
     
     if (!email) {
       updateState({ message: ERROR_MESSAGES.EMAIL_REQUIRED, isLoading: false });
@@ -111,11 +113,6 @@ export function ExternalPeopleStep({ onBack, onRequestSubmitted }: ExternalPeopl
     
     if (!department) {
       updateState({ message: 'Department is required', isLoading: false });
-      return;
-    }
-    
-    if (!address) {
-      updateState({ message: 'Address is required', isLoading: false });
       return;
     }
     

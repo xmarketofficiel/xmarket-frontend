@@ -34,7 +34,7 @@ export function Student1337Step({ onBack, onNext }: Student1337StepProps) {
     lastName: '',
     department: '1337 School',
     role: 'student',
-    address: '',
+    address: 'UM6P Ben Guerir',
     whatsappNumber: '',
     password: '',
     confirmPassword: '',
