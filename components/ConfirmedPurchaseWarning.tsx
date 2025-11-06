@@ -70,16 +70,16 @@ export default function ConfirmedPurchaseWarning({
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Agreed Price:</span>
-                  <span className="text-sm font-medium">${currentPrice}</span>
+                  <span className="text-sm font-medium">{currentPrice} DH</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">New Price:</span>
-                  <span className="text-sm font-medium">${newPrice}</span>
+                  <span className="text-sm font-medium">{newPrice} DH</span>
                 </div>
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-sm text-gray-600">Change:</span>
                   <span className={`text-sm font-medium ${priceChange === 'increase' ? 'text-red-600' : 'text-green-600'}`}>
-                    {priceChange === 'increase' ? '+' : '-'}${priceDifference.toFixed(2)} ({priceChange})
+                    {priceChange === 'increase' ? '+' : '-'}{priceDifference.toFixed(2)} DH ({priceChange})
                   </span>
                 </div>
               </div>

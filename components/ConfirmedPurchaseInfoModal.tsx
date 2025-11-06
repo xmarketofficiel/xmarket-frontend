@@ -28,7 +28,7 @@ export default function ConfirmedPurchaseInfoModal({
       case 'price':
         return {
           title: 'Price Change Notice',
-          description: `You're changing the price from $${currentValue} to $${newValue}`,
+          description: `You're changing the price from ${currentValue} DH to ${newValue} DH`,
           impact: 'This change may affect buyer expectations, but confirmed purchases will honor the original agreed price.'
         };
       case 'title':

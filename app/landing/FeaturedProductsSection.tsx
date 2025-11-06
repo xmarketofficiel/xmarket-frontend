@@ -146,7 +146,7 @@ export default function FeaturedProductsSection() {
                   </h3>
                   
                   <div className="text-2xl font-bold text-[#009F9C]">
-                    ${product.price.toFixed(2)}
+                    {product.price.toFixed(2)} DH
                   </div>
                 </div>
 

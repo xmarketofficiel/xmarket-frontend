@@ -203,6 +203,7 @@ export const SETTINGS_CONSTANTS = {
 
   // Currency options
   CURRENCIES: [
+    { code: 'MAD', name: 'Moroccan Dirham', symbol: 'DH' },
     { code: 'USD', name: 'US Dollar', symbol: '$' },
     { code: 'EUR', name: 'Euro', symbol: '€' },
     { code: 'GBP', name: 'British Pound', symbol: '£' },
