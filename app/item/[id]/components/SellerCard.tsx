@@ -56,7 +56,7 @@ export default function SellerCard({
       return photoUrl;
     }
     
-    // If it's a relative path, prepend the API base URL
+    // If it's a relative path, prepend the API base U
     if (photoUrl.startsWith('/')) {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
       return `${baseUrl}${photoUrl}`;
