@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircle, MessageCircle, User, Star, Clock } from 'lucide-react';
+import Image from 'next/image';
 
 interface SellerInfo {
   id?: string | number;
@@ -13,6 +14,8 @@ interface SellerInfo {
   rating?: number;
   responseTime?: string;
   whatsappNumber?: string;
+  profileImageUrl?: string;
+  profilePicture?: string;
 }
 
 interface SellerCardProps {
@@ -42,6 +45,24 @@ export default function SellerCard({
     if (isAnonymous) return '🕶️';
     const name = getSellerName();
     return name.charAt(0).toUpperCase();
+  };
+
+  const getProfilePhotoUrl = () => {
+    const photoUrl = seller.profileImageUrl || seller.profilePicture;
+    if (!photoUrl) return null;
+    
+    // If it's already a full URL, return as is
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+      return photoUrl;
+    }
+    
+    // If it's a relative path, prepend the API base URL
+    if (photoUrl.startsWith('/')) {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001');
+      return `${baseUrl}${photoUrl}`;
+    }
+    
+    return photoUrl;
   };
 
   const isVerified = seller.isVerified || seller.verified;
@@ -77,10 +98,23 @@ export default function SellerCard({
       <div className="flex items-center space-x-3">
         {/* Avatar */}
         <div 
-          className="w-12 h-12 bg-[#006666] rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md transition-transform duration-200 hover:scale-105"
+          className="w-12 h-12 bg-[#006666] rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md transition-transform duration-200 hover:scale-105 overflow-hidden relative"
         >
-          {getSellerInitial()}
-        </div>
+          {getProfilePhotoUrl() && !isAnonymous ? (
+            <Image
+              src={getProfilePhotoUrl()!}
+              alt={getSellerName()}
+              fill
+              className="object-cover"
+              sizes="48px"
+              onError={(e) => {
+                // Hide image on error and show initial instead
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <span>{getSellerInitial()}</span>
+          )}</div>
         
         {/* Details */}
         <div className="flex-1">
