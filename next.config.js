@@ -93,87 +93,9 @@ const nextConfig = {
     return config;
   },
   
-  // Image optimization
+  // Image optimization (disabled to prevent Vercel from using Next.js optimizer)
   images: {
-    formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60,
-    qualities: [50, 75, 85, 90, 95], // Add quality configurations including 85
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        port: '',
-        pathname: '/**',
-      },
-      // DigitalOcean Spaces CDN
-      {
-        protocol: 'https',
-        hostname: 'xmarket-app-dev.ams3.cdn.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'xmarket-app-dev.ams3.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'xmarket-images-dev.ams3.cdn.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'xmarket-images-dev.ams3.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      // Production DigitalOcean Spaes
-      {
-        protocol: 'https',
-        hostname: 'xmarket-images-prod.ams3.cdn.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'xmarket-images-prod.ams3.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      // Production API domain - update this to your backend domain
-      {
-        protocol: 'https',
-        hostname: 'your-backend-api.vercel.app',
-        port: '',
-        pathname: '/**',
-      },
-      // Development only
-      ...(process.env.NODE_ENV === 'development' ? [
-        {
-          protocol: 'http',
-          hostname: 'localhost',
-          port: '3001',
-          pathname: '/**',
-        },
-      ] : []),
-    ],
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: true,
   },
   
   // Ensure proper module resolution
