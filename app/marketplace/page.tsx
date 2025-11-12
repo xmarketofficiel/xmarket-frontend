@@ -161,14 +161,15 @@ export default function MarketplacePage() {
       console.log('📋 Response data type:', typeof response.data);
       console.log('📋 Response data length:', Array.isArray(response.data) ? response.data.length : 'Not an array');
       
+      console.log('🔍 Parsing categories from response...', response);
       // Handle nested response structure: response.data.data contains the actual categories array
       const responseData = response.data as any;
-      const categoryList = (responseData && responseData.data) ? responseData.data : (Array.isArray(responseData) ? responseData : []);
-      console.log('📦 Category list:', categoryList);
+      // const categoryList = (responseData && responseData.data) ? responseData.data : (Array.isArray(responseData) ? responseData : []);
+      console.log('📦 Category list:', responseData);
       
-      if (Array.isArray(categoryList) && categoryList.length > 0) {
+      // if (Array.isArray(categoryList) && categoryList.length > 0) {
         // Extract just the names for the filter, but keep full objects for reference
-        const categoryNames = categoryList.map((cat: any) => {
+        const categoryNames = responseData.map((cat: any) => {
           // Handle both formats: object with name property or direct string
           if (typeof cat === 'object' && cat.name) {
             return cat.name;
@@ -177,36 +178,36 @@ export default function MarketplacePage() {
         });
         console.log(`✅ Processed ${categoryNames.length} category names:`, categoryNames);
         setCategories(categoryNames);
-      } else {
-        console.warn('⚠️ No categories returned from backend. This usually means:');
-        console.warn('   1. Backend server is not running');
-        console.warn('   2. Database has no categories');
-        console.warn('   3. API endpoint issue');
-        console.warn('   Using comprehensive fallback categories...');
+      // } else {
+      //   console.warn('⚠️ No categories returned from backend. This usually means:');
+      //   console.warn('   1. Backend server is not running');
+      //   console.warn('   2. Database has no categories');
+      //   console.warn('   3. API endpoint issue');
+      //   console.warn('   Using comprehensive fallback categories...');
         
         // Use a comprehensive set of fallback categories based on our backend seed data
-        const fallbackCategories = [
-          'Electronics',
-          'Books', 
-          'Clothing',
-          'Furniture',
-          'Sports',
-          'Transportation',
-          'Health & Beauty',
-          'Art & Crafts',
-          'Music & Instruments',
-          'Home & Garden',
-          'Toys & Games',
-          'Pet Supplies',
-          'Office Supplies',
-          'Food & Beverages',
-          'Services',
-          'Other'
-        ];
-        
-        console.log(`📦 Using ${fallbackCategories.length} fallback categories:`, fallbackCategories);
-        setCategories(fallbackCategories);
-      }
+      //   const fallbackCategories = [
+      //     'Electronics',
+      //     'Books', 
+      //     'Clothing',
+      //     'Furniture',
+      //     'Sports',
+      //     'Transportation',
+      //     'Health & Beauty',
+      //     'Art & Crafts',
+      //     'Music & Instruments',
+      //     'Home & Garden',
+      //     'Toys & Games',
+      //     'Pet Supplies',
+      //     'Office Supplies',
+      //     'Food & Beverages',
+      //     'Services',
+      //     'Other'
+      //   ];
+      //   
+      //   console.log(`📦 Using ${fallbackCategories.length} fallback categories:`, fallbackCategories);
+      //   setCategories(fallbackCategories);
+      // }
     } catch (error) {
       console.error('❌ Failed to load categories:', error);
       
@@ -216,7 +217,7 @@ export default function MarketplacePage() {
       }
       
       // Minimal fallback to prevent hanging
-      setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
+      // setCategories(['Electronics', 'Books', 'Furniture', 'Clothing']);
     }
   }, []); // Remove all dependencies to prevent loops
 
