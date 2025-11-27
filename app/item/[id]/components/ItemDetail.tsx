@@ -173,7 +173,7 @@ export default function ItemDetail({
     const message = encodeURIComponent(
       `Hi! I'm interested in your item: ${item.title} (${item.price} DH)`
     );
-    const whatsappNumber = item.seller.whatsappNumber.replace(/[^0-9]/g, "");
+    const whatsappNumber = "212768949364";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
     window.open(whatsappUrl, "_blank");
 
