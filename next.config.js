@@ -26,6 +26,9 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion']
   },
   
+  // Turbopack configuration for Next.js 16
+  turbopack: {},
+  
   // Compiler optimizations using SWC (automatically enabled in Next.js 15+)
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
