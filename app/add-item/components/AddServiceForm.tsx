@@ -122,15 +122,21 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
         departureTime.setHours(selectedTime.getHours(), selectedTime.getMinutes());
       }
 
-      const serviceData = {
+      const serviceData: any = {
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
         serviceCategoryId: formData.serviceCategoryId,
         type: formData.type,
-        departureTime: departureTime?.toISOString(),
-        location: formData.location || undefined,
       };
+
+      // Only add optional fields if they have values
+      if (departureTime) {
+        serviceData.departureTime = departureTime.toISOString();
+      }
+      if (formData.location && formData.location.trim()) {
+        serviceData.location = formData.location.trim();
+      }
 
       console.log('📤 Submitting service:', serviceData);
       
