@@ -23,9 +23,6 @@ interface FeedProps {
 export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetching = false, onItemClick, isFetching = false }: FeedProps) {
   const observerRef = React.useRef<HTMLDivElement>(null);
   const hasTriggeredRef = React.useRef(false);
-  // Sticky skeleton: once shown, stays until fetch completes (prevents flashing)
-  const [showCatchUpSkeleton, setShowCatchUpSkeleton] = React.useState(false);
-  const reachedEndRef = React.useRef(false);
 
   // Debug: Check for duplicate IDs
   React.useEffect(() => {
@@ -70,33 +67,9 @@ export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetchin
     return () => prefetchObserver.disconnect();
   }, [hasMore, onLoadMore]);
 
-  // End-of-content observer - tracks when user actually reaches the sentinel
-  // Used to trigger sticky skeleton display
-  React.useEffect(() => {
-    const endObserver = new IntersectionObserver(
-      (entries) => {
-        reachedEndRef.current = entries[0].isIntersecting;
-      },
-      { threshold: 0 } // No rootMargin - triggers only when actually visible
-    );
-
-    if (observerRef.current) {
-      endObserver.observe(observerRef.current);
-    }
-
-    return () => endObserver.disconnect();
-  }, []);
-
-  // Sticky skeleton logic: show when user reaches end while fetching, hide only when fetch completes
-  React.useEffect(() => {
-    if (reachedEndRef.current && isFetching && hasMore) {
-      setShowCatchUpSkeleton(true);
-    }
-    // Hide skeleton only when fetch completes (isFetching becomes false)
-    if (!isFetching) {
-      setShowCatchUpSkeleton(false);
-    }
-  }, [isFetching, hasMore]);
+  // Simple skeleton logic: always show when fetching more items
+  // This ensures smooth UX - skeleton is always visible during load
+  const showLoadingSkeleton = isFetching && hasMore && items.length > 0;
 
   if (items.length === 0 && !loading) {
     return (
@@ -141,10 +114,10 @@ export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetchin
           ))
         )}
         
-        {/* Catch-up skeleton - shows only when user scrolls faster than prefetch (sticky until fetch completes) */}
-        {showCatchUpSkeleton && items.length > 0 && (
+        {/* Loading skeleton - always shows when fetching more items */}
+        {showLoadingSkeleton && (
           Array.from({ length: 4 }).map((_, index) => (
-            <MarketplaceItemSkeleton key={`catchup-mobile-${index}`} />
+            <MarketplaceItemSkeleton key={`loading-mobile-${index}`} />
           ))
         )}
       </div>
@@ -168,10 +141,10 @@ export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetchin
           ))
         )}
         
-        {/* Catch-up skeleton - shows only when user scrolls faster than prefetch (sticky until fetch completes) */}
-        {showCatchUpSkeleton && items.length > 0 && (
+        {/* Loading skeleton - always shows when fetching more items */}
+        {showLoadingSkeleton && (
           Array.from({ length: 4 }).map((_, index) => (
-            <MarketplaceItemSkeleton key={`catchup-desktop-${index}`} />
+            <MarketplaceItemSkeleton key={`loading-desktop-${index}`} />
           ))
         )}
       </div>
