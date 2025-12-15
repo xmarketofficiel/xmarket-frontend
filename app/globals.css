@@ -131,6 +131,16 @@
     background: rgba(0, 159, 156, 0.5);
   }
   
+  /* Hide scrollbar completely */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
   /* Font optimization */
   .font-inter {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;

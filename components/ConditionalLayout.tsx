@@ -43,7 +43,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     // For home page, let the page itself handle authentication and layout
     // Only show Navbar if user is authenticated
     return user ? (
-      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+      <div className="h-screen flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
           {children}
         </main>
@@ -68,7 +68,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   
   // User is authenticated - show navbar and content with proper fixed layout
   return (
-    <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
         {children}
       </main>

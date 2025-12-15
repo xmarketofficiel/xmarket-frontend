@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { ShoppingBag, User, Search, X, Filter } from 'lucide-react';
+import { ShoppingBag, User, Search, X, Filter, Zap } from 'lucide-react';
 import { ANIMATION_SYSTEM } from '../../../lib/design-system';
 import type { MarketplaceHeaderProps } from '../types';
 import { useState, useRef, useEffect } from 'react';
+import type { MarketplaceMode } from './ModeToggle';
 
 /**
  * Marketplace Header Component
@@ -15,8 +16,10 @@ export function MarketplaceHeader({
   onSearchChange,
   onSearch,
   showFilters = false,
-  onToggleFilters
-}: MarketplaceHeaderProps) {
+  onToggleFilters,
+  mode,
+  onModeChange
+}: MarketplaceHeaderProps & { mode?: MarketplaceMode; onModeChange?: (mode: MarketplaceMode) => void }) {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,15 +39,15 @@ export function MarketplaceHeader({
     onSearchChange('');
   };
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: ANIMATION_SYSTEM.duration.normal / 1000, 
-        ease: ANIMATION_SYSTEM.framerEasing.easeOut 
-      }}
-      className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 sticky top-0 z-40"
-    >
+    <div className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 md:sticky md:top-0 md:z-50">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: ANIMATION_SYSTEM.duration.normal / 1000, 
+          ease: ANIMATION_SYSTEM.framerEasing.easeOut 
+        }}
+      >
       <div className="px-4 py-3">
         <AnimatePresence mode="wait">
           {!isSearchExpanded ? (
@@ -65,6 +68,41 @@ export function MarketplaceHeader({
                 </svg>
                 <h1 className="text-2xl font-bold text-green-700 bg-gradient-to-r from-[#009F9C] to-[#007B78] bg-clip-text text-transparent">Market</h1>
               </div>
+
+              {/* Mode Toggle - Desktop Only */}
+              {mode !== undefined && onModeChange && (
+                <div className="hidden md:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+                  <button
+                    onClick={() => onModeChange('products')}
+                    className={`
+                      flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold min-w-[200px]
+                      transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
+                      ${mode === 'products'
+                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg shadow-teal-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }
+                    `}
+                  >
+                    <ShoppingBag className={`w-5 h-5 ${mode === 'products' ? 'animate-pulse' : ''}`} />
+                    <span className="text-base">Products</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => onModeChange('services')}
+                    className={`
+                      flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold min-w-[200px]
+                      transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
+                      ${mode === 'services'
+                        ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }
+                    `}
+                  >
+                    <Zap className={`w-5 h-5 ${mode === 'services' ? 'animate-pulse' : ''}`} />
+                    <span className="text-base">Services</span>
+                  </button>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex items-center space-x-3">
@@ -135,6 +173,7 @@ export function MarketplaceHeader({
           )}
         </AnimatePresence>
       </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }

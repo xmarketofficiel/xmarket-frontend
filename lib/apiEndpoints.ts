@@ -8,6 +8,7 @@ import { usersApi as _usersApi } from './api/users';
 import { messagesApi as _messagesApi } from './api/messages';
 import { searchApi as _searchApi, uploadsApi as _uploadsApi } from './api/uploads';
 import { adminApi as _adminApi } from './api/admin';
+import { servicesApi as _servicesApi } from './api/services';
 import apiClient from './api';
 
 export const authApi = _authApi;
@@ -17,6 +18,7 @@ export const messagesApi = _messagesApi;
 export const searchApi = _searchApi;
 export const uploadsApi = _uploadsApi;
 export const adminApi = _adminApi;
+export const servicesApi = _servicesApi;
 
 export const api = {
   auth: _authApi,
@@ -26,6 +28,7 @@ export const api = {
   search: _searchApi,
   uploads: _uploadsApi,
   admin: _adminApi,
+  services: _servicesApi,
   joinRequests: {
     create: (data: any) =>
       apiClient.post('/join-requests', data)
@@ -51,7 +54,10 @@ export const api = {
   createItem: _itemsApi.createItem,
   getItems: _itemsApi.getItems,
   getCategories: _itemsApi.getCategories,
-  searchItems: _searchApi.searchItems
+  searchItems: _searchApi.searchItems,
+  createService: _servicesApi.createService,
+  getServices: _servicesApi.getServices,
+  getServiceCategories: _servicesApi.getServiceCategories
 };
 
 export default api;

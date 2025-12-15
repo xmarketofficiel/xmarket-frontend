@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '../../contexts/UserContext';
-import { api } from '../../lib/apiEndpoints';
+import { api, servicesApi } from '../../lib/apiEndpoints';
 import { Item } from '../../types';
+import type { Service, ServiceCategory as ServiceCategoryType } from '../../lib/api/services';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useConditionalLoading, getOptimalSkeletonCount } from '../../hooks/useConditionalLoading';
 
@@ -13,12 +14,26 @@ import { MarketplaceHeader } from './components/MarketplaceHeader';
 import { SearchBar } from './components/SearchBar';
 import { AdvancedFilterPanel } from './components/AdvancedFilterPanel';
 import { CategoryFilter } from './components/CategoryFilter';
+import { ModeToggle, MarketplaceMode } from './components/ModeToggle';
 import { ViewControls } from './components/ViewControls';
 import { FilterPanel } from './components/FilterPanel';
 import { SearchResultsHeader } from './components/SearchResultsHeader';
 import { EmptyState } from './components/EmptyState';
 import { LoadMoreButton } from './components/LoadMoreButton';
+import { ServiceCard } from './components/ServiceCard';
+import { ServiceCategoryCard } from './components/ServiceCategoryCard';
 import Feed from '../../components/Feed';
+
+// Services
+import { 
+  sortServices, 
+  filterActiveServices, 
+  getCategoryHotnessScore, 
+  getHottestItemInCategory,
+  getHoursUntilDeparture,
+  getUrgencyBadge,
+  formatTimeLeft
+} from '../../lib/serviceUtils';
 
 // Skeleton components
 import { 
@@ -30,7 +45,7 @@ import {
 import { MarketplaceGridSkeleton } from '../../components/skeletons/MarketplacePageSkeleton';
 
 // Constants and Types
-import { MARKETPLACE_CONFIG, CATEGORY_CONFIG } from './constants';
+import { MARKETPLACE_CONFIG, CATEGORY_CONFIG, SERVICE_CATEGORIES } from './constants';
 import type { 
   MarketplaceState, 
   SearchParams, 
@@ -60,6 +75,21 @@ export default function MarketplacePage() {
       }
     }
   }, [user]);
+
+  // Mode state for Products/Services toggle
+  const [mode, setMode] = useState<MarketplaceMode>('products');
+  
+  // Services state
+  const [services, setServices] = useState<Service[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategoryType[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
+  const [servicesError, setServicesError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  
+  // Client-side mount effect
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Consolidated state management
   const [state, setState] = useState<MarketplaceState>({
@@ -106,6 +136,48 @@ export default function MarketplacePage() {
    */
   const updateState = useCallback((updates: Partial<MarketplaceState>) => {
     setState(prev => ({ ...prev, ...updates }));
+  }, []);
+
+  /**
+   * Load services from backend
+   */
+  const loadServices = useCallback(async (categoryId?: string) => {
+    try {
+      setServicesLoading(true);
+      setServicesError(null);
+      
+      const params: any = {
+        page: 1,
+        limit: 100, // Load all services for now
+      };
+      
+      if (categoryId && categoryId !== 'all') {
+        params.category = categoryId;
+      }
+      
+      const response = await servicesApi.getServices(params);
+      const servicesData = response.data.data || [];
+      
+      setServices(servicesData as Service[]);
+    } catch (error) {
+      console.error('Error loading services:', error);
+      setServicesError('Failed to load services');
+      setServices([]);
+    } finally {
+      setServicesLoading(false);
+    }
+  }, []);
+
+  /**
+   * Load service categories from backend
+   */
+  const loadServiceCategories = useCallback(async () => {
+    try {
+      const response = await servicesApi.getServiceCategories();
+      setServiceCategories(response.data);
+    } catch (error) {
+      console.error('Error loading service categories:', error);
+    }
   }, []);
 
   /**
@@ -407,6 +479,14 @@ export default function MarketplacePage() {
   }, [updateState]);
 
   /**
+   * Handle mode change (Products/Services)
+   */
+  const handleModeChange = useCallback((newMode: MarketplaceMode) => {
+    setMode(newMode);
+    updateState({ selectedCategory: 'all', currentPage: 1 });
+  }, [updateState]);
+
+  /**
    * Handle category change
    */
   const handleCategoryChange = useCallback((category: string) => {
@@ -478,13 +558,15 @@ export default function MarketplacePage() {
   useEffect(() => {
     loadCategories();
     loadPendingSalesCount();
+    loadServiceCategories();
+    loadServices();
     
     // Load saved view mode preference
     const savedViewMode = localStorage.getItem('marketplace-view-mode') as ViewMode;
     if (savedViewMode && ['grid', 'list'].includes(savedViewMode)) {
       updateState({ viewMode: savedViewMode });
     }
-  }, [loadCategories, loadPendingSalesCount, updateState]);
+  }, [loadCategories, loadPendingSalesCount, loadServiceCategories, loadServices, updateState]);
 
   // Load initial items once categories are loaded
   useEffect(() => {
@@ -528,55 +610,83 @@ export default function MarketplacePage() {
   const isSearching = useMemo(() => 
     state.searchQuery.length >= MARKETPLACE_CONFIG.MIN_SEARCH_LENGTH, [state.searchQuery]
   );
+  
+  // Services computed data
+  const filteredServices = useMemo(() => {
+    if (state.selectedCategory === 'all') {
+      return services;
+    }
+    const categoryServices = services.filter(s => s.serviceCategoryId === state.selectedCategory);
+    return categoryServices;
+  }, [services, state.selectedCategory]);
+  
+  // Convert service categories to display format
+  const displayServiceCategories = useMemo(() => {
+    const allCategory = { id: 'all', name: 'All Services', icon: '🔥', type: 'both' as const };
+    const mappedCategories = serviceCategories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      icon: cat.icon || '🔧',
+      type: cat.type,
+      backgroundImage: cat.backgroundImage
+    }));
+    return [allCategory, ...mappedCategories];
+  }, [serviceCategories]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="min-h-screen">
       {/* Fixed Header */}
-      <div className="flex-shrink-0">
-        <MarketplaceHeader
-          user={user}
-          searchQuery={state.searchQuery}
-          onSearchChange={handleSearchChange}
-          onSearch={(query) => {
-            handleSearchChange(query);
-            loadItems(1, true);
-          }}
-          showFilters={showAdvancedFilters}
-          onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
-        />
-      </div>
+      <MarketplaceHeader
+        user={user}
+        searchQuery={state.searchQuery}
+        onSearchChange={handleSearchChange}
+        onSearch={(query) => {
+          handleSearchChange(query);
+          loadItems(1, true);
+        }}
+        showFilters={showAdvancedFilters}
+        onToggleFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+        mode={mode}
+        onModeChange={handleModeChange}
+      />
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50 pb-20">
-        {/* Category Filter - with brief sticky behavior */}
-        {categories.length === 0 ? (
-          <SkeletonCategoryFilter />
-        ) : (
-          <CategoryFilter
-            categories={categories}
-            selectedCategory={state.selectedCategory}
-            onChange={handleCategoryChange}
-            loading={!categories.length && showSkeleton}
-          />
+      {/* Content - scrolls in ConditionalLayout's main container */}
+      <div className="bg-gray-50 pb-20">
+        {/* Mode Toggle for Products/Services - Mobile Only - Sticky behavior */}
+        <ModeToggle mode={mode} onChange={handleModeChange} />
+        {/* Category Filter - Only show for products mode */}
+        {mode === 'products' && (
+          categories.length === 0 ? (
+            <SkeletonCategoryFilter />
+          ) : (
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={state.selectedCategory}
+              onChange={handleCategoryChange}
+              loading={!categories.length && showSkeleton}
+            />
+          )
         )}
 
-        {/* Results Counter */}
-        <div className="bg-white border-b border-gray-100 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              {showSkeleton ? (
-                <SkeletonResultsCounter />
-              ) : (
-                <span>
-                  <span className="font-semibold text-gray-900">{state.totalItems.toLocaleString()}</span>{' '}
+        {/* Results Counter - Only show for products mode */}
+        {mode === 'products' && (
+          <div className="bg-white border-b border-gray-100 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {showSkeleton ? (
+                  <SkeletonResultsCounter />
+                ) : (
                   <span>
-                    {state.totalItems === 1 ? 'item' : 'items'}
+                    <span className="font-semibold text-gray-900">{state.totalItems.toLocaleString()}</span>{' '}
+                    <span>
+                      {state.totalItems === 1 ? 'item' : 'items'}
+                    </span>
                   </span>
-                </span>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Content */}
         {/* Filter Panel */}
@@ -602,46 +712,125 @@ export default function MarketplacePage() {
 
         {/* Content Area */}
         <div className="px-4 pt-4 pb-6">
-          {/* Error State */}
-          {state.error && (
-            <EmptyState
-              type="error"
-              onAction={() => loadItems(1, true)}
-            />
-          )}
-
-          {/* Loading State */}
-          {showSkeleton && (
-            <MarketplaceGridSkeleton count={getOptimalSkeletonCount(state.items.length > 0)} />
-          )}
-
-          {/* Empty State */}
-          {isEmpty && !state.error && (
-            <EmptyState
-              type={isSearching ? "noItems" : "noSearch"}
-              searchQuery={state.searchQuery}
-              selectedCategory={state.selectedCategory}
-              onAction={handleClearFilters}
-            />
-          )}
-
-          {/* Items Grid */}
-          {state.items.length > 0 && (
+          {mode === 'products' ? (
             <>
-              <Feed
-                items={state.items}
-                loading={state.loading}
-                onLoadMore={handleLoadMore}
-                hasMore={state.hasMore}
-              />
-              
-              <LoadMoreButton
-                hasMore={state.hasMore}
-                loading={state.loading}
-                onClick={handleLoadMore}
-                itemsShown={state.items.length}
-                totalItems={state.totalItems}
-              />
+              {/* Products Mode */}
+              {/* Error State */}
+              {state.error && (
+                <EmptyState
+                  type="error"
+                  onAction={() => loadItems(1, true)}
+                />
+              )}
+
+              {/* Loading State */}
+              {showSkeleton && (
+                <MarketplaceGridSkeleton count={getOptimalSkeletonCount(state.items.length > 0)} />
+              )}
+
+              {/* Empty State */}
+              {isEmpty && !state.error && (
+                <EmptyState
+                  type={isSearching ? "noItems" : "noSearch"}
+                  searchQuery={state.searchQuery}
+                  selectedCategory={state.selectedCategory}
+                  onAction={handleClearFilters}
+                />
+              )}
+
+              {/* Items Grid */}
+              {state.items.length > 0 && (
+                <>
+                  <Feed
+                    items={state.items}
+                    loading={state.loading}
+                    onLoadMore={handleLoadMore}
+                    hasMore={state.hasMore}
+                  />
+                  
+                  <LoadMoreButton
+                    hasMore={state.hasMore}
+                    loading={state.loading}
+                    onClick={handleLoadMore}
+                    itemsShown={state.items.length}
+                    totalItems={state.totalItems}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Services Mode */}
+              {servicesLoading ? (
+                <div className="text-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-gray-500">Loading services...</p>
+                </div>
+              ) : servicesError ? (
+                <div className="text-center py-20">
+                  <div className="text-6xl mb-4">⚠️</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Failed to load services</h3>
+                  <p className="text-gray-500 mb-4">{servicesError}</p>
+                  <button
+                    onClick={() => loadServices()}
+                    className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : state.selectedCategory === 'all' ? (
+                /* Show Service Category Cards */
+                <div>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Browse Service Categories</h2>
+                    <p className="text-sm text-gray-500">
+                      {displayServiceCategories.filter(c => c.id !== 'all').length} categories available
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {displayServiceCategories.filter(c => c.id !== 'all').map((category) => {
+                      const categoryServices = services.filter(s => s.serviceCategoryId === category.id);
+                      return (
+                        <ServiceCategoryCard
+                          key={category.id}
+                          category={category}
+                          serviceCount={categoryServices.length}
+                          onClick={() => handleCategoryChange(category.id)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                /* Show Services Grid */
+                <div>
+                  <button
+                    onClick={() => handleCategoryChange('all')}
+                    className="mb-4 flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                  >
+                    <span className="text-xl">←</span>
+                    Back to all categories
+                  </button>
+                  
+                  {filteredServices.length === 0 ? (
+                    <div className="text-center py-20">
+                      <div className="text-6xl mb-4">🔍</div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        No services found
+                      </h3>
+                      <p className="text-gray-500">
+                        Try selecting a different category
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                      {filteredServices.map((service) => (
+                        <ServiceCard key={service.id} service={service} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>

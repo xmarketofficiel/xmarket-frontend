@@ -341,3 +341,16 @@ export const ANALYTICS_EVENTS = {
   FILTER_APPLIED: 'filter_applied',
   LOAD_MORE_TRIGGERED: 'load_more_items'
 };
+
+// Service categories configuration
+export const SERVICE_CATEGORIES = [
+  { id: 'all', name: 'All Services', icon: '⚡', type: 'all' },
+  { id: 'transportation', name: 'Transportation', icon: '🚗', type: 'time-based' },
+  { id: 'delivery', name: 'Delivery', icon: '📦', type: 'time-based' },
+  { id: 'moving', name: 'Moving Help', icon: '📦', type: 'time-based' },
+  { id: 'cleaning', name: 'Cleaning', icon: '🧹', type: 'ongoing' },
+  { id: 'laundry', name: 'Laundry', icon: '👔', type: 'ongoing' },
+  { id: 'repair', name: 'Repair', icon: '🔧', type: 'ongoing' },
+  { id: 'tutoring', name: 'Tutoring', icon: '📖', type: 'ongoing' },
+  { id: 'pharmacy', name: 'Pharmacy', icon: '💊', type: 'ongoing' },
+];

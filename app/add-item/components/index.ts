@@ -9,6 +9,8 @@ export { default as Textarea } from './Textarea';
 export { default as Select } from './Select';
 export { default as Toggle } from './Toggle';
 export { default as AddItemForm } from './AddItemForm';
+export { default as TypeSelectionScreen } from './TypeSelectionScreen';
+export { default as AddServiceForm } from './AddServiceForm';
 
 // Re-export types and constants for convenience
 export * from '../types';
