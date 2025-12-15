@@ -3,16 +3,12 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import Script from 'next/script';
-import ConditionalLayout from '../components/ConditionalLayout';
-import { UserProvider } from '../contexts/UserContext';
-import { FavoritesProvider } from '../contexts/FavoritesContext';
-import { ToastProvider } from '../contexts/ToastContext';
+import { AppProviders } from '../providers/AppProviders';
+import AppShell from '../components/AppShell';
 import ToastContainer from '../components/ToastProvider';
-import { UIProvider } from '../contexts/UIContext';
 import KeyboardShortcutsProvider from '../components/KeyboardShortcutsProvider';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import OfflineStatus from '../components/OfflineStatus';
-import ErrorBoundary from '../components/ErrorBoundary';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -69,7 +65,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${inter.className} antialiased`}>
+      <body className={`${inter.variable} ${inter.className} antialiased`}>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -80,25 +76,16 @@ export default function RootLayout({
           />
         </noscript>
         
-        <ErrorBoundary>
-          <UserProvider>
-            <ToastProvider>
-              <FavoritesProvider>
-                <UIProvider>
-                  <KeyboardShortcutsProvider>
-                    <ConditionalLayout>
-                      {children}
-                    </ConditionalLayout>
-                    <ToastContainer />
-                    <PWAInstallPrompt />
-                    {/* <PWATestButton /> */}
-                    <OfflineStatus />
-                  </KeyboardShortcutsProvider>
-                </UIProvider>
-              </FavoritesProvider>
-            </ToastProvider>
-          </UserProvider>
-        </ErrorBoundary>
+        <AppProviders>
+          <KeyboardShortcutsProvider>
+            <AppShell>
+              {children}
+            </AppShell>
+            <ToastContainer />
+            <PWAInstallPrompt />
+            <OfflineStatus />
+          </KeyboardShortcutsProvider>
+        </AppProviders>
         <Analytics />
       </body>
     </html>

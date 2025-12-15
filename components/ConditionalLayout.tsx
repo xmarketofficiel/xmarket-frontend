@@ -1,5 +1,17 @@
 'use client';
 
+/**
+ * @deprecated This component has been replaced by AppShell.tsx
+ * 
+ * Migration notes:
+ * - Layout logic moved to: components/AppShell.tsx
+ * - Provider nesting moved to: providers/AppProviders.tsx
+ * - Auth redirects: Still client-side (localStorage tokens)
+ * 
+ * This file is kept for reference during migration.
+ * Safe to delete after confirming AppShell works correctly.
+ */
+
 import { useUser } from '../contexts/UserContext';
 import { usePathname } from 'next/navigation';
 import LoginPage from '../app/login/page';
@@ -10,6 +22,7 @@ interface ConditionalLayoutProps {
   children: React.ReactNode;
 }
 
+/** @deprecated Use AppShell instead */
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const { user, loading } = useUser();
   const pathname = usePathname();

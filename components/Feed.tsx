@@ -5,16 +5,27 @@ import { Item } from '../types';
 import ItemCard from './ItemCard';
 import SkeletonCard from './SkeletonCard';
 import { SkeletonGrid } from './skeletons/SkeletonComponents';
+import { MarketplaceItemSkeleton } from './skeletons/MarketplacePageSkeleton';
 
 interface FeedProps {
   items: Item[];
   loading: boolean;
   onLoadMore: () => void;
   hasMore: boolean;
+  /** If true, prefetch is in progress (don't show loading UI) */
+  isPrefetching?: boolean;
+  /** Called before navigating to item detail (for scroll restoration). Receives current scrollY. */
+  onItemClick?: (scrollY: number) => void;
+  /** If true, a background fetch is in progress */
+  isFetching?: boolean;
 }
 
-export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps) {
+export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetching = false, onItemClick, isFetching = false }: FeedProps) {
   const observerRef = React.useRef<HTMLDivElement>(null);
+  const hasTriggeredRef = React.useRef(false);
+  // Sticky skeleton: once shown, stays until fetch completes (prevents flashing)
+  const [showCatchUpSkeleton, setShowCatchUpSkeleton] = React.useState(false);
+  const reachedEndRef = React.useRef(false);
 
   // Debug: Check for duplicate IDs
   React.useEffect(() => {
@@ -31,23 +42,61 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
     }
   }, [items]);
 
-  // Infinite scroll observer
+  // Reset trigger flag when items change (new page loaded)
+  // Don't reset reachedEnd - let the observer handle it naturally to prevent flashing
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
+    hasTriggeredRef.current = false;
+  }, [items.length]);
+
+  // Prefetch observer - triggers early (1000px before bottom) for background loading
+  React.useEffect(() => {
+    const prefetchObserver = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !hasTriggeredRef.current) {
+          hasTriggeredRef.current = true;
           onLoadMore();
         }
       },
-      { threshold: 0.1 }
+      { 
+        threshold: 0,
+        rootMargin: '0px 0px 1000px 0px' // Trigger 1000px early for prefetch
+      }
     );
 
     if (observerRef.current) {
-      observer.observe(observerRef.current);
+      prefetchObserver.observe(observerRef.current);
     }
 
-    return () => observer.disconnect();
-  }, [hasMore, loading, onLoadMore]);
+    return () => prefetchObserver.disconnect();
+  }, [hasMore, onLoadMore]);
+
+  // End-of-content observer - tracks when user actually reaches the sentinel
+  // Used to trigger sticky skeleton display
+  React.useEffect(() => {
+    const endObserver = new IntersectionObserver(
+      (entries) => {
+        reachedEndRef.current = entries[0].isIntersecting;
+      },
+      { threshold: 0 } // No rootMargin - triggers only when actually visible
+    );
+
+    if (observerRef.current) {
+      endObserver.observe(observerRef.current);
+    }
+
+    return () => endObserver.disconnect();
+  }, []);
+
+  // Sticky skeleton logic: show when user reaches end while fetching, hide only when fetch completes
+  React.useEffect(() => {
+    if (reachedEndRef.current && isFetching && hasMore) {
+      setShowCatchUpSkeleton(true);
+    }
+    // Hide skeleton only when fetch completes (isFetching becomes false)
+    if (!isFetching) {
+      setShowCatchUpSkeleton(false);
+    }
+  }, [isFetching, hasMore]);
 
   if (items.length === 0 && !loading) {
     return (
@@ -81,13 +130,21 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
             item={item} 
             priority={index < 4}
             layout="mobile"
+            onItemClick={onItemClick}
           />
         ))}
         
-        {/* Loading skeletons for mobile */}
+        {/* Loading skeletons for mobile - initial load only */}
         {loading && items.length === 0 && (
           Array.from({ length: 6 }).map((_, index) => (
             <SkeletonCard key={`skeleton-mobile-${index}`} layout="mobile" />
+          ))
+        )}
+        
+        {/* Catch-up skeleton - shows only when user scrolls faster than prefetch (sticky until fetch completes) */}
+        {showCatchUpSkeleton && items.length > 0 && (
+          Array.from({ length: 4 }).map((_, index) => (
+            <MarketplaceItemSkeleton key={`catchup-mobile-${index}`} />
           ))
         )}
       </div>
@@ -100,30 +157,30 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
             item={item} 
             priority={index < 4}
             layout="desktop"
+            onItemClick={onItemClick}
           />
         ))}
         
-        {/* Loading skeletons for desktop */}
+        {/* Loading skeletons for desktop - initial load only */}
         {loading && items.length === 0 && (
           Array.from({ length: 8 }).map((_, index) => (
             <SkeletonCard key={`skeleton-desktop-${index}`} layout="desktop" />
           ))
         )}
+        
+        {/* Catch-up skeleton - shows only when user scrolls faster than prefetch (sticky until fetch completes) */}
+        {showCatchUpSkeleton && items.length > 0 && (
+          Array.from({ length: 4 }).map((_, index) => (
+            <MarketplaceItemSkeleton key={`catchup-desktop-${index}`} />
+          ))
+        )}
       </div>
 
-      {/* Load More Button/Infinite Scroll Trigger - simplified */}
-      {hasMore && !loading && items.length > 0 && (
-        <div ref={observerRef} className="py-6">
-          <SkeletonGrid count={4} />
-        </div>
+      {/* Infinite Scroll Sentinel - invisible trigger point for prefetching */}
+      {hasMore && items.length > 0 && (
+        <div ref={observerRef} className="h-1" aria-hidden="true" />
       )}
 
-      {/* Loading more indicator - skeleton */}
-      {loading && items.length > 0 && (
-        <div className="py-4">
-          <SkeletonGrid count={2} />
-        </div>
-      )}
 
       {/* End of results message */}
       {!hasMore && items.length > 0 && (

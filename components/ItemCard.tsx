@@ -25,6 +25,8 @@ interface ItemCardProps {
   onToggleFavorite?: (itemId: string) => void;
   priority?: boolean;
   layout?: "mobile" | "desktop";
+  /** Called before navigating to item detail (for scroll restoration). Receives current scrollY. */
+  onItemClick?: (scrollY: number) => void;
 }
 
 // Utility function to get category display name and protect against UIDs
@@ -75,18 +77,12 @@ const getCategoryIcon = (category: any): string => {
   return config?.icon || "📦";
 };
 
-interface ItemCardProps {
-  item: Item;
-  onToggleFavorite?: (itemId: string) => void;
-  priority?: boolean;
-  layout?: "mobile" | "desktop";
-}
-
 export default function ItemCard({
   item,
   onToggleFavorite,
   priority = false,
   layout = "desktop",
+  onItemClick,
 }: ItemCardProps) {
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
   const { user } = useUser();
@@ -151,6 +147,15 @@ export default function ItemCard({
 
   const handleCardClick = async (e: React.MouseEvent) => {
     e.preventDefault();
+
+    // Capture scroll position IMMEDIATELY before anything else
+    // Note: The app uses a scrollable <main> container, not window scroll
+    const scrollContainer = document.querySelector('main.overflow-y-auto') || document.documentElement;
+    const currentScrollY = scrollContainer.scrollTop || window.scrollY;
+    console.log('🎯 [ItemCard] Captured scrollY:', currentScrollY, 'from:', scrollContainer.tagName);
+
+    // Save scroll position before navigating (for scroll restoration on back)
+    onItemClick?.(currentScrollY);
 
     // Use instant navigation without loading state for better UX
     try {

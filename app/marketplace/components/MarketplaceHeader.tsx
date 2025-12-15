@@ -39,7 +39,7 @@ export function MarketplaceHeader({
     onSearchChange('');
   };
   return (
-    <div className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50 md:sticky md:top-0 md:z-50">
+    <div className="bg-white md:bg-white/95 md:backdrop-blur-md md:shadow-sm md:border-b md:border-gray-100/50 md:sticky md:top-0 md:z-50">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,34 +71,34 @@ export function MarketplaceHeader({
 
               {/* Mode Toggle - Desktop Only */}
               {mode !== undefined && onModeChange && (
-                <div className="hidden md:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+                <div className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
                   <button
                     onClick={() => onModeChange('products')}
                     className={`
-                      flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold min-w-[200px]
-                      transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
+                      flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold min-w-[180px]
+                      transition-colors duration-200
                       ${mode === 'products'
-                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg shadow-teal-200'
+                        ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }
                     `}
                   >
-                    <ShoppingBag className={`w-5 h-5 ${mode === 'products' ? 'animate-pulse' : ''}`} />
+                    <ShoppingBag className="w-5 h-5" />
                     <span className="text-base">Products</span>
                   </button>
                   
                   <button
                     onClick={() => onModeChange('services')}
                     className={`
-                      flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold min-w-[200px]
-                      transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
+                      flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold min-w-[180px]
+                      transition-colors duration-200
                       ${mode === 'services'
-                        ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200'
+                        ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }
                     `}
                   >
-                    <Zap className={`w-5 h-5 ${mode === 'services' ? 'animate-pulse' : ''}`} />
+                    <Zap className="w-5 h-5" />
                     <span className="text-base">Services</span>
                   </button>
                 </div>

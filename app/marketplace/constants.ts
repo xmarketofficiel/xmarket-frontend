@@ -1,8 +1,11 @@
 // Marketplace Page Constants
 
 export const MARKETPLACE_CONFIG = {
-  // Pagination settings
-  ITEMS_PER_PAGE: 12,
+  // Pagination settings - Responsive based on device
+  // Research: Baymard Institute recommends 15-30 for mobile, 50-150 for desktop (visually-driven sites)
+  ITEMS_PER_PAGE: 24, // Default fallback
+  ITEMS_PER_PAGE_MOBILE: 24,   // Mobile: 24 items (optimized for 2-column grid)
+  ITEMS_PER_PAGE_DESKTOP: 48,  // Desktop: 48 items (optimized for 4-column grid)
   MAX_PAGES_TO_SHOW: 5,
   
   // View modes

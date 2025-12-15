@@ -180,3 +180,13 @@
     opacity: 1;
   }
 }
+
+/* Facebook-style radial spinner animation */
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}

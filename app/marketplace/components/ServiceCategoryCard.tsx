@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import { ChevronRight, Timer } from 'lucide-react';
 import Image from 'next/image';
 
@@ -19,7 +20,36 @@ interface ServiceCategoryCardProps {
   onClick: () => void;
 }
 
-export function ServiceCategoryCard({ category, serviceCount, onClick }: ServiceCategoryCardProps) {
+/**
+ * Transform backend image URL to use the frontend proxy
+ * This ensures images work from any device, not just localhost
+ */
+function getProxiedImageUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  
+  // If it's a relative path starting with /images/, proxy through /api/images/
+  if (url.startsWith('/images/')) {
+    return `/api${url}`;
+  }
+  
+  // If it contains localhost or backend URL, extract the path and proxy it
+  if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    const match = url.match(/\/images\/.+$/);
+    if (match) {
+      return `/api${match[0]}`;
+    }
+  }
+  
+  // Return as-is for external URLs (e.g., Cloudinary)
+  return url;
+}
+
+const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, serviceCount, onClick }: ServiceCategoryCardProps) {
+  // Transform the background image URL to use the proxy
+  const backgroundImageUrl = useMemo(
+    () => getProxiedImageUrl(category.backgroundImage),
+    [category.backgroundImage]
+  );
   const urgencyColorClasses = {
     red: 'bg-gradient-to-r from-red-500 to-red-600',
     orange: 'bg-gradient-to-r from-orange-500 to-orange-600',
@@ -32,18 +62,22 @@ export function ServiceCategoryCard({ category, serviceCount, onClick }: Service
     <button
       onClick={onClick}
       className="group rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 transform hover:-translate-y-1 hover:border-purple-300 text-left relative h-64"
+      style={{ willChange: 'transform', transform: 'translateZ(0)' }}
     >
       {/* Background Image with Overlay */}
-      {category.backgroundImage && (
+      {backgroundImageUrl && (
         <div className="absolute inset-0">
           <Image
-            src={category.backgroundImage}
+            src={backgroundImageUrl}
             alt={category.name}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            loading="lazy"
+            quality={75}
+            unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" style={{ willChange: 'opacity' }} />
         </div>
       )}
 
@@ -86,4 +120,6 @@ export function ServiceCategoryCard({ category, serviceCount, onClick }: Service
       </div>
     </button>
   );
-}
+});
+
+export { ServiceCategoryCard };

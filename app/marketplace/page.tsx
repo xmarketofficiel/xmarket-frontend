@@ -8,6 +8,7 @@ import { Item } from '../../types';
 import type { Service, ServiceCategory as ServiceCategoryType } from '../../lib/api/services';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useConditionalLoading, getOptimalSkeletonCount } from '../../hooks/useConditionalLoading';
+import { useMarketplaceCache, restoreScrollPosition, saveMarketplaceToCache } from '../../hooks/useMarketplaceCache';
 
 // Components
 import { MarketplaceHeader } from './components/MarketplaceHeader';
@@ -15,6 +16,7 @@ import { SearchBar } from './components/SearchBar';
 import { AdvancedFilterPanel } from './components/AdvancedFilterPanel';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ModeToggle, MarketplaceMode } from './components/ModeToggle';
+import { FloatingModeToggle } from './components/FloatingModeToggle';
 import { ViewControls } from './components/ViewControls';
 import { FilterPanel } from './components/FilterPanel';
 import { SearchResultsHeader } from './components/SearchResultsHeader';
@@ -55,6 +57,7 @@ import type {
   ConditionFilter 
 } from './types';
 
+
 /**
  * Marketplace Page - Optimized with clean component architecture
  * Features search, filtering, sorting, and infinite scroll
@@ -85,6 +88,8 @@ export default function MarketplacePage() {
   const [servicesLoading, setServicesLoading] = useState(false);
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isRestoringScroll, setIsRestoringScroll] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   
   // Client-side mount effect
   useEffect(() => {
@@ -112,6 +117,31 @@ export default function MarketplacePage() {
     itemsPerPage: MARKETPLACE_CONFIG.ITEMS_PER_PAGE
   });
 
+  // Responsive page size based on device
+  useEffect(() => {
+    const updatePageSize = () => {
+      const isMobile = window.innerWidth < MARKETPLACE_CONFIG.MOBILE_BREAKPOINT;
+      const newPageSize = isMobile 
+        ? MARKETPLACE_CONFIG.ITEMS_PER_PAGE_MOBILE 
+        : MARKETPLACE_CONFIG.ITEMS_PER_PAGE_DESKTOP;
+      
+      // Only update if different to avoid unnecessary re-renders
+      setState(prev => {
+        if (prev.itemsPerPage !== newPageSize) {
+          return { ...prev, itemsPerPage: newPageSize };
+        }
+        return prev;
+      });
+    };
+
+    // Set initial value
+    updatePageSize();
+
+    // Listen for resize events (debounced via the effect cleanup)
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
+
   // Enhanced filter state
   const [advancedFilters, setAdvancedFilters] = useState({
     priceRange: [0, 1000] as [number, number],
@@ -130,6 +160,25 @@ export default function MarketplacePage() {
 
   // Ref to prevent multiple simultaneous loadItems calls
   const loadItemsInProgress = useRef(false);
+  
+  // Ref to track which page is currently being fetched (for prefetch deduplication)
+  const fetchingPageRef = useRef<number | null>(null);
+  
+  // Ref to track the last successfully loaded page (prevents race conditions)
+  const lastLoadedPageRef = useRef(0);
+  
+  // State to track if a fetch is in progress (for skeleton display when user catches up)
+  const [isFetching, setIsFetching] = useState(false);
+
+  // Ref for tracking original ModeToggle position (for floating toggle)
+  const modeToggleRef = useRef<HTMLDivElement>(null);
+  
+  // Marketplace cache hook for scroll restoration
+  const { checkCache } = useMarketplaceCache();
+  
+  // Track if we restored from cache (simple ref that survives re-renders)
+  const cacheRestorationDone = useRef(false);
+  const restoredItemsCount = useRef(0);
 
   /**
    * Update state helper function
@@ -413,15 +462,49 @@ export default function MarketplacePage() {
 
   /**
    * Load items with current filters
+   * Supports prefetching - allows loading next page while still showing current items
+   * @param page - Page number to load
+   * @param replaceItems - If true, replace all items. If false, append to existing
+   * @param silent - If true, don't show loading skeleton (for background prefetch)
    */
-  const loadItems = useCallback(async (page: number = 1, replaceItems: boolean = true) => {
-    // Prevent multiple simultaneous calls
-    if (loadItemsInProgress.current) {
+  const loadItems = useCallback(async (page: number = 1, replaceItems: boolean = true, silent: boolean = false) => {
+    console.log('🔄 [loadItems] Called with:', { page, replaceItems, silent, restoredItems: restoredItemsCount.current, itemsCount: state.items.length });
+    
+    // Skip if we restored from cache (back navigation) - don't require state.items.length 
+    // since React state updates are async and may not have propagated yet
+    if (restoredItemsCount.current > 0 && replaceItems && page === 1) {
+      console.log('⏭️ [loadItems] SKIPPING - restored from cache with', restoredItemsCount.current, 'items');
+      restoredItemsCount.current = 0; // Reset after skip to allow future loads
       return;
     }
     
-    loadItemsInProgress.current = true;
-    updateState({ loading: true, error: null });
+    // For append operations (infinite scroll), check if we're already fetching or have loaded this page
+    if (!replaceItems) {
+      // Skip if we already loaded this page or are currently fetching it
+      if (page <= lastLoadedPageRef.current || fetchingPageRef.current === page) {
+        console.log('⏭️ [loadItems] SKIPPING page', page, '- already loaded or fetching');
+        return;
+      }
+      fetchingPageRef.current = page;
+      setIsFetching(true); // Track that a fetch is in progress
+      // Only show skeleton if not a silent prefetch
+      if (!silent) {
+        setLoadingMore(true);
+      }
+    } else {
+      // Reset last loaded page for fresh loads
+      lastLoadedPageRef.current = 0;
+      // For replace operations, prevent multiple simultaneous calls
+      if (loadItemsInProgress.current) {
+        return;
+      }
+      loadItemsInProgress.current = true;
+    }
+    
+    // Only show loading state for initial load or replace, not for prefetch/append
+    if (replaceItems) {
+      updateState({ loading: true, error: null });
+    }
 
     try {
       const params = buildSearchParams();
@@ -434,22 +517,38 @@ export default function MarketplacePage() {
       const pageItems = responseData.items || [];
       const total = responseData.total || 0;
 
-      updateState({
-        totalItems: total,
-        hasMore: responseData.hasMore || false,
-        currentPage: page
-      });
-
       if (replaceItems) {
-        updateState({ items: pageItems });
+        updateState({
+          items: pageItems,
+          totalItems: total,
+          hasMore: responseData.hasMore || false,
+          currentPage: page
+        });
+        
+        // Prefetch page 2 immediately after initial load for seamless scrolling
+        if (page === 1 && responseData.hasMore) {
+          lastLoadedPageRef.current = 1;
+          setTimeout(() => {
+            loadItems(2, false, true); // silent=true for background prefetch
+          }, 100);
+        }
       } else {
         // Infinite scroll: append new items with deduplication
+        // Update lastLoadedPageRef to prevent duplicate fetches
+        lastLoadedPageRef.current = page;
+        
         setState(prev => {
           const existingIds = new Set(prev.items.map(item => item.id));
           const newItems = pageItems.filter((item: Item) => !existingIds.has(item.id));
+          
+          // Always trust the API's hasMore - don't override based on duplicates
+          // Duplicates can happen due to race conditions, not end of data
           return {
             ...prev,
-            items: [...prev.items, ...newItems]
+            items: newItems.length > 0 ? [...prev.items, ...newItems] : prev.items,
+            totalItems: total,
+            hasMore: responseData.hasMore ?? false,
+            currentPage: page
           };
         });
       }
@@ -460,14 +559,19 @@ export default function MarketplacePage() {
           error: error.message || 'Failed to load items',
           items: []
         });
-      } else {
-        updateState({ 
-          error: error.message || 'Failed to load items'
-        });
       }
+      // For append errors, silently fail (user can try again)
     } finally {
-      updateState({ loading: false });
-      loadItemsInProgress.current = false;
+      if (replaceItems) {
+        updateState({ loading: false });
+        loadItemsInProgress.current = false;
+      } else {
+        setIsFetching(false); // Fetch complete
+        if (!silent) {
+          setLoadingMore(false); // Hide skeleton after loading more (only if we showed it)
+        }
+      }
+      fetchingPageRef.current = null;
     }
   }, [buildSearchParams, updateState]);
 
@@ -518,13 +622,39 @@ export default function MarketplacePage() {
   }, [updateState]);
 
   /**
-   * Handle load more
+   * Handle load more (called by infinite scroll)
+   * Uses ref-based tracking to prevent race conditions during aggressive scrolling
+   * Always silent since IntersectionObserver triggers early (prefetch pattern)
    */
   const handleLoadMore = useCallback(() => {
-    if (!state.loading && state.hasMore) {
-      loadItems(state.currentPage + 1, false);
+    if (state.hasMore) {
+      // Use lastLoadedPageRef + 1 to avoid race conditions with stale state
+      const nextPage = Math.max(lastLoadedPageRef.current, state.currentPage) + 1;
+      loadItems(nextPage, false, true); // silent=true for seamless prefetch
     }
-  }, [state.loading, state.hasMore, state.currentPage, loadItems]);
+  }, [state.hasMore, state.currentPage, loadItems]);
+
+  /**
+   * Save marketplace state before navigating to item detail
+   * This enables scroll restoration when user navigates back
+   * @param scrollY - The scroll position captured at click time
+   */
+  const handleItemClick = useCallback((scrollY: number) => {
+    saveMarketplaceToCache({
+      items: state.items,
+      currentPage: state.currentPage,
+      totalItems: state.totalItems,
+      hasMore: state.hasMore,
+      filters: {
+        searchQuery: state.searchQuery,
+        selectedCategory: state.selectedCategory,
+        sortBy: state.sortBy,
+        priceRange: state.priceRange,
+        conditionFilter: state.conditionFilter,
+      },
+      mode: mode
+    }, scrollY); // Pass explicit scrollY captured at click time
+  }, [state, mode]);
 
   /**
    * Clear all filters
@@ -554,8 +684,56 @@ export default function MarketplacePage() {
     ]);
   }, [loadPendingSalesCount, loadCategories]);
 
-  // Initialize data on mount
+  // Initialize data on mount - check for cached state first (scroll restoration)
+  // Initialize data on mount - check for cached state first
   useEffect(() => {
+    // Check cache FIRST before loading anything
+    if (!cacheRestorationDone.current) {
+      cacheRestorationDone.current = true;
+      const cachedData = checkCache();
+      
+      if (cachedData && cachedData.items.length > 0) {
+        console.log('📦 [INIT] Restoring from cache:', cachedData.items.length, 'items, scroll:', cachedData.scrollY);
+        
+        // Mark that we restored items (used to skip loadItems)
+        restoredItemsCount.current = cachedData.items.length;
+        
+        // Update lastLoadedPageRef to prevent duplicate fetches after restoration
+        lastLoadedPageRef.current = cachedData.currentPage;
+        
+        // Hide content during scroll restoration to prevent flash
+        if (cachedData.scrollY > 0) {
+          setIsRestoringScroll(true);
+        }
+        
+        // Restore mode
+        setMode(cachedData.mode);
+        
+        // Restore state with cached data
+        setState(prev => ({
+          ...prev,
+          items: cachedData.items,
+          currentPage: cachedData.currentPage,
+          totalItems: cachedData.totalItems,
+          hasMore: cachedData.hasMore,
+          searchQuery: cachedData.filters.searchQuery,
+          selectedCategory: cachedData.filters.selectedCategory,
+          sortBy: cachedData.filters.sortBy as SortOption,
+          priceRange: cachedData.filters.priceRange as PriceRange,
+          conditionFilter: cachedData.filters.conditionFilter as ConditionFilter,
+          loading: false
+        }));
+        
+        // Restore scroll position and reveal content when complete
+        if (cachedData.scrollY > 0) {
+          restoreScrollPosition(cachedData.scrollY, () => {
+            setIsRestoringScroll(false);
+          });
+        }
+      }
+    }
+    
+    // Load other data
     loadCategories();
     loadPendingSalesCount();
     loadServiceCategories();
@@ -566,18 +744,66 @@ export default function MarketplacePage() {
     if (savedViewMode && ['grid', 'list'].includes(savedViewMode)) {
       updateState({ viewMode: savedViewMode });
     }
-  }, [loadCategories, loadPendingSalesCount, loadServiceCategories, loadServices, updateState]);
+  }, [loadCategories, loadPendingSalesCount, loadServiceCategories, loadServices, updateState, checkCache]);
 
   // Load initial items once categories are loaded
   useEffect(() => {
+    console.log('🔍 [CATEGORIES EFFECT] categories.length:', categories.length, 'restoredItems:', restoredItemsCount.current);
+    
+    // Skip if we just restored from cache - don't reload items
+    if (restoredItemsCount.current > 0) {
+      console.log('⏭️ [CATEGORIES EFFECT] Skipping - restored from cache with', restoredItemsCount.current, 'items');
+      return;
+    }
+    
     if (categories.length > 0) {
       loadItems(1, true);
     }
   }, [categories]);
 
-  // Load items when filters change
+  // Load items when filters change (user changes filters after initial load)
+  // Track if user has interacted with filters (not just initial/cache restoration)
+  const userChangedFilters = useRef(false);
+  const prevFilters = useRef({
+    searchQuery: state.searchQuery,
+    selectedCategory: state.selectedCategory,
+    sortBy: state.sortBy,
+    priceRange: state.priceRange,
+    conditionFilter: state.conditionFilter
+  });
+  
   useEffect(() => {
+    const currentFilters = {
+      searchQuery: state.searchQuery,
+      selectedCategory: state.selectedCategory,
+      sortBy: state.sortBy,
+      priceRange: state.priceRange,
+      conditionFilter: state.conditionFilter
+    };
+    
+    // Check if filters actually changed from user interaction (not initial/cache)
+    const filtersChanged = JSON.stringify(currentFilters) !== JSON.stringify(prevFilters.current);
+    prevFilters.current = currentFilters;
+    
+    console.log('🔍 [FILTER EFFECT] filtersChanged:', filtersChanged, 'restoredItems:', restoredItemsCount.current);
+    
+    // Skip if restored from cache - don't reload items
+    if (restoredItemsCount.current > 0) {
+      console.log('🔍 [FILTER EFFECT] Skipping - restored from cache');
+      return;
+    }
+    
+    // Skip if filters didn't actually change
+    if (!filtersChanged) {
+      console.log('🔍 [FILTER EFFECT] Skipping - no filter change');
+      return;
+    }
+    
+    // Mark that user has changed filters
+    userChangedFilters.current = true;
+    
     const timeoutId = setTimeout(() => {
+      console.log('🔍 [FILTER EFFECT] Calling loadItems after timeout');
       loadItems(1, true);
     }, state.searchQuery ? MARKETPLACE_CONFIG.SEARCH_DEBOUNCE_MS : 0);
 
@@ -591,7 +817,7 @@ export default function MarketplacePage() {
   ]);
 
   // Pull to refresh
-  usePullToRefresh({
+  const { isRefreshing, pullDistance, isPulling } = usePullToRefresh({
     onRefresh: handleRefresh,
     threshold: MARKETPLACE_CONFIG.PULL_TO_REFRESH_THRESHOLD
   });
@@ -620,22 +846,51 @@ export default function MarketplacePage() {
     return categoryServices;
   }, [services, state.selectedCategory]);
   
+  // Pre-compute service counts for each category (performance optimization)
+  const serviceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    services.forEach(service => {
+      const categoryId = service.serviceCategoryId;
+      counts[categoryId] = (counts[categoryId] || 0) + 1;
+    });
+    return counts;
+  }, [services]);
+
   // Convert service categories to display format
   const displayServiceCategories = useMemo(() => {
-    const allCategory = { id: 'all', name: 'All Services', icon: '🔥', type: 'both' as const };
+    const allCategory = { 
+      id: 'all', 
+      name: 'All Services', 
+      icon: '🔥', 
+      type: 'both' as const,
+      serviceCount: services.length
+    };
     const mappedCategories = serviceCategories.map(cat => ({
       id: cat.id,
       name: cat.name,
       icon: cat.icon || '🔧',
       type: cat.type,
-      backgroundImage: cat.backgroundImage
+      backgroundImage: cat.backgroundImage,
+      serviceCount: serviceCounts[cat.id] || 0
     }));
     return [allCategory, ...mappedCategories];
-  }, [serviceCategories]);
+  }, [serviceCategories, serviceCounts, services.length]);
 
   return (
-    <div className="min-h-screen">
-      {/* Fixed Header */}
+    <>
+      {/* Skeleton overlay during scroll restoration - hides content flash */}
+      {isRestoringScroll && (
+        <div className="fixed inset-0 z-50 bg-gray-50">
+          <SkeletonCategoryFilter />
+          <SkeletonResultsCounter />
+          <div className="px-4 pt-4">
+            <MarketplaceGridSkeleton count={12} />
+          </div>
+        </div>
+      )}
+      
+      <div className="min-h-screen bg-gray-50">
+      {/* Header - scrolls on mobile, sticky on desktop */}
       <MarketplaceHeader
         user={user}
         searchQuery={state.searchQuery}
@@ -650,10 +905,20 @@ export default function MarketplacePage() {
         onModeChange={handleModeChange}
       />
 
-      {/* Content - scrolls in ConditionalLayout's main container */}
-      <div className="bg-gray-50 pb-20">
-        {/* Mode Toggle for Products/Services - Mobile Only - Sticky behavior */}
+      {/* Mode Toggle - Scrolls with content on mobile, hidden on desktop */}
+      <div ref={modeToggleRef}>
         <ModeToggle mode={mode} onChange={handleModeChange} />
+      </div>
+
+      {/* Floating Mode Toggle - Slides from top when original is scrolled out of view (mobile only) */}
+      <FloatingModeToggle 
+        mode={mode} 
+        onChange={handleModeChange} 
+        triggerRef={modeToggleRef} 
+      />
+
+      {/* Content */}
+      <div className="pb-20">
         {/* Category Filter - Only show for products mode */}
         {mode === 'products' && (
           categories.length === 0 ? (
@@ -702,16 +967,52 @@ export default function MarketplacePage() {
           onClearFilters={handleClearFilters}
         />
 
+        {/* Pull-to-refresh indicator - Facebook style (mobile only) */}
+        {(pullDistance > 0 || isRefreshing) && (
+          <div 
+            className="flex justify-center md:hidden overflow-hidden transition-all duration-300 ease-out"
+            style={{ 
+              height: isRefreshing ? 56 : Math.min(pullDistance, 56),
+              opacity: isRefreshing ? 1 : Math.min(pullDistance / 40, 1)
+            }}
+          >
+            <div className="flex items-center justify-center py-3">
+              {/* Facebook-style radial spinner */}
+              <div 
+                className={`relative w-6 h-6 ${isRefreshing ? 'animate-spin' : ''}`}
+                style={{ 
+                  transform: isRefreshing ? undefined : `rotate(${pullDistance * 3}deg)`,
+                  transition: isRefreshing ? undefined : 'transform 0.1s ease-out'
+                }}
+              >
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1.5 h-1.5 bg-gray-400 rounded-full"
+                    style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: `rotate(${i * 45}deg) translateY(-8px) translateX(-50%)`,
+                      opacity: isRefreshing ? 0.3 + (i * 0.1) : (isPulling ? 0.8 : 0.4),
+                      animation: isRefreshing ? `fadeInOut 0.8s ease-in-out ${i * 0.1}s infinite` : 'none'
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Search Results Header */}
         <SearchResultsHeader
           searchQuery={state.searchQuery}
           totalResults={state.totalItems}
           onClearSearch={() => handleSearchChange('')}
-          loading={state.loading}
+          loading={state.loading && !isRefreshing}
         />
 
-        {/* Content Area */}
-        <div className="px-4 pt-4 pb-6">
+        {/* Content Area - min-height prevents layout shift during loading */}
+        <div className="px-4 pt-4 pb-6 min-h-[calc(100vh-200px)]">
           {mode === 'products' ? (
             <>
               {/* Products Mode */}
@@ -746,14 +1047,8 @@ export default function MarketplacePage() {
                     loading={state.loading}
                     onLoadMore={handleLoadMore}
                     hasMore={state.hasMore}
-                  />
-                  
-                  <LoadMoreButton
-                    hasMore={state.hasMore}
-                    loading={state.loading}
-                    onClick={handleLoadMore}
-                    itemsShown={state.items.length}
-                    totalItems={state.totalItems}
+                    onItemClick={handleItemClick}
+                    isFetching={isFetching}
                   />
                 </>
               )}
@@ -762,9 +1057,17 @@ export default function MarketplacePage() {
             <>
               {/* Services Mode */}
               {servicesLoading ? (
-                <div className="text-center py-20">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                  <p className="text-gray-500">Loading services...</p>
+                /* Services Loading Skeleton - matches actual grid dimensions to prevent layout shift */
+                <div>
+                  <div className="mb-6">
+                    <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-2" />
+                    <div className="h-4 w-40 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="h-64 bg-gray-200 rounded-2xl animate-pulse" />
+                    ))}
+                  </div>
                 </div>
               ) : servicesError ? (
                 <div className="text-center py-20">
@@ -788,17 +1091,14 @@ export default function MarketplacePage() {
                     </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {displayServiceCategories.filter(c => c.id !== 'all').map((category) => {
-                      const categoryServices = services.filter(s => s.serviceCategoryId === category.id);
-                      return (
-                        <ServiceCategoryCard
-                          key={category.id}
-                          category={category}
-                          serviceCount={categoryServices.length}
-                          onClick={() => handleCategoryChange(category.id)}
-                        />
-                      );
-                    })}
+                    {displayServiceCategories.filter(c => c.id !== 'all').map((category) => (
+                      <ServiceCategoryCard
+                        key={category.id}
+                        category={category}
+                        serviceCount={category.serviceCount}
+                        onClick={() => handleCategoryChange(category.id)}
+                      />
+                    ))}
                   </div>
                 </div>
               ) : (
@@ -861,5 +1161,6 @@ export default function MarketplacePage() {
         }}
       />
       </div>
+    </>
   );
 }
