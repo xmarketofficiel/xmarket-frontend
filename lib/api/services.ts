@@ -42,6 +42,7 @@ export interface Service {
 
 export interface ServiceCategory {
   id: string;
+  slug: string;
   name: string;
   description?: string;
   icon?: string;

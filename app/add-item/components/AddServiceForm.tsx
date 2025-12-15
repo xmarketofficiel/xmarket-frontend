@@ -205,7 +205,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
               >
                 <option value="">{loadingCategories ? 'Loading categories...' : 'Select a category'}</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.id} value={cat.slug || cat.id}>
                     {cat.icon || '🔧'} {cat.name}
                   </option>
                 ))}
