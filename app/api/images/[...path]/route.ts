@@ -6,7 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+// Read at runtime, not build time
+const getBackendUrl = () => process.env.BACKEND_URL || 'http://localhost:3001';
 
 export async function GET(
   request: NextRequest,
@@ -15,8 +16,11 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const imagePath = resolvedParams.path.join('/');
-    const imageUrl = `${BACKEND_URL}/images/${imagePath}`;
+    const imageUrl = `${getBackendUrl()}/images/${imagePath}`;
 
+    const backendUrl = getBackendUrl();
+    console.log(`[Image Proxy] BACKEND_URL env: ${process.env.BACKEND_URL}`);
+    console.log(`[Image Proxy] Resolved backend: ${backendUrl}`);
     console.log(`[Image Proxy] Fetching: ${imageUrl}`);
 
     const response = await fetch(imageUrl, {
