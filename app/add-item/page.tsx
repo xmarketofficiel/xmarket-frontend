@@ -28,5 +28,5 @@ export default function AddItemPage() {
     return <AddServiceForm onBack={() => setSelection('none')} />;
   }
 
-  return <AddItemForm />;
+  return <AddItemForm onCancel={() => setSelection('none')} />;
 }

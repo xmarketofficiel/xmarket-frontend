@@ -87,7 +87,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
     if (!formData.serviceCategoryId) {
       newErrors.serviceCategoryId = 'Please select a category';
     }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
+    if (formData.price === '' || parseFloat(formData.price) < 0) {
       newErrors.price = 'Please enter a valid price';
     }
     if (!formData.description.trim()) {
@@ -334,6 +334,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
                       value={selectedTime}
                       onChange={setSelectedTime}
                       autoOpen={!selectedTime}
+                      selectedDate={selectedDate}
                     />
                   </div>
                 )}

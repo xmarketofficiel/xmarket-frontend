@@ -7,9 +7,10 @@ interface CustomTimePickerProps {
   value: Date | null;
   onChange: (date: Date) => void;
   autoOpen?: boolean;
+  selectedDate?: Date | null; // The date selected in the date picker, used to disable past times
 }
 
-export default function CustomTimePicker({ value, onChange, autoOpen = false }: CustomTimePickerProps) {
+export default function CustomTimePicker({ value, onChange, autoOpen = false, selectedDate }: CustomTimePickerProps) {
   const [isOpen, setIsOpen] = useState(autoOpen);
   const [selectedHour, setSelectedHour] = useState(value?.getHours() || 9);
   const [selectedMinute, setSelectedMinute] = useState(value?.getMinutes() || 0);
@@ -129,15 +130,37 @@ export default function CustomTimePicker({ value, onChange, autoOpen = false }: 
                 const isSelected = selectedHour === hour && selectedMinute === minute;
                 const displayTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 
+                // Check if this time slot is in the past (only if selected date is today)
+                let isPast = false;
+                if (selectedDate) {
+                  const now = new Date();
+                  const isToday = selectedDate.toDateString() === now.toDateString();
+                  if (isToday) {
+                    // Convert to 24-hour format for comparison
+                    let hour24 = hour;
+                    if (period === 'PM' && hour !== 12) {
+                      hour24 = hour + 12;
+                    } else if (period === 'AM' && hour === 12) {
+                      hour24 = 0;
+                    }
+                    const slotTime = new Date(selectedDate);
+                    slotTime.setHours(hour24, minute, 0, 0);
+                    isPast = slotTime <= now;
+                  }
+                }
+                
                 return (
                   <button
                     key={`${hour}-${minute}`}
                     type="button"
-                    onClick={() => handleTimeSelect(hour, minute)}
+                    onClick={() => !isPast && handleTimeSelect(hour, minute)}
+                    disabled={isPast}
                     className={`w-full py-3 px-4 text-center rounded-lg font-semibold text-lg transition-all ${
-                      isSelected
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'text-blue-500 hover:bg-blue-50'
+                      isPast
+                        ? 'text-gray-300 cursor-not-allowed bg-gray-50'
+                        : isSelected
+                          ? 'bg-blue-500 text-white shadow-md'
+                          : 'text-blue-500 hover:bg-blue-50'
                     }`}
                   >
                     {displayTime}
