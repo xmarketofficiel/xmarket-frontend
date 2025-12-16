@@ -53,7 +53,7 @@ export default function AppShell({ children }: AppShellProps) {
   // Public routes without navbar (login, signup, etc.)
   if (shouldHideNavbar) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen min-h-dvh bg-gray-50">
         {children}
       </main>
     );
@@ -64,12 +64,12 @@ export default function AppShell({ children }: AppShellProps) {
   if (pathname === '/') {
     if (user) {
       return (
-        <div className="h-screen flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
+        <>
+          <main className="min-h-screen bg-gray-50 content-with-navbar">
             {children}
           </main>
           <Navbar />
-        </div>
+        </>
       );
     }
     // Guest on home page - no navbar (landing page)
@@ -82,12 +82,13 @@ export default function AppShell({ children }: AppShellProps) {
   
   // All other authenticated routes - show navbar
   // Note: Middleware handles redirecting unauthenticated users
+  // Using natural body scroll to allow browser chrome to hide/show on mobile
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
+    <>
+      <main className="min-h-screen bg-gray-50 content-with-navbar">
         {children}
       </main>
       <Navbar />
-    </div>
+    </>
   );
 }

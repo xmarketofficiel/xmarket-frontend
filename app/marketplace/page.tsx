@@ -24,6 +24,7 @@ import { EmptyState } from './components/EmptyState';
 import { LoadMoreButton } from './components/LoadMoreButton';
 import { ServiceCard } from './components/ServiceCard';
 import { ServiceCategoryCard } from './components/ServiceCategoryCard';
+import ServiceDetailModal from './components/ServiceDetailModal';
 import Feed from '../../components/Feed';
 
 // Services
@@ -154,6 +155,10 @@ export default function MarketplacePage() {
   });
 
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Service detail modal state
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedServiceCategory, setSelectedServiceCategory] = useState<string | undefined>(undefined);
 
   // Categories list
   const [categories, setCategories] = useState<string[]>([]);
@@ -856,6 +861,26 @@ export default function MarketplacePage() {
     return counts;
   }, [services]);
 
+  // Helper to get urgency badge from departure time
+  const getUrgencyBadgeFromDepartureTime = (departureTime: string | undefined) => {
+    if (!departureTime) return undefined;
+    
+    const departure = new Date(departureTime);
+    const now = new Date();
+    const hoursLeft = (departure.getTime() - now.getTime()) / (1000 * 60 * 60);
+    
+    if (hoursLeft < 0) return undefined; // Expired
+    if (hoursLeft < 1) {
+      const minutesLeft = Math.floor(hoursLeft * 60);
+      return { color: 'red', label: `${minutesLeft}min`, icon: '🔴' };
+    }
+    if (hoursLeft < 3) return { color: 'red', label: `${Math.floor(hoursLeft)}h`, icon: '🔴' };
+    if (hoursLeft < 6) return { color: 'orange', label: `${Math.floor(hoursLeft)}h`, icon: '🟠' };
+    if (hoursLeft < 12) return { color: 'yellow', label: 'Today', icon: '🟡' };
+    if (hoursLeft < 24) return { color: 'green', label: 'Today', icon: '🟢' };
+    return { color: 'blue', label: 'Upcoming', icon: '📅' };
+  };
+
   // Convert service categories to display format
   const displayServiceCategories = useMemo(() => {
     const allCategory = { 
@@ -863,7 +888,9 @@ export default function MarketplacePage() {
       name: 'All Services', 
       icon: '🔥', 
       type: 'both' as const,
-      serviceCount: services.length
+      backgroundImage: undefined as string | undefined,
+      serviceCount: services.length,
+      urgencyBadge: undefined as { color: string; label: string; icon: string } | undefined
     };
     const mappedCategories = serviceCategories.map(cat => ({
       id: cat.id,
@@ -871,7 +898,8 @@ export default function MarketplacePage() {
       icon: cat.icon || '🔧',
       type: cat.type,
       backgroundImage: cat.backgroundImage,
-      serviceCount: serviceCounts[cat.id] || 0
+      serviceCount: serviceCounts[cat.id] || 0,
+      urgencyBadge: getUrgencyBadgeFromDepartureTime((cat as any).hottestDepartureTime)
     }));
     return [allCategory, ...mappedCategories];
   }, [serviceCategories, serviceCounts, services.length]);
@@ -1084,12 +1112,6 @@ export default function MarketplacePage() {
               ) : state.selectedCategory === 'all' ? (
                 /* Show Service Category Cards */
                 <div>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Browse Service Categories</h2>
-                    <p className="text-sm text-gray-500">
-                      {displayServiceCategories.filter(c => c.id !== 'all').length} categories available
-                    </p>
-                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {displayServiceCategories.filter(c => c.id !== 'all').map((category) => (
                       <ServiceCategoryCard
@@ -1106,7 +1128,7 @@ export default function MarketplacePage() {
                 <div>
                   <button
                     onClick={() => handleCategoryChange('all')}
-                    className="mb-4 flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                    className="mb-4 flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors"
                   >
                     <span className="text-xl">←</span>
                     Back to all categories
@@ -1123,10 +1145,21 @@ export default function MarketplacePage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                      {filteredServices.map((service) => (
-                        <ServiceCard key={service.id} service={service} />
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+                      {filteredServices.map((service) => {
+                        const category = displayServiceCategories.find(c => c.id === service.serviceCategoryId);
+                        return (
+                          <ServiceCard 
+                            key={service.id} 
+                            service={service} 
+                            categoryBackgroundImage={category?.backgroundImage}
+                            onClick={() => {
+                              setSelectedService(service);
+                              setSelectedServiceCategory(category?.backgroundImage);
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -1159,6 +1192,14 @@ export default function MarketplacePage() {
           });
           loadItems(1, true);
         }}
+      />
+
+      {/* Service Detail Modal */}
+      <ServiceDetailModal
+        service={selectedService}
+        isOpen={selectedService !== null}
+        onClose={() => setSelectedService(null)}
+        categoryBackgroundImage={selectedServiceCategory}
       />
       </div>
     </>

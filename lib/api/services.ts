@@ -49,6 +49,7 @@ export interface ServiceCategory {
   backgroundImage?: string;
   type: 'time-based' | 'ongoing' | 'both';
   isActive: boolean;
+  hottestDepartureTime?: string; // ISO string of the hottest time-based service's departure
   createdAt: string;
   updatedAt: string;
 }

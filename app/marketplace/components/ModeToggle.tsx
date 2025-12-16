@@ -1,6 +1,6 @@
 'use client';
 
-import { ShoppingBag, Zap } from 'lucide-react';
+import { ShoppingBag, Car } from 'lucide-react';
 
 type MarketplaceMode = 'products' | 'services';
 
@@ -35,12 +35,12 @@ export function ModeToggle({ mode, onChange }: ModeToggleProps) {
               flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold
               transition-colors duration-200
               ${mode === 'services'
-                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
+                ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }
             `}
           >
-            <Zap className="w-5 h-5" />
+            <Car className="w-5 h-5" />
             <span className="text-sm">Services</span>
           </button>
         </div>

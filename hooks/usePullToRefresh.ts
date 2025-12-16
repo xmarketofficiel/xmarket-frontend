@@ -9,18 +9,10 @@ interface UsePullToRefreshOptions {
 }
 
 /**
- * Get the current scroll position from either the main scrollable container or window
+ * Get the current scroll position from window (natural body scroll)
  */
 function getScrollTop(): number {
   if (typeof window === 'undefined') return 0;
-  
-  // Check for scrollable main container first (used in AppShell)
-  const scrollContainer = document.querySelector('main.overflow-y-auto');
-  if (scrollContainer) {
-    return scrollContainer.scrollTop;
-  }
-  
-  // Fall back to window scroll
   return window.scrollY;
 }
 

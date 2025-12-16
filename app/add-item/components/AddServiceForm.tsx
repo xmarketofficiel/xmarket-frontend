@@ -52,14 +52,10 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
     fetchCategories();
   }, [addToast]);
 
-  // Auto-scroll when time-based is selected
+  // Scroll to top when form mounts
   useEffect(() => {
-    if (formData.type === 'time-based' && departureTimeRef.current) {
-      setTimeout(() => {
-        departureTimeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-  }, [formData.type]);
+    window.scrollTo(0, 0);
+  }, []);
 
   // Auto-show time picker when date is selected
   useEffect(() => {

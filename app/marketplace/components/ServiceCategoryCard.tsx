@@ -61,7 +61,7 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
   return (
     <button
       onClick={onClick}
-      className="group rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 transform hover:-translate-y-1 hover:border-purple-300 text-left relative h-64"
+      className="group rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 transform hover:-translate-y-1 hover:border-purple-300 text-left relative h-40 md:h-64"
       style={{ willChange: 'transform', transform: 'translateZ(0)' }}
     >
       {/* Background Image with Overlay */}
@@ -82,7 +82,7 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
       )}
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-between p-6">
+      <div className="relative h-full flex flex-col justify-between p-3 md:p-6">
         <div>
           {/* Urgency Badge */}
           {category.urgencyBadge && (
@@ -93,24 +93,24 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
           )}
 
           {/* Category Icon */}
-          <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+          <div className="text-3xl md:text-5xl mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
             {category.icon}
           </div>
         </div>
 
         <div>
           {/* Category Name */}
-          <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors drop-shadow-md">
+          <h3 className="text-lg md:text-2xl font-bold text-white mb-1 md:mb-2 group-hover:text-purple-300 transition-colors drop-shadow-md">
             {category.name}
           </h3>
 
           {/* Service Count */}
-          <p className="text-sm text-white/90 mb-4">
+          <p className="text-xs md:text-sm text-white/90 mb-2 md:mb-4">
             {serviceCount} service{serviceCount !== 1 ? 's' : ''} available
           </p>
 
           {/* View Button */}
-          <div className="flex items-center justify-between pt-3 border-t border-white/20">
+          <div className="flex items-center justify-between pt-2 md:pt-3 border-t border-white/20">
             <span className="text-sm font-medium text-white group-hover:text-purple-300">
               View Services
             </span>

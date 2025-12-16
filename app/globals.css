@@ -10,6 +10,10 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --navbar-height: 4rem;
+  /* Safe area insets for notched devices */
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  /* Dynamic viewport height - fallback to vh for older browsers */
+  --app-height: 100vh;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -89,26 +93,41 @@
   /* Mobile scroll optimization */
   html, body {
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: none;
+    /* Allow natural overscroll to enable browser chrome hide/show */
+    overscroll-behavior-y: auto;
   }
   
   /* Fix for mobile browser chrome/address bar issue */
+  /* Use min-height to allow page to expand and trigger browser chrome hide/show */
   html {
-    height: -webkit-fill-available;
-  }
-  
-  body {
-    min-height: 100vh;
+    min-height: 100vh; /* Fallback */
+    min-height: 100dvh; /* Dynamic viewport height */
     min-height: -webkit-fill-available;
   }
   
-  /* Prevent mobile bounce/rubber-band on iOS */
+  body {
+    min-height: 100vh; /* Fallback */
+    min-height: 100dvh; /* Dynamic viewport height */
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Mobile optimizations */
   @media (max-width: 768px) {
     html, body {
-      position: relative;
+      /* Only prevent horizontal scroll, allow vertical for browser chrome behavior */
       overflow-x: hidden;
     }
   }
+}
+
+/* Bottom navbar safe area padding for notched devices */
+.navbar-safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Content padding to account for fixed bottom navbar + safe area */
+.content-with-navbar {
+  padding-bottom: calc(var(--navbar-height, 4rem) + env(safe-area-inset-bottom, 0px));
 }
 
 /* Custom scrollbar styles */
