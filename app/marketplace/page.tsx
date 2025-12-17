@@ -80,8 +80,10 @@ export default function MarketplacePage() {
     }
   }, [user]);
 
-  // Mode state for Products/Services toggle
-  const [mode, setMode] = useState<MarketplaceMode>('products');
+  // Mode state for Products/Services toggle - read from URL params
+  const [mode, setMode] = useState<MarketplaceMode>(
+    (searchParams.get('mode') as MarketplaceMode) || 'products'
+  );
   
   // Services state
   const [services, setServices] = useState<Service[]>([]);
@@ -177,6 +179,9 @@ export default function MarketplacePage() {
 
   // Ref for tracking original ModeToggle position (for floating toggle)
   const modeToggleRef = useRef<HTMLDivElement>(null);
+  
+  // State to force hide floating toggle during mode changes (prevents lag/glitch)
+  const [isChangingMode, setIsChangingMode] = useState(false);
   
   // Marketplace cache hook for scroll restoration
   const { checkCache } = useMarketplaceCache();
@@ -585,22 +590,57 @@ export default function MarketplacePage() {
    */
   const handleSearchChange = useCallback((query: string) => {
     updateState({ searchQuery: query, currentPage: 1 });
-  }, [updateState]);
+    // Update URL to reflect search query
+    const params = new URLSearchParams();
+    params.set('mode', mode);
+    if (state.selectedCategory !== 'all') {
+      params.set('category', state.selectedCategory);
+    }
+    if (query.trim()) {
+      params.set('search', query);
+    }
+    router.push(`/marketplace?${params.toString()}`);
+  }, [updateState, mode, state.selectedCategory, router]);
 
   /**
    * Handle mode change (Products/Services)
    */
   const handleModeChange = useCallback((newMode: MarketplaceMode) => {
+    // Immediately scroll to top to prevent header glitch
+    const scrollContainer = document.querySelector('main.overflow-y-auto');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+    } else {
+      window.scrollTo(0, 0);
+    }
+    
+    // Trigger floating toggle hide animation
+    setIsChangingMode(true);
+    
+    // Change mode and update state instantly
     setMode(newMode);
     updateState({ selectedCategory: 'all', currentPage: 1 });
-  }, [updateState]);
+    
+    // Update URL to reflect mode change
+    router.push(`/marketplace?mode=${newMode}`);
+    
+    // Reset changing mode state after hide animation completes
+    setTimeout(() => setIsChangingMode(false), 250);
+  }, [updateState, router]);
 
   /**
    * Handle category change
    */
   const handleCategoryChange = useCallback((category: string) => {
     updateState({ selectedCategory: category, currentPage: 1 });
-  }, [updateState]);
+    // Update URL to reflect category change
+    const params = new URLSearchParams();
+    params.set('mode', mode);
+    if (category !== 'all') {
+      params.set('category', category);
+    }
+    router.push(`/marketplace?${params.toString()}`);
+  }, [updateState, mode, router]);
 
   /**
    * Handle filter changes
@@ -673,7 +713,9 @@ export default function MarketplacePage() {
       conditionFilter: 'all',
       currentPage: 1
     });
-  }, [updateState]);
+    // Reset URL to just mode parameter
+    router.push(`/marketplace?mode=${mode}`);
+  }, [updateState, mode, router]);
 
   /**
    * Handle notification click
@@ -942,7 +984,8 @@ export default function MarketplacePage() {
       <FloatingModeToggle 
         mode={mode} 
         onChange={handleModeChange} 
-        triggerRef={modeToggleRef} 
+        triggerRef={modeToggleRef}
+        forceHide={isChangingMode}
       />
 
       {/* Content */}

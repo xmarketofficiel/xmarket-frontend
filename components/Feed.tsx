@@ -96,7 +96,7 @@ export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetchin
   return (
     <div className="">
       {/* Mobile layout - 2 column grid */}
-      <div className="grid grid-cols-2 gap-3 md:hidden">
+      <div className="grid grid-cols-2 gap-2 md:hidden">
         {items.map((item, index) => (
           <ItemCard 
             key={item.id} 
@@ -123,7 +123,7 @@ export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetchin
       </div>
 
       {/* Desktop layout - 3-4 column grid */}
-      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((item, index) => (
           <ItemCard 
             key={item.id} 

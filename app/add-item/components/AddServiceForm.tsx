@@ -23,6 +23,8 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
     type: 'time-based' as 'time-based' | 'ongoing',
     description: '',
     location: '',
+    fromLocation: '',
+    toLocation: '',
   });
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -96,6 +98,16 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
     if (formData.type === 'time-based' && (!selectedDate || !selectedTime)) {
       newErrors.departureTime = 'Departure date and time are required for time-based services';
     }
+    
+    // Validate From/To fields for Covoiturage
+    if (formData.serviceCategoryId === 'covoiturage') {
+      if (!formData.fromLocation.trim()) {
+        newErrors.fromLocation = 'From location is required for Covoiturage';
+      }
+      if (!formData.toLocation.trim()) {
+        newErrors.toLocation = 'To location is required for Covoiturage';
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -133,13 +145,21 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
       if (formData.location && formData.location.trim()) {
         serviceData.location = formData.location.trim();
       }
+      
+      // Add From/To locations for Covoiturage
+      if (formData.serviceCategoryId === 'covoiturage') {
+        serviceData.fromLocation = formData.fromLocation.trim();
+        serviceData.toLocation = formData.toLocation.trim();
+      }
 
       console.log('📤 Submitting service:', serviceData);
       
       const response = await servicesApi.createService(serviceData);
       
       addToast('Service created successfully!', 'success');
-      router.push('/marketplace');
+      // Redirect to marketplace with services mode and the category UUID from response
+      const createdService = response.data;
+      router.push(`/marketplace?mode=services&category=${createdService.serviceCategoryId}`);
     } catch (error) {
       console.error('Error creating service:', error);
       addToast('Failed to create service. Please try again.', 'error');
@@ -207,7 +227,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
               >
                 <option value="">{loadingCategories ? 'Loading categories...' : 'Select a category'}</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.slug || cat.id}>
+                  <option key={cat.id} value={cat.slug}>
                     {cat.icon || '🔧'} {cat.name}
                   </option>
                 ))}
@@ -218,6 +238,59 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
               <p className="mt-1 text-sm text-red-600">{errors.serviceCategoryId}</p>
             )}
           </div>
+
+          {/* From/To Fields - Only for Covoiturage */}
+          {formData.serviceCategoryId === 'covoiturage' && (
+            <div className="overflow-hidden transition-all duration-500 ease-in-out">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-slideDown">
+                {/* From Location */}
+                <div>
+                  <label htmlFor="fromLocation" className="block text-sm font-semibold text-gray-700 mb-2">
+                    From *
+                  </label>
+                  <input
+                    type="text"
+                    id="fromLocation"
+                    name="fromLocation"
+                    value={formData.fromLocation}
+                    onChange={handleChange}
+                    placeholder="e.g., Casablanca"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
+                      errors.fromLocation
+                        ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                        : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
+                    }`}
+                  />
+                  {errors.fromLocation && (
+                    <p className="mt-1 text-sm text-red-600">{errors.fromLocation}</p>
+                  )}
+                </div>
+
+                {/* To Location */}
+                <div>
+                  <label htmlFor="toLocation" className="block text-sm font-semibold text-gray-700 mb-2">
+                    To *
+                  </label>
+                  <input
+                    type="text"
+                    id="toLocation"
+                    name="toLocation"
+                    value={formData.toLocation}
+                    onChange={handleChange}
+                    placeholder="e.g., Rabat"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
+                      errors.toLocation
+                        ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+                        : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
+                    }`}
+                  />
+                  {errors.toLocation && (
+                    <p className="mt-1 text-sm text-red-600">{errors.toLocation}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Price */}
           <div>
@@ -259,8 +332,8 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
                 onChange={handleChange}
                 className="w-full px-4 py-3 pr-12 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors appearance-none bg-white cursor-pointer border-gray-200 focus:border-blue-500 focus:ring-blue-200"
               >
-                <option value="time-based">⏰ Time-Based (Specific time)</option>
-                <option value="ongoing">⚡ Ongoing (Always available)</option>
+                <option value="time-based">⏰ Temporary</option>
+                <option value="ongoing">⚡ Permanent</option>
               </select>
               <ChevronDown className="w-5 h-5 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>

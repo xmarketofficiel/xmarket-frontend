@@ -13,6 +13,8 @@ export interface CreateServiceData {
   type: 'time-based' | 'ongoing';
   departureTime?: string; // ISO string for time-based services
   location?: string;
+  fromLocation?: string;
+  toLocation?: string;
 }
 
 export interface Service {
@@ -28,6 +30,8 @@ export interface Service {
   departureTime?: string;
   distance?: string;
   location?: string;
+  fromLocation?: string;
+  toLocation?: string;
   imageUrl?: string;
   featured: boolean;
   isActive: boolean;

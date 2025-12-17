@@ -2,7 +2,7 @@
 
 import type { Service } from '@/lib/api/services';
 import { getHoursUntilDeparture, getUrgencyBadge, formatTimeLeft } from '@/lib/serviceUtils';
-import { Clock, MapPin, Star, Zap, Timer } from 'lucide-react';
+import { Clock, MapPin, Star, Zap, Timer, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState, useMemo } from 'react';
 
@@ -124,8 +124,16 @@ export function ServiceCard({ service, categoryBackgroundImage, onClick }: Servi
               </h3>
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex items-center gap-0.5 text-[11px] text-gray-600">
-                  <MapPin className="w-3 h-3" />
-                  <span>{service.location || 'UM6P'}</span>
+                  <MapPin className="w-3 h-3 flex-shrink-0" />
+                  {service.fromLocation && service.toLocation ? (
+                    <span className="flex items-center gap-1">
+                      <span className="truncate">{service.fromLocation}</span>
+                      <ArrowRight className="w-2.5 h-2.5 flex-shrink-0" />
+                      <span className="truncate">{service.toLocation}</span>
+                    </span>
+                  ) : (
+                    <span>{service.location || 'UM6P'}</span>
+                  )}
                 </div>
                 <span className="text-gray-300">•</span>
                 <span className="text-[12px] text-gray-600 truncate">{service.user?.fullName || 'Provider'}</span>
@@ -250,8 +258,16 @@ export function ServiceCard({ service, categoryBackgroundImage, onClick }: Servi
             
             <div className="flex items-center justify-between text-xs text-white/85 pt-3 border-t border-white/20">
               <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <span className="font-medium text-white">{service.location || 'UM6P'}</span>
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                {service.fromLocation && service.toLocation ? (
+                  <span className="flex items-center gap-1 font-medium text-white">
+                    <span className="truncate">{service.fromLocation}</span>
+                    <ArrowRight className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{service.toLocation}</span>
+                  </span>
+                ) : (
+                  <span className="font-medium text-white">{service.location || 'UM6P'}</span>
+                )}
               </div>
               <span className="font-semibold text-white">{service.user?.fullName || 'Service Provider'}</span>
             </div>

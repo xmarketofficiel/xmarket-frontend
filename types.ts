@@ -50,6 +50,7 @@ export interface Item {
   updatedAt?: string;
   condition?: string;
   anonymous?: boolean;
+  location?: string;
 }
 
 export interface Message {

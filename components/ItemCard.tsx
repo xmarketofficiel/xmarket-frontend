@@ -167,7 +167,7 @@ export default function ItemCard({
 
   const getSellerName = () => {
     if (item.anonymous) return "Anonymous";
-    return item.seller?.fullName?.split(" ")[0] || "Unknown";
+    return item.seller?.fullName || "Unknown";
   };
 
   const getImageUrl = () => {
@@ -179,15 +179,15 @@ export default function ItemCard({
   return (
     <>
       <div onClick={handleCardClick} className="block group cursor-pointer">
-        <div className="rounded-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1">
           {/* Image Section - Fixed aspect ratio for grid layout */}
-          <div className="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
+          <div className="relative aspect-square bg-gray-100 overflow-hidden">
             {getImageUrl() ? (
               <Image
                 src={getImageUrl()!}
                 alt={item.title}
                 fill
-                className="object-cover"
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 priority={priority}
                 placeholder="blur"
@@ -211,27 +211,17 @@ export default function ItemCard({
             )}
 
             {/* Condition Badge - Top right */}
-            <div className="absolute top-2 left-2">
-              <span className="px-2 py-1 text-xs font-medium bg-white/90 text-gray-700 rounded-md shadow-sm">
+            <div className="absolute top-3 right-3">
+              <span className="px-2.5 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-700 rounded-full">
                 {item.condition}
               </span>
             </div>
 
-            {/* Favorite Button - Top left (only show for other users' items) */}
-            {!isOwnItem && (
-              <button
-                onClick={handleFavoriteClick}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all duration-200"
-                aria-label={
-                  isFavorited ? "Remove from favorites" : "Add to favorites"
-                }
-              >
-                <Heart
-                  className={`w-4 h-4 transition-colors ${
-                    isFavorited ? "text-red-500 fill-current" : "text-gray-600"
-                  }`}
-                />
-              </button>
+            {/* Featured Badge - Top left */}
+            {item.featured && (
+              <div className="absolute top-3 left-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                ⭐ Featured
+              </div>
             )}
 
             {/* Sold Badge */}
@@ -245,17 +235,29 @@ export default function ItemCard({
             )}
           </div>
 
-          {/* Content Section - Simplified */}
-          <div className="py-2 px-1 space-y-0.2">
-            {/* Price - Facebook Marketplace style: Price first and prominent */}
-            <div className="text-lg font-bold text-[#009F9C]">
-              {item.price} DH
+          {/* Content Section */}
+          <div className="p-4">
+            {/* Title and Price - Aligned on desktop, stacked on mobile */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 gap-1">
+              {/* Title */}
+              <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 group-hover:text-teal-600 transition-colors md:flex-1 md:mr-2">
+                {item.title}
+              </h3>
+              
+              {/* Price */}
+              <div className="text-2xl font-bold text-teal-600 md:flex-shrink-0">
+                {item.price} <span className="text-sm font-normal text-gray-500">DH</span>
+              </div>
             </div>
-
-            {/* Title - Below price, smaller */}
-            <h3 className="font-normal text-gray-900 text-sm line-clamp-2 leading-tight">
-              {item.title}
-            </h3>
+            
+            {/* Footer - Location and Seller */}
+            <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                <span>{item.location || 'UM6P'}</span>
+              </div>
+              <div className="font-medium text-gray-600 truncate max-w-[50%]">{getSellerName()}</div>
+            </div>
           </div>
         </div>
       </div>

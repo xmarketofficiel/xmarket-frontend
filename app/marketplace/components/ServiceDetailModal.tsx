@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { X, Star, MapPin, Clock, Timer, Zap, MessageCircle } from 'lucide-react';
+import { X, Star, MapPin, Clock, Timer, Zap, MessageCircle, ArrowRight } from 'lucide-react';
 import { Service } from '@/lib/api/services';
 import { getHoursUntilDeparture, getUrgencyBadge, formatTimeLeft } from '@/lib/serviceUtils';
 
@@ -229,8 +229,16 @@ export default function ServiceDetailModal({
           {/* Info Row */}
           <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
             <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>{service.location || 'UM6P'}</span>
+              <MapPin className="w-4 h-4 flex-shrink-0" />
+              {service.fromLocation && service.toLocation ? (
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span>{service.fromLocation}</span>
+                  <ArrowRight className="w-4 h-4 flex-shrink-0 text-teal-600" />
+                  <span>{service.toLocation}</span>
+                </span>
+              ) : (
+                <span>{service.location || 'UM6P'}</span>
+              )}
             </div>
             {service.duration && (
               <div className="flex items-center gap-1">
