@@ -7,6 +7,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { servicesApi, type ServiceCategory } from '../../../lib/api/services';
 import CustomDatePicker from './CustomDatePicker';
 import CustomTimePicker from './CustomTimePicker';
+import LocationAutocomplete from './LocationAutocomplete';
 
 interface AddServiceFormProps {
   onBack: () => void;
@@ -241,53 +242,41 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
 
           {/* From/To Fields - Only for Covoiturage */}
           {formData.serviceCategoryId === 'covoiturage' && (
-            <div className="overflow-hidden transition-all duration-500 ease-in-out">
+            <div className="transition-all duration-500 ease-in-out">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-slideDown">
                 {/* From Location */}
-                <div>
-                  <label htmlFor="fromLocation" className="block text-sm font-semibold text-gray-700 mb-2">
-                    From *
-                  </label>
-                  <input
-                    type="text"
-                    id="fromLocation"
-                    name="fromLocation"
-                    value={formData.fromLocation}
-                    onChange={handleChange}
-                    placeholder="e.g., Casablanca"
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
-                      errors.fromLocation
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                        : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
-                    }`}
-                  />
-                  {errors.fromLocation && (
-                    <p className="mt-1 text-sm text-red-600">{errors.fromLocation}</p>
-                  )}
-                </div>
+                <LocationAutocomplete
+                  id="fromLocation"
+                  name="fromLocation"
+                  value={formData.fromLocation}
+                  onChange={(value) => {
+                    setFormData(prev => ({ ...prev, fromLocation: value }));
+                    if (errors.fromLocation) {
+                      setErrors(prev => ({ ...prev, fromLocation: '' }));
+                    }
+                  }}
+                  placeholder="e.g., Casablanca"
+                  label="From"
+                  error={errors.fromLocation}
+                  required
+                />
 
                 {/* To Location */}
-                <div>
-                  <label htmlFor="toLocation" className="block text-sm font-semibold text-gray-700 mb-2">
-                    To *
-                  </label>
-                  <input
-                    type="text"
-                    id="toLocation"
-                    name="toLocation"
-                    value={formData.toLocation}
-                    onChange={handleChange}
-                    placeholder="e.g., Rabat"
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
-                      errors.toLocation
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                        : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'
-                    }`}
-                  />
-                  {errors.toLocation && (
-                    <p className="mt-1 text-sm text-red-600">{errors.toLocation}</p>
-                  )}
-                </div>
+                <LocationAutocomplete
+                  id="toLocation"
+                  name="toLocation"
+                  value={formData.toLocation}
+                  onChange={(value) => {
+                    setFormData(prev => ({ ...prev, toLocation: value }));
+                    if (errors.toLocation) {
+                      setErrors(prev => ({ ...prev, toLocation: '' }));
+                    }
+                  }}
+                  placeholder="e.g., Rabat"
+                  label="To"
+                  error={errors.toLocation}
+                  required
+                />
               </div>
             </div>
           )}
