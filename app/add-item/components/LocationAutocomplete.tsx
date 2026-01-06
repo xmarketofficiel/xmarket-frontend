@@ -74,7 +74,7 @@ export default function LocationAutocomplete({
     console.log('⏳ [LocationAutocomplete] Starting API call...');
     setIsLoading(true);
     try {
-      const apiUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=8&lat=31.7917&lon=-7.0926&lang=en`;
+      const apiUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=50&lat=31.7917&lon=-7.0926&lang=en`;
       console.log('📡 [LocationAutocomplete] Fetching:', apiUrl);
       
       const response = await fetch(apiUrl);
@@ -86,14 +86,20 @@ export default function LocationAutocomplete({
       const data = await response.json();
       console.log('✅ [LocationAutocomplete] API response:', data.features.length, 'results');
       
-      const moroccanResults = data.features.filter((feature: LocationSuggestion) => 
-        feature.properties.country?.toLowerCase().includes('maroc') || 
-        feature.properties.country?.toLowerCase().includes('morocco')
-      );
+      // Filter for city-level results only (cities, towns, villages)
+      const cityLevelTypes = ['city', 'town', 'village', 'municipality'];
+      
+      // Strict Morocco-only filter: only show Moroccan cities
+      const moroccanCities = data.features.filter((feature: any) => {
+        const isCityLevel = cityLevelTypes.includes(feature.properties.type);
+        const isMorocco = feature.properties.country?.toLowerCase().includes('maroc') || 
+                         feature.properties.country?.toLowerCase().includes('morocco') ||
+                         feature.properties.countrycode === 'MA';
+        return isCityLevel && isMorocco;
+      });
 
-      const finalResults = moroccanResults.length > 0 ? moroccanResults : data.features.slice(0, 8);
-      console.log('📍 [LocationAutocomplete] Setting suggestions:', finalResults.length, 'items');
-      setSuggestions(finalResults);
+      console.log('📍 [LocationAutocomplete] Setting suggestions:', moroccanCities.length, 'Moroccan cities');
+      setSuggestions(moroccanCities);
     } catch (error) {
       console.error('❌ [LocationAutocomplete] Error fetching suggestions:', error);
       setSuggestions([]);

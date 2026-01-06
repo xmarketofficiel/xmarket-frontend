@@ -83,7 +83,7 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
 
       {/* Content */}
       <div className="relative h-full flex flex-col justify-between p-3 md:p-6">
-        <div>
+        <div className="overflow-hidden">
           {/* Urgency Badge */}
           {category.urgencyBadge && (
             <div className={`absolute top-3 right-3 ${urgencyColorClasses[category.urgencyBadge.color as keyof typeof urgencyColorClasses]} text-white px-2.5 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 animate-pulse`}>
@@ -93,7 +93,7 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
           )}
 
           {/* Category Icon */}
-          <div className="text-3xl md:text-5xl mb-2 md:mb-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+          <div className="text-3xl md:text-5xl mb-2 md:mb-4 scale-95 group-hover:scale-100 transition-transform duration-300 drop-shadow-lg">
             {category.icon}
           </div>
         </div>

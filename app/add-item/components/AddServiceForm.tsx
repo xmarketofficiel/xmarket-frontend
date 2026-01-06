@@ -421,7 +421,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
                     })}
                   </p>
                   <p className="text-xs text-blue-700 mt-1">
-                    ⏰ This service will automatically expire after the departure time
+                    ⏰ This service will automatically expire 30 minutes after the departure time
                   </p>
                 </div>
               )}
@@ -463,7 +463,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-[#009F9C] text-white rounded-xl font-semibold hover:bg-[#007A77] transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
             >
               {isSubmitting ? (
                 <>
@@ -472,8 +472,8 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5" />
-                  Create Service
+                  <Save className="w-5 h-5 flex-shrink-0" />
+                  <span>Create Service</span>
                 </>
               )}
             </button>

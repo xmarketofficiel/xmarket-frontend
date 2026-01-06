@@ -245,18 +245,14 @@ export default function ItemCard({
               </h3>
               
               {/* Price */}
-              <div className="text-2xl font-bold text-teal-600 md:flex-shrink-0">
-                {item.price} <span className="text-sm font-normal text-gray-500">DH</span>
+              <div className="text-lg font-bold text-teal-600 md:flex-shrink-0">
+                {item.price} <span className="text-xs font-normal text-gray-500">DH</span>
               </div>
             </div>
             
-            {/* Footer - Location and Seller */}
-            <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100">
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
-                <span>{item.location || 'UM6P'}</span>
-              </div>
-              <div className="font-medium text-gray-600 truncate max-w-[50%]">{getSellerName()}</div>
+            {/* Footer - Seller only */}
+            <div className="flex items-center justify-start text-xs text-gray-500 pt-3 border-t border-gray-100">
+              <div className="font-medium text-gray-600 truncate max-w-full">{getSellerName()}</div>
             </div>
           </div>
         </div>
