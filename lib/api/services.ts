@@ -142,11 +142,11 @@ export const servicesApi = {
     apiClient.patch(`/services/contacts/${contactId}`, { 
       status, 
       customerFeedback: feedback 
-    }),
+  }),
 
   getContactHistory: (
     page = 1,
-    limit = 10
+    limit = 20
   ): Promise<ApiResponse<PaginatedResponse<any>>> =>
-    apiClient.get('/services/contacts/history', { page, limit }),
+    apiClient.get(`/services/contacts/history?page=${page}&limit=${limit}`),
 };

@@ -89,6 +89,7 @@ export default function MarketplacePage() {
   const [services, setServices] = useState<Service[]>([]);
   const [serviceCategories, setServiceCategories] = useState<ServiceCategoryType[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
+  const [categoriesInitialLoad, setCategoriesInitialLoad] = useState(true); // Start as true to prevent flash
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
@@ -236,6 +237,9 @@ export default function MarketplacePage() {
       setServiceCategories(response.data);
     } catch (error) {
       console.error('Error loading service categories:', error);
+    } finally {
+      // Mark initial load as complete to prevent flash
+      setCategoriesInitialLoad(false);
     }
   }, []);
 
@@ -1109,7 +1113,7 @@ export default function MarketplacePage() {
           ) : (
             <>
               {/* Services Mode */}
-              {servicesLoading ? (
+              {(servicesLoading || categoriesInitialLoad) ? (
                 /* Services Loading Skeleton - matches actual grid dimensions to prevent layout shift */
                 <div>
                   <div className="mb-6">
