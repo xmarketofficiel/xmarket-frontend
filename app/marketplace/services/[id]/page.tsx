@@ -36,16 +36,27 @@ export default function ServiceDetailPage() {
     }
   }, [action, service]);
 
-  const loadService = async () => {
+  const loadService = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
       const response = await servicesApi.getService(serviceId);
       setService(response.data);
+      if (silent) {
+        // Clear any previous errors on successful silent reload
+        setError(null);
+      }
     } catch (error) {
       console.error('Failed to load service:', error);
-      setError('Failed to load service details');
+      // Only set error if this is not a silent reload
+      if (!silent) {
+        setError('Failed to load service details');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
@@ -63,14 +74,19 @@ export default function ServiceDetailPage() {
         comment.trim() || undefined
       );
 
-      alert('Thank you for your feedback!');
+      // Close modal and show success
       setShowRatingModal(false);
+      setRating(0);
+      setComment('');
       
-      // Reload service to show updated rating
-      loadService();
+      // Show success message
+      alert('Thank you for your feedback! Your rating has been submitted.');
       
       // Remove action and contactId from URL
       router.replace(`/marketplace/services/${serviceId}`);
+      
+      // Reload service to show updated rating (silent - don't show error page if fails)
+      loadService(true);
     } catch (error) {
       console.error('Failed to submit rating:', error);
       alert('Failed to submit rating. Please try again.');

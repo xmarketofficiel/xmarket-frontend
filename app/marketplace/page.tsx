@@ -621,6 +621,16 @@ export default function MarketplacePage() {
     // Trigger floating toggle hide animation
     setIsChangingMode(true);
     
+    // If switching to services mode, show loading state to prevent flash
+    if (newMode === 'services') {
+      setCategoriesInitialLoad(true);
+      // Reload service categories to ensure fresh data
+      setTimeout(() => {
+        loadServiceCategories();
+        loadServices();
+      }, 0);
+    }
+    
     // Change mode and update state instantly
     setMode(newMode);
     updateState({ selectedCategory: 'all', currentPage: 1 });
@@ -630,7 +640,7 @@ export default function MarketplacePage() {
     
     // Reset changing mode state after hide animation completes
     setTimeout(() => setIsChangingMode(false), 250);
-  }, [updateState, router]);
+  }, [updateState, router, loadServiceCategories, loadServices]);
 
   /**
    * Handle category change
