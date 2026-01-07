@@ -107,7 +107,6 @@ export function ServiceCard({ service, categoryBackgroundImage, onClick }: Servi
                   fill
                   className="object-cover blur-sm scale-110"
                   sizes="80px"
-                  unoptimized
                 />
                 <div className="absolute inset-0 bg-black/40" />
               </>
@@ -171,11 +170,10 @@ export function ServiceCard({ service, categoryBackgroundImage, onClick }: Servi
           <div className="absolute inset-0">
             <Image
               src={categoryBackgroundUrl}
-              alt={service.serviceCategory?.name || 'Category'}
+              alt="Background"
               fill
               className="object-cover blur-md scale-110"
               sizes="(max-width: 1024px) 50vw, 25vw"
-              unoptimized
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-black/30" />
           </div>

@@ -190,7 +190,6 @@ export default function ServiceDetailModal({
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 512px"
-                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
             </>

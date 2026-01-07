@@ -618,20 +618,24 @@ export default function MarketplacePage() {
     // Trigger floating toggle hide animation
     setIsChangingMode(true);
     
-    // If switching to services mode, show loading state to prevent flash
+    // If switching to services mode
     if (newMode === 'services') {
       // Clear products loading state to prevent double loading UI
       updateState({ loading: false, selectedCategory: 'all', currentPage: 1 });
-      setCategoriesInitialLoad(true);
       
-      // Load both categories and services together, then hide skeleton
-      Promise.all([
-        loadServiceCategories(),
-        loadServices()
-      ]).finally(() => {
-        // Only hide skeleton after BOTH loads complete
-        setCategoriesInitialLoad(false);
-      });
+      // Only load data if not already cached (same as Products behavior)
+      if (serviceCategories.length === 0 || services.length === 0) {
+        setCategoriesInitialLoad(true);
+        
+        // Load both categories and services together, then hide skeleton
+        Promise.all([
+          loadServiceCategories(),
+          loadServices()
+        ]).finally(() => {
+          setCategoriesInitialLoad(false);
+        });
+      }
+      // If data exists, don't touch categoriesInitialLoad - just show cached data instantly
     } else {
       // Switching to products mode
       updateState({ selectedCategory: 'all', currentPage: 1 });
@@ -1137,8 +1141,8 @@ export default function MarketplacePage() {
           ) : (
             <>
               {/* Services Mode */}
-              {categoriesInitialLoad ? (
-                /* Services Loading Skeleton - matches actual grid dimensions to prevent layout shift */
+              {(categoriesInitialLoad && (serviceCategories.length === 0 || services.length === 0)) ? (
+                /* Services Loading Skeleton - only show if actually loading and no data */
                 <div>
                   <div className="mb-6">
                     <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-2" />

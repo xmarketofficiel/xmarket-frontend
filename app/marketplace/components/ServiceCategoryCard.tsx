@@ -45,11 +45,9 @@ function getProxiedImageUrl(url: string | undefined): string | undefined {
 }
 
 const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, serviceCount, onClick }: ServiceCategoryCardProps) {
-  // Transform the background image URL to use the proxy
-  const backgroundImageUrl = useMemo(
-    () => getProxiedImageUrl(category.backgroundImage),
-    [category.backgroundImage]
-  );
+  // Transform the background image URL to use the proxy (inline, no useMemo)
+  const backgroundImageUrl = getProxiedImageUrl(category.backgroundImage);
+  
   const urgencyColorClasses = {
     red: 'bg-gradient-to-r from-red-500 to-red-600',
     orange: 'bg-gradient-to-r from-orange-500 to-orange-600',
@@ -73,9 +71,8 @@ const ServiceCategoryCard = memo(function ServiceCategoryCard({ category, servic
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            loading="lazy"
             quality={75}
-            unoptimized
+            priority={false}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" style={{ willChange: 'opacity' }} />
         </div>
