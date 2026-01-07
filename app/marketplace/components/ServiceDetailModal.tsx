@@ -54,36 +54,37 @@ export default function ServiceDetailModal({
   const [isVisible, setIsVisible] = useState(false);
   const [isContacting, setIsContacting] = useState(false);
 
-  const handleContactSeller = async () => {
+  const handleContactSeller = () => {
     if (!service) return;
 
-    setIsContacting(true);
-    try {
-      // Log contact event and get WhatsApp number
-      const response = await servicesApi.logContact(service.id);
-      const { whatsappNumber, sellerName } = response.data;
-
-      // Format WhatsApp number (remove any spaces or special chars)
-      const cleanNumber = whatsappNumber.replace(/\D/g, '');
-      
-      // Create WhatsApp message
-      const message = encodeURIComponent(
-        `Hi ${sellerName}, I'm interested in your service: ${service.title}`
-      );
-
-      // Redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`;
-      window.open(whatsappUrl, '_blank');
-      
-      // Close modal after successful contact
-      setTimeout(() => onClose(), 500);
-    } catch (error) {
-      console.error('Failed to log contact:', error);
-      // Still allow user to proceed even if tracking fails
-      alert('Unable to connect. Please try again.');
-    } finally {
-      setIsContacting(false);
+    // Check if seller has WhatsApp number
+    if (!service.user?.whatsappNumber) {
+      alert('Seller has no WhatsApp number available');
+      return;
     }
+
+    // Create WhatsApp message
+    const message = encodeURIComponent(
+      `Hi! I'm interested in your service: ${service.title}`
+    );
+
+    // Format WhatsApp number (remove any spaces or special chars)
+    const cleanNumber = service.user.whatsappNumber.replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`;
+    
+    // CRITICAL: Open WhatsApp immediately (synchronous) for mobile compatibility
+    // Mobile browsers block window.open() if there's any async delay
+    window.open(whatsappUrl, '_blank');
+
+    // Log contact event in background (non-blocking)
+    // This runs after WhatsApp opens to avoid mobile popup blocking
+    servicesApi.logContact(service.id).catch((error) => {
+      console.error('Failed to log contact:', error);
+      // Don't show error to user - WhatsApp already opened successfully
+    });
+    
+    // Close modal after contact
+    setTimeout(() => onClose(), 500);
   };
 
   useEffect(() => {
