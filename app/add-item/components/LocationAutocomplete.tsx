@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MapPin, X } from 'lucide-react';
+import { MapPin, X, Star, Edit3 } from 'lucide-react';
 
 interface LocationSuggestion {
   properties: {
@@ -15,6 +15,8 @@ interface LocationSuggestion {
   geometry: {
     coordinates: [number, number];
   };
+  isCustom?: boolean;
+  isPreset?: boolean;
 }
 
 interface LocationAutocompleteProps {
@@ -44,6 +46,30 @@ export default function LocationAutocomplete({
   const [inputValue, setInputValue] = useState(value);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Preset locations that should always be available
+  const presetLocations: LocationSuggestion[] = [
+    {
+      properties: {
+        name: 'UM6P Benguerir',
+        country: 'Morocco'
+      },
+      geometry: {
+        coordinates: [-7.9539, 32.2297]
+      },
+      isPreset: true
+    },
+    {
+      properties: {
+        name: 'UM6P Rabat',
+        country: 'Morocco'
+      },
+      geometry: {
+        coordinates: [-6.8498, 33.9716]
+      },
+      isPreset: true
+    }
+  ];
 
   useEffect(() => {
     setInputValue(value);
@@ -98,11 +124,51 @@ export default function LocationAutocomplete({
         return isCityLevel && isMorocco;
       });
 
-      console.log('📍 [LocationAutocomplete] Setting suggestions:', moroccanCities.length, 'Moroccan cities');
-      setSuggestions(moroccanCities);
+      // Filter preset locations that match the query
+      const matchingPresets = presetLocations.filter(preset => {
+        const presetName = preset.properties.name?.toLowerCase() || '';
+        const queryLower = query.toLowerCase();
+        return presetName.includes(queryLower);
+      });
+
+      // Create custom suggestion with user's typed text
+      const customSuggestion: LocationSuggestion = {
+        properties: {
+          name: query.trim(),
+          country: 'Custom Location'
+        },
+        geometry: {
+          coordinates: [0, 0]
+        },
+        isCustom: true
+      };
+
+      // Combine all suggestions: presets first, then API results, then custom
+      const allSuggestions = [...matchingPresets, ...moroccanCities, customSuggestion];
+
+      console.log('📍 [LocationAutocomplete] Setting suggestions:', allSuggestions.length, 'total (presets:', matchingPresets.length, ', cities:', moroccanCities.length, ', custom: 1)');
+      setSuggestions(allSuggestions);
     } catch (error) {
       console.error('❌ [LocationAutocomplete] Error fetching suggestions:', error);
-      setSuggestions([]);
+      // On error, still show preset locations and custom suggestion
+      const matchingPresets = presetLocations.filter(preset => {
+        const presetName = preset.properties.name?.toLowerCase() || '';
+        const queryLower = query.toLowerCase();
+        return presetName.includes(queryLower);
+      });
+      
+      const customSuggestion: LocationSuggestion = {
+        properties: {
+          name: query.trim(),
+          country: 'Custom Location'
+        },
+        geometry: {
+          coordinates: [0, 0]
+        },
+        isCustom: true
+      };
+      
+      setSuggestions([...matchingPresets, customSuggestion]);
     } finally {
       setIsLoading(false);
       console.log('✔️ [LocationAutocomplete] API call finished');
@@ -140,6 +206,12 @@ export default function LocationAutocomplete({
   };
 
   const formatLocationName = (suggestion: LocationSuggestion): string => {
+    // For preset or custom locations, just return the name as-is
+    if (suggestion.isPreset || suggestion.isCustom) {
+      return suggestion.properties.name || 'Unknown location';
+    }
+    
+    // For API results, format with city/state/country
     const { name, city, state, country } = suggestion.properties;
     const parts = [];
     
@@ -226,6 +298,13 @@ export default function LocationAutocomplete({
                   v && !locationName.includes(v)
                 ).join(', ');
 
+                // Determine icon and styling based on suggestion type
+                const isCustom = suggestion.isCustom;
+                const Icon = isCustom ? Edit3 : MapPin;
+                const iconColor = isCustom 
+                    ? 'text-green-500 group-hover:text-green-600'
+                    : 'text-gray-400 group-hover:text-blue-500';
+
                 return (
                   <li key={index}>
                     <button
@@ -233,10 +312,11 @@ export default function LocationAutocomplete({
                       onClick={() => handleSelectSuggestion(suggestion)}
                       className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors flex items-start gap-3 group"
                     >
-                      <MapPin className="w-4 h-4 text-gray-400 group-hover:text-blue-500 mt-1 flex-shrink-0" />
+                      <Icon className={`w-4 h-4 ${iconColor} mt-1 flex-shrink-0`} />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900 truncate">
                           {locationName}
+                          {isCustom && <span className="ml-2 text-xs text-green-600 font-normal">(Use as typed)</span>}
                         </div>
                         {subtitle && (
                           <div className="text-sm text-gray-500 truncate">

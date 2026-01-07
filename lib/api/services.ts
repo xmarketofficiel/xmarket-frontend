@@ -126,4 +126,27 @@ export const servicesApi = {
     limit = 10
   ): Promise<ApiResponse<PaginatedResponse<any>>> =>
     apiClient.get(`/services/${serviceId}/ratings`, { page, limit }),
+
+  // Contact tracking
+  logContact: (
+    serviceId: string,
+    platform = 'whatsapp'
+  ): Promise<ApiResponse<{ contactEvent: any; whatsappNumber: string; sellerName: string }>> =>
+    apiClient.post('/services/contact', { serviceId, platform }),
+
+  updateContactStatus: (
+    contactId: string,
+    status: string,
+    feedback?: string
+  ): Promise<ApiResponse<any>> =>
+    apiClient.patch(`/services/contacts/${contactId}`, { 
+      status, 
+      customerFeedback: feedback 
+    }),
+
+  getContactHistory: (
+    page = 1,
+    limit = 10
+  ): Promise<ApiResponse<PaginatedResponse<any>>> =>
+    apiClient.get('/services/contacts/history', { page, limit }),
 };

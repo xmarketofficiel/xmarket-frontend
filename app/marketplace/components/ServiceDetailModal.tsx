@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { X, Star, MapPin, Clock, Timer, Zap, MessageCircle, ArrowRight } from 'lucide-react';
-import { Service } from '@/lib/api/services';
+import { Service, servicesApi } from '@/lib/api/services';
 import { getHoursUntilDeparture, getUrgencyBadge, formatTimeLeft } from '@/lib/serviceUtils';
 
 interface ServiceDetailModalProps {
@@ -52,6 +52,39 @@ export default function ServiceDetailModal({
 }: ServiceDetailModalProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isContacting, setIsContacting] = useState(false);
+
+  const handleContactSeller = async () => {
+    if (!service) return;
+
+    setIsContacting(true);
+    try {
+      // Log contact event and get WhatsApp number
+      const response = await servicesApi.logContact(service.id);
+      const { whatsappNumber, sellerName } = response.data;
+
+      // Format WhatsApp number (remove any spaces or special chars)
+      const cleanNumber = whatsappNumber.replace(/\D/g, '');
+      
+      // Create WhatsApp message
+      const message = encodeURIComponent(
+        `Hi ${sellerName}, I'm interested in your service: ${service.title}`
+      );
+
+      // Redirect to WhatsApp
+      const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`;
+      window.open(whatsappUrl, '_blank');
+      
+      // Close modal after successful contact
+      setTimeout(() => onClose(), 500);
+    } catch (error) {
+      console.error('Failed to log contact:', error);
+      // Still allow user to proceed even if tracking fails
+      alert('Unable to connect. Please try again.');
+    } finally {
+      setIsContacting(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -285,10 +318,21 @@ export default function ServiceDetailModal({
 
           {/* Contact Button */}
           <button
-            className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center gap-2"
+            onClick={handleContactSeller}
+            disabled={isContacting}
+            className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <MessageCircle className="w-5 h-5" />
-            Contact Seller
+            {isContacting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Connecting...
+              </>
+            ) : (
+              <>
+                <MessageCircle className="w-5 h-5" />
+                Contact Seller
+              </>
+            )}
           </button>
         </div>
       </div>

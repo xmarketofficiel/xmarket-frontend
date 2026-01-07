@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Clock, ChevronDown } from 'lucide-react';
 
 interface CustomTimePickerProps {
@@ -11,10 +11,48 @@ interface CustomTimePickerProps {
 }
 
 export default function CustomTimePicker({ value, onChange, autoOpen = false, selectedDate }: CustomTimePickerProps) {
+  // Helper function to get first available time
+  const getFirstAvailableTime = (): { hour: number; minute: number; period: 'AM' | 'PM' } => {
+    const now = new Date();
+    const isToday = selectedDate?.toDateString() === now.toDateString();
+    
+    if (!isToday || !selectedDate) {
+      // Not today, default to first time slot (12:00 AM)
+      return { hour: 12, minute: 0, period: 'AM' };
+    }
+    
+    // Today - find first available time after current time
+    const currentHour24 = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Round up to next 30-minute slot
+    let nextMinute = currentMinute <= 0 ? 30 : 0;
+    let nextHour24 = currentMinute <= 0 ? currentHour24 : currentHour24 + 1;
+    
+    // If we've gone past 11:30 PM, default to 12:00 AM tomorrow (shouldn't happen for today)
+    if (nextHour24 >= 24) {
+      return { hour: 12, minute: 0, period: 'AM' };
+    }
+    
+    // Convert to 12-hour format
+    const nextPeriod: 'AM' | 'PM' = nextHour24 >= 12 ? 'PM' : 'AM';
+    const nextHour = nextHour24 === 0 ? 12 : nextHour24 > 12 ? nextHour24 - 12 : nextHour24;
+    
+    return { hour: nextHour, minute: nextMinute, period: nextPeriod };
+  };
+
+  const initialTime = value ? {
+    hour: value.getHours() === 0 ? 12 : value.getHours() > 12 ? value.getHours() - 12 : value.getHours(),
+    minute: value.getMinutes(),
+    period: value.getHours() >= 12 ? 'PM' as const : 'AM' as const
+  } : getFirstAvailableTime();
+
   const [isOpen, setIsOpen] = useState(autoOpen);
-  const [selectedHour, setSelectedHour] = useState(value?.getHours() || 9);
-  const [selectedMinute, setSelectedMinute] = useState(value?.getMinutes() || 0);
-  const [period, setPeriod] = useState<'AM' | 'PM'>('AM');
+  const [selectedHour, setSelectedHour] = useState(initialTime.hour);
+  const [selectedMinute, setSelectedMinute] = useState(initialTime.minute);
+  const [period, setPeriod] = useState<'AM' | 'PM'>(initialTime.period);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const firstAvailableRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (autoOpen) {
@@ -22,14 +60,32 @@ export default function CustomTimePicker({ value, onChange, autoOpen = false, se
     }
   }, [autoOpen]);
 
+  // Auto-scroll to first available time when picker opens
+  useEffect(() => {
+    if (isOpen && firstAvailableRef.current && scrollContainerRef.current) {
+      setTimeout(() => {
+        firstAvailableRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 100);
+    }
+  }, [isOpen, period]);
+
   useEffect(() => {
     if (value) {
       const hours = value.getHours();
       setSelectedHour(hours === 0 ? 12 : hours > 12 ? hours - 12 : hours);
       setSelectedMinute(value.getMinutes());
       setPeriod(hours >= 12 ? 'PM' : 'AM');
+    } else if (selectedDate) {
+      // Re-calculate first available time when selectedDate changes
+      const firstAvailable = getFirstAvailableTime();
+      setSelectedHour(firstAvailable.hour);
+      setSelectedMinute(firstAvailable.minute);
+      setPeriod(firstAvailable.period as 'AM' | 'PM');
     }
-  }, [value]);
+  }, [value, selectedDate]);
 
   const handleTimeSelect = (hour: number, minute: number) => {
     setSelectedHour(hour);
@@ -125,8 +181,8 @@ export default function CustomTimePicker({ value, onChange, autoOpen = false, se
             </div>
 
             {/* Time Slots List */}
-            <div className="space-y-1 max-h-60 overflow-y-auto">
-              {timeSlots.map(({ hour, minute }) => {
+            <div ref={scrollContainerRef} className="space-y-1 max-h-60 overflow-y-auto">
+              {timeSlots.map(({ hour, minute }, index) => {
                 const isSelected = selectedHour === hour && selectedMinute === minute;
                 const displayTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 
@@ -149,9 +205,13 @@ export default function CustomTimePicker({ value, onChange, autoOpen = false, se
                   }
                 }
                 
+                // Determine if this is the first available (non-past) time slot
+                const isFirstAvailable = !isPast && selectedHour === hour && selectedMinute === minute;
+                
                 return (
                   <button
                     key={`${hour}-${minute}`}
+                    ref={isFirstAvailable ? firstAvailableRef : null}
                     type="button"
                     onClick={() => !isPast && handleTimeSelect(hour, minute)}
                     disabled={isPast}
