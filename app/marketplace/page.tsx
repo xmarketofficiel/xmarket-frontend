@@ -81,15 +81,15 @@ export default function MarketplacePage() {
   }, [user]);
 
   // Mode state for Products/Services toggle - read from URL params
-  const [mode, setMode] = useState<MarketplaceMode>(
-    (searchParams.get('mode') as MarketplaceMode) || 'products'
-  );
+  const initialMode = (searchParams.get('mode') as MarketplaceMode) || 'products';
+  const [mode, setMode] = useState<MarketplaceMode>(initialMode);
   
   // Services state
   const [services, setServices] = useState<Service[]>([]);
   const [serviceCategories, setServiceCategories] = useState<ServiceCategoryType[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
-  const [categoriesInitialLoad, setCategoriesInitialLoad] = useState(true); // Start as true to prevent flash
+  // Only show loading on mount if starting in Services mode
+  const [categoriesInitialLoad, setCategoriesInitialLoad] = useState(initialMode === 'services');
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isRestoringScroll, setIsRestoringScroll] = useState(false);
@@ -229,7 +229,7 @@ export default function MarketplacePage() {
   }, []);
 
   /**
-   * Load service categories from backend
+   * Load service categories
    */
   const loadServiceCategories = useCallback(async () => {
     try {
@@ -237,9 +237,6 @@ export default function MarketplacePage() {
       setServiceCategories(response.data);
     } catch (error) {
       console.error('Error loading service categories:', error);
-    } finally {
-      // Mark initial load as complete to prevent flash
-      setCategoriesInitialLoad(false);
     }
   }, []);
 
@@ -623,17 +620,25 @@ export default function MarketplacePage() {
     
     // If switching to services mode, show loading state to prevent flash
     if (newMode === 'services') {
+      // Clear products loading state to prevent double loading UI
+      updateState({ loading: false, selectedCategory: 'all', currentPage: 1 });
       setCategoriesInitialLoad(true);
-      // Reload service categories to ensure fresh data
-      setTimeout(() => {
-        loadServiceCategories();
-        loadServices();
-      }, 0);
+      
+      // Load both categories and services together, then hide skeleton
+      Promise.all([
+        loadServiceCategories(),
+        loadServices()
+      ]).finally(() => {
+        // Only hide skeleton after BOTH loads complete
+        setCategoriesInitialLoad(false);
+      });
+    } else {
+      // Switching to products mode
+      updateState({ selectedCategory: 'all', currentPage: 1 });
     }
     
-    // Change mode and update state instantly
+    // Change mode
     setMode(newMode);
-    updateState({ selectedCategory: 'all', currentPage: 1 });
     
     // Update URL to reflect mode change
     router.push(`/marketplace?mode=${newMode}`);
@@ -797,8 +802,17 @@ export default function MarketplacePage() {
     // Load other data
     loadCategories();
     loadPendingSalesCount();
-    loadServiceCategories();
-    loadServices();
+    
+    // Load service data on mount if starting in Services mode
+    const currentMode = searchParams.get('mode') as MarketplaceMode || 'products';
+    if (currentMode === 'services') {
+      Promise.all([
+        loadServiceCategories(),
+        loadServices()
+      ]).finally(() => {
+        setCategoriesInitialLoad(false);
+      });
+    }
     
     // Load saved view mode preference
     const savedViewMode = localStorage.getItem('marketplace-view-mode') as ViewMode;
@@ -1123,7 +1137,7 @@ export default function MarketplacePage() {
           ) : (
             <>
               {/* Services Mode */}
-              {(servicesLoading || categoriesInitialLoad) ? (
+              {categoriesInitialLoad ? (
                 /* Services Loading Skeleton - matches actual grid dimensions to prevent layout shift */
                 <div>
                   <div className="mb-6">
