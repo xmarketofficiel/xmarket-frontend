@@ -196,7 +196,7 @@ export default function AddServiceForm({ onBack }: AddServiceFormProps) {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="e.g., Carpooling to Rabat"
+              placeholder="e.g., Laundry Service"
               className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
                 errors.title
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
