@@ -15,8 +15,8 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
 
-  // Hide navbar on add-item page and item detail pages
-  if (pathname === '/add-item' || pathname.startsWith('/item/')) {
+  // Hide navbar on item detail pages
+  if (pathname.startsWith('/item/')) {
     return null;
   }
 
