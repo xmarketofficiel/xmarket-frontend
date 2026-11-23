@@ -122,18 +122,6 @@ export const CATEGORY_CONFIG = {
     color: '#6366F1',
     description: 'Bikes, scooters & transportation'
   },
-  services: {
-    name: 'Services',
-    icon: '🔧',
-    color: '#059669',
-    description: 'Tutoring, cleaning, repairs'
-  },
-  Services: {
-    name: 'Services',
-    icon: '🔧',
-    color: '#059669',
-    description: 'Tutoring, cleaning, repairs'
-  },
   'home & garden': {
     name: 'Home & Garden',
     icon: '🏡',

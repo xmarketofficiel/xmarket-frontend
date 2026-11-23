@@ -15,6 +15,7 @@ export interface DiscordData {
 }
 
 export interface SignupFormData {
+  registrationToken?: string;
   step: SignupStepType;
   userType?: UserType;
   email: string;

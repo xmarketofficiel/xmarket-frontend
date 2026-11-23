@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Heart, MessageCircle, Flag, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -69,7 +71,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
 
   const openWhatsApp = () => {
     if (!item.seller?.whatsappNumber) {
-      addToast('Seller has no WhatsApp number available', 'error');
+      addToast('This member has no WhatsApp contact available', 'error');
       return;
     }
     
@@ -288,19 +290,9 @@ export default function ItemDetail({ item }: ItemDetailProps) {
         {/* Seller Info */}
         <div className="bg-gray-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-900">Seller</h3>
-            {!isOwnItem && !item.anonymous && (
-              <button
-                onClick={() => {
-                  const sellerId = item.seller?.id || item.sellerId;
-                  if (sellerId) {
-                    window.location.href = `/user/${sellerId}`;
-                  }
-                }}
-                className="text-sm text-[#006666] hover:text-[#005555] font-medium transition-colors"
-              >
-                View Profile
-              </button>
+            <h3 className="font-semibold text-gray-900">Member</h3>
+            {!item.anonymous && (item.seller?.id || item.sellerId) && (
+              <Link href={`/user/${item.seller?.id || item.sellerId}`} className="text-sm font-semibold text-[#007B78] hover:underline">View profile</Link>
             )}
           </div>
           <div className="flex items-center space-x-3">
@@ -310,7 +302,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900">
-                  {item.anonymous ? 'Anonymous Seller' : (item.seller.fullName || item.seller.name)}
+                  {item.anonymous ? 'Community member' : (item.seller.fullName || item.seller.name)}
                 </span>
                 {!item.anonymous && (item.seller.isVerified || item.seller.verified) && (
                   <CheckCircle size={16} className="text-[#006666]" />
@@ -404,7 +396,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
           title: item.title,
           price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
           seller: {
-            fullName: item.seller?.fullName || item.seller?.name || 'Unknown Seller',
+            fullName: item.seller?.fullName || item.seller?.name || 'Community member',
             whatsappNumber: item.seller?.whatsappNumber
           }
         }}

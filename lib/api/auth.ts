@@ -13,6 +13,7 @@ export interface LoginCredentials {
 }
 
 export interface CompleteRegistrationData {
+  registrationToken?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -31,6 +32,7 @@ export interface Discord1337VerificationData {
 
 export interface Discord1337VerificationResponse {
   verified: boolean;
+  registrationToken: string;
   user?: {
     id: string;
     username: string;
@@ -67,7 +69,7 @@ export const authApi = {
   verifyOtp: (
     email: string,
     otp: string
-  ): Promise<ApiResponse<{ message: string }>> =>
+  ): Promise<ApiResponse<{ message: string; registrationToken: string }>> =>
     apiClient.post("/auth/verify-otp", { email, otp }),
 
   completeRegistration: async (

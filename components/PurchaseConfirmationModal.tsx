@@ -101,7 +101,7 @@ export default function PurchaseConfirmationModal({
             </div>
             {item.seller?.fullName && (
               <div className="flex justify-between items-center text-sm mt-1">
-                <span className="text-gray-600">Seller:</span>
+                <span className="text-gray-600">Posted by:</span>
                 <span className="text-gray-900">{item.seller.fullName}</span>
               </div>
             )}
@@ -141,14 +141,14 @@ export default function PurchaseConfirmationModal({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any questions for the seller or special requests..."
+              placeholder="Any questions about this item or special requests..."
               rows={3}
               maxLength={500}
               disabled={isSubmitting}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006666] focus:border-transparent resize-none disabled:bg-gray-50 disabled:text-gray-500"
             />
             <div className="text-xs text-gray-500 mt-1 flex justify-between">
-              <span>Share any questions or requirements with the seller</span>
+              <span>Share any questions or requirements with this member</span>
               <span>{notes.length}/500</span>
             </div>
           </div>

@@ -59,7 +59,7 @@ function BrandHeading() {
     <>
       <h2 className="text-4xl font-bold mb-6">Welcome to XMarket</h2>
       <p className="text-xl text-teal-100 mb-8 leading-relaxed">
-        Your trusted campus marketplace connecting students for secure trading and services.
+        Your campus marketplace for students and staff to buy and sell items.
       </p>
     </>
   );

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
   User, 
@@ -197,13 +198,19 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     className="flex items-center gap-1 px-3 py-1 bg-green-50 border border-green-200 rounded-full text-sm font-medium text-green-700 mx-auto sm:mx-0 w-fit"
-                    title="Verified Seller"
+                    title="Verified community member"
                   >
                     <CheckCircle className="w-4 h-4" />
                     Verified
                   </motion.div>
                 )}
               </div>
+
+              {isOwner && (
+                <Link href={`/user/${user.id}`} className="inline-flex text-sm font-semibold text-[#007B78] hover:underline">
+                  View my community profile
+                </Link>
+              )}
 
               {/* Email */}
               {user.email && (

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { api } from '../../../lib/apiEndpoints';
 import { useUser } from '../../../contexts/UserContext';
+import { isCommunityEmail } from '../../../lib/community';
+import { StepHeader } from './StepHeader';
 
 // Import existing step components
 import { EmailStep } from './EmailStep';
@@ -22,7 +24,7 @@ interface UM6PStudentStepProps {
   onBack: () => void;
 }
 
-export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
+export function CommunitySignupForm({ onBack }: UM6PStudentStepProps) {
   const router = useRouter();
   const { refreshUser } = useUser();
 
@@ -141,14 +143,24 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
       return;
     }
 
+    if (!isCommunityEmail(formData.email)) {
+      updateState({ message: 'Use your @um6p.ma or @student.1337.ma community email.', isLoading: false });
+      return;
+    }
+
     try {
-      await api.auth.sendOtp(formData.email);
+      const email = formData.email.trim().toLowerCase();
+      await api.auth.sendOtp(email);
       
       updateState({
         message: SUCCESS_MESSAGES.OTP_SENT,
         messageType: 'success'
       });
-      setFormData(prev => ({ ...prev, step: 'otp' }));
+      setFormData(prev => ({
+        ...prev, email, step: 'otp',
+        userType: email.endsWith('@student.1337.ma') ? '1337' : 'um6p',
+        department: email.endsWith('@student.1337.ma') ? '1337' : 'UM6P',
+      }));
       startResendTimer();
     } catch (error: any) {
       const errorMessage = getErrorMessage(error);
@@ -195,13 +207,13 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
     }
 
     try {
-      await api.auth.verifyOtp(formData.email, formData.otp);
+      const response = await api.auth.verifyOtp(formData.email, formData.otp);
       
       updateState({
         message: SUCCESS_MESSAGES.OTP_VERIFIED,
         messageType: 'success'
       });
-      setFormData(prev => ({ ...prev, step: 'details' }));
+      setFormData(prev => ({ ...prev, step: 'details', registrationToken: response.data.registrationToken }));
     } catch (error: any) {
       const errorMessage = getErrorMessage(error);
       updateState({ message: errorMessage });
@@ -242,10 +254,11 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
 
     try {
       const response = await api.auth.completeRegistration({
+        registrationToken: formData.registrationToken,
         email: formData.email,
         firstName: formData.firstName || '',
         lastName: formData.lastName || '',
-        department: 'UM6P',
+        department: formData.department,
         role: formData.role || 'student',
         address: formData.address || '',
         whatsappNumber,
@@ -289,6 +302,7 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
         ease: ANIMATION_SYSTEM.framerEasing.easeOut 
       }}
     >
+      <StepHeader step={formData.step} signupMode="signup" />
 
       {/* Email Step */}
       {formData.step === 'email' && (
@@ -357,3 +371,6 @@ export function UM6PStudentStep({ onBack }: UM6PStudentStepProps) {
     </motion.div>
   );
 }
+
+// Retained for imports in the retired institution-specific signup pages.
+export { CommunitySignupForm as UM6PStudentStep };

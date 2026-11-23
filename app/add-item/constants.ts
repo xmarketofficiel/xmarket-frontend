@@ -106,11 +106,6 @@ export const CATEGORY_CONFIG = {
     description: 'Snacks, drinks, food items',
     subcategories: ['Snacks', 'Beverages', 'Ingredients', 'Specialty Foods']
   },
-  'Services': {
-    icon: '🔧',
-    description: 'Tutoring, repairs, services',
-    subcategories: ['Tutoring', 'Repairs', 'Consulting', 'Personal Services']
-  },
   'Other': {
     icon: '�',
     description: 'Items that don\'t fit other categories',

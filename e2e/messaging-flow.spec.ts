@@ -5,7 +5,8 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Messaging Flow', () => {
+// Archived: in-app messaging is retired; buyers contact sellers through WhatsApp.
+test.describe.skip('Messaging Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/messages');
     await page.waitForLoadState('networkidle');

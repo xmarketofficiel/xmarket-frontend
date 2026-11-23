@@ -144,7 +144,7 @@ export function DetailsStep({
           />
           {formData.email && formData.userType && (formData.userType === '1337' || formData.userType === 'um6p') && (
             <p className="text-xs text-gray-500 px-1">
-              💡 This email was auto-filled from your authentication, but you can change it if needed.
+              This is your verified community email address.
             </p>
           )}
         </div>

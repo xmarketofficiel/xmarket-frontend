@@ -2,9 +2,11 @@
 
 import { CheckCircle, MessageCircle, User, Star, Clock } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
-interface SellerInfo {
+interface MemberInfo {
   id?: string | number;
+  userRole?: 'student' | 'staff';
   name?: string;
   fullName?: string;
   program?: string;
@@ -18,37 +20,35 @@ interface SellerInfo {
   profilePicture?: string;
 }
 
-interface SellerCardProps {
-  seller: SellerInfo;
+interface MemberCardProps {
+  member: MemberInfo;
   isAnonymous?: boolean;
   isOwnItem?: boolean;
   onMessageClick: () => void;
-  onViewProfile?: () => void;
   className?: string;
 }
 
-export default function SellerCard({
-  seller,
+export default function MemberCard({
+  member,
   isAnonymous = false,
   isOwnItem = false,
   onMessageClick,
-  onViewProfile,
   className = ''
-}: SellerCardProps) {
+}: MemberCardProps) {
 
-  const getSellerName = () => {
-    if (isAnonymous) return 'Anonymous Seller';
-    return seller.fullName || seller.name || 'Unknown Seller';
+  const getMemberName = () => {
+    if (isAnonymous) return 'Community member';
+    return member.fullName || member.name || 'Community member';
   };
 
-  const getSellerInitial = () => {
+  const getMemberInitial = () => {
     if (isAnonymous) return '🕶️';
-    const name = getSellerName();
+    const name = getMemberName();
     return name.charAt(0).toUpperCase();
   };
 
   const getProfilePhotoUrl = () => {
-    const photoUrl = seller.profileImageUrl || seller.profilePicture;
+    const photoUrl = member.profileImageUrl || member.profilePicture;
     if (!photoUrl) return null;
     
     // If it's already a full URL, return as is
@@ -65,13 +65,9 @@ export default function SellerCard({
     return photoUrl;
   };
 
-  const isVerified = seller.isVerified || seller.verified;
+  const isVerified = member.isVerified || member.verified;
 
-  const handleViewProfile = () => {
-    if (onViewProfile && !isAnonymous && !isOwnItem) {
-      onViewProfile();
-    }
-  };
+
 
   return (
     <div 
@@ -81,20 +77,17 @@ export default function SellerCard({
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-gray-900 flex items-center space-x-2">
           <User size={18} />
-          <span>Seller</span>
+          <span>Posted by</span>
         </h3>
         
-        {!isOwnItem && !isAnonymous && onViewProfile && (
-          <button
-            onClick={handleViewProfile}
-            className="text-sm text-[#006666] hover:text-[#005555] font-medium transition-colors duration-200"
-          >
-            View Profile
-          </button>
+        {!isAnonymous && member.id && (
+          <Link href={`/user/${member.id}`} className="text-sm font-semibold text-[#007B78] hover:underline">
+            View profile
+          </Link>
         )}
       </div>
 
-      {/* Seller Info */}
+      {/* Member info */}
       <div className="flex items-center space-x-3">
         {/* Avatar */}
         <div 
@@ -103,7 +96,7 @@ export default function SellerCard({
           {getProfilePhotoUrl() && !isAnonymous ? (
             <Image
               src={getProfilePhotoUrl()!}
-              alt={getSellerName()}
+              alt={getMemberName()}
               fill
               className="object-cover"
               sizes="48px"
@@ -113,14 +106,14 @@ export default function SellerCard({
               }}
             />
           ) : (
-            <span>{getSellerInitial()}</span>
+            <span>{getMemberInitial()}</span>
           )}</div>
         
         {/* Details */}
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
             <span className="font-medium text-gray-900">
-              {getSellerName()}
+              {getMemberName()}
             </span>
             
             {!isAnonymous && isVerified && (
@@ -140,26 +133,27 @@ export default function SellerCard({
           
           {!isAnonymous && (
             <div className="space-y-1">
+              {member.userRole && <p className="text-sm text-gray-500">{member.userRole === 'staff' ? 'Staff' : 'Student'}</p>}
               {/* Program and Year */}
-              {(seller.program || seller.year) && (
+              {(member.program || member.year) && (
                 <div className="text-sm text-gray-600">
-                  {seller.program} {seller.year && `• ${seller.year}`}
+                  {member.program} {member.year && `• ${member.year}`}
                 </div>
               )}
               
               {/* Rating and Response Time */}
               <div className="flex items-center space-x-4 text-xs text-gray-500">
-                {seller.rating && (
+                {member.rating && (
                   <div className="flex items-center space-x-1">
                     <Star size={12} className="text-yellow-500 fill-current" />
-                    <span>{seller.rating.toFixed(1)}</span>
+                    <span>{member.rating.toFixed(1)}</span>
                   </div>
                 )}
                 
-                {seller.responseTime && (
+                {member.responseTime && (
                   <div className="flex items-center space-x-1">
                     <Clock size={12} />
-                    <span>Responds in {seller.responseTime}</span>
+                    <span>Responds in {member.responseTime}</span>
                   </div>
                 )}
               </div>
@@ -168,7 +162,7 @@ export default function SellerCard({
         </div>
       </div>
 
-      {/* Anonymous Seller Info */}
+      {/* Community member Info */}
       {isAnonymous && (
         <div
           className="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-100"
@@ -177,7 +171,7 @@ export default function SellerCard({
             <div className="text-blue-500 mt-0.5">ℹ️</div>
             <div className="text-sm text-blue-700">
               <p className="font-medium mb-1">Private Listing</p>
-              <p className="text-xs">This seller has chosen to remain anonymous. You can still contact them through our secure messaging system.</p>
+              <p className="text-xs">This member has chosen to keep their identity private on this listing. Contact is available through WhatsApp.</p>
             </div>
           </div>
         </div>

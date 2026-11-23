@@ -96,6 +96,18 @@ const nextConfig = {
   // Image optimization (disabled to prevent Vercel from using Next.js optimizer)
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'xmarket-images-prod.ams3.cdn.digitaloceanspaces.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'xmarket-images-prod.ams3.digitaloceanspaces.com',
+        pathname: '/**',
+      },
+    ],
   },
   
   // Ensure proper module resolution

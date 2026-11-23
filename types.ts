@@ -23,6 +23,9 @@ export interface User {
   averageRating?: string | number;
   totalRatings?: number;
   role?: string;
+  userRole?: 'student' | 'staff';
+  department?: string;
+  showPhone?: boolean;
   status?: string;
   lastLogin?: string;
   privacy?: UserPrivacySettings;

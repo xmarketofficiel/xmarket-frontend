@@ -28,22 +28,22 @@ export const FEATURES = [
   },
   {
     icon: MessageCircle,
-    title: "Real-Time Messaging",
-    description: "Chat instantly with buyers and sellers. Negotiate prices, ask questions, and coordinate meetups seamlessly.",
+    title: "WhatsApp Contact",
+    description: "Contact members through WhatsApp to ask questions, discuss prices, and arrange a campus meetup.",
     color: "from-[#8B5CF6] to-[#7C3AED]",
     delay: 0.2
   },
   {
     icon: Heart,
     title: "Save Favorites",
-    description: "Bookmark items you love and get notified when prices drop. Never miss a great deal on campus.",
+    description: "Save items you like and find them again in your favorites.",
     color: "from-[#EF4444] to-[#DC2626]",
     delay: 0.3
   },
   {
     icon: Shield,
     title: "Verified Community",
-    description: "Every user is verified with a university email. Buy and sell with confidence in a trusted student network.",
+    description: "Join with your @um6p.ma or @student.1337.ma email. Buy and sell with students and staff on campus.",
     color: "from-[#10B981] to-[#059669]",
     delay: 0.4
   },
@@ -89,7 +89,7 @@ export const TESTIMONIALS = [
     name: "Fatima El Mansouri",
     role: "Business Student",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    content: "The messaging system is super convenient. I sold my furniture in just two days!",
+    content: "Contacting buyers through WhatsApp made it easy to arrange a campus meetup.",
     rating: 5
   }
 ] as const;
@@ -100,25 +100,24 @@ export const CATEGORIES = [
   { name: "Furniture", icon: "🪑", count: "80+ items" },
   { name: "Clothing", icon: "👕", count: "120+ items" },
   { name: "Sports", icon: "⚽", count: "90+ items" },
-  { name: "Services", icon: "🛠️", count: "200+ offers" }
 ] as const;
 
 export const FAQ_ITEMS = [
   {
     question: "How do I verify my university email?",
-    answer: "Simply sign up with your university email address and we'll send you a verification link. Click the link in your email to activate your account. Only verified students can access the marketplace."
+    answer: "Sign up with your university email and enter the verification code we send you. Students and staff join with an @um6p.ma or @student.1337.ma email address."
   },
   {
     question: "Is it safe to buy from other students?",
-    answer: "Absolutely! All users are verified university students with confirmed email addresses. We also have a rating system and secure messaging to help you communicate safely. Always meet in public places on campus for transactions."
+    answer: "The marketplace is for students and staff in our community. Contact members through WhatsApp, check the item before paying, and meet in a public place on campus."
   },
   {
     question: "How do I list an item for sale?",
-    answer: "Click 'Add Item' from your dashboard, fill in the details (title, description, price, category), upload photos, and publish. Your listing will be visible to all verified students in your university."
+    answer: "Click 'Add Item' from your dashboard, fill in the details (title, description, price, category), upload photos, and publish. Your listing will be visible to community students and staff."
   },
   {
-    question: "Can I negotiate prices with sellers?",
-    answer: "Yes! Use our built-in messaging system to chat with sellers and negotiate prices directly. Many sellers are open to reasonable offers, especially for bulk purchases or quick sales."
+    question: "Can I negotiate item prices?",
+    answer: "Yes! Use the WhatsApp contact button to discuss prices directly with the member who posted the item. Members may accept reasonable offers, especially for bulk purchases or quick sales."
   },
   {
     question: "What categories are available?",

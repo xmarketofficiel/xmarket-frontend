@@ -25,6 +25,7 @@ export default function EditProfilePage() {
   const [privacySettings, setPrivacySettings] = useState({
     showSoldItems: user?.privacy?.showSoldItems ?? user?.showSoldItems ?? true,
     showPurchases: user?.privacy?.showPurchases ?? user?.showPurchases ?? true,
+    showPhone: user?.privacy?.showPhone ?? user?.showPhone ?? false,
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -275,51 +276,16 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Privacy Settings */}
+          {/* Community profile visibility */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Privacy Settings</h2>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <h3 className="font-medium text-gray-900">Show Sold Items</h3>
-                  <p className="text-sm text-gray-500">Other users can see items you've sold</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPrivacySettings(prev => ({ ...prev, showSoldItems: !prev.showSoldItems }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    privacySettings.showSoldItems ? 'bg-blue-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      privacySettings.showSoldItems ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 border-t border-gray-100">
-                <div>
-                  <h3 className="font-medium text-gray-900">Show Purchases</h3>
-                  <p className="text-sm text-gray-500">Other users can see items you've bought</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPrivacySettings(prev => ({ ...prev, showPurchases: !prev.showPurchases }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    privacySettings.showPurchases ? 'bg-blue-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      privacySettings.showPurchases ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Community profile</h2>
+            <p className="mb-4 text-sm leading-6 text-gray-500">Other community members can see your name, student or staff status, join date, and active listings. Your purchases remain private.</p>
+            <label className="flex items-center justify-between gap-4 text-sm font-medium text-gray-700">
+              Show my WhatsApp contact on my community profile
+              <input type="checkbox" checked={privacySettings.showPhone}
+                onChange={(event) => setPrivacySettings(prev => ({ ...prev, showPhone: event.target.checked }))}
+                className="h-5 w-5 rounded border-gray-300 accent-[#009F9C]" />
+            </label>
           </div>
 
           {/* Save Button */}

@@ -26,7 +26,33 @@ interface PaginatedResponse<T> {
 }
 
 // ===== USERS API =====
+export interface CommunityProfile {
+  user: {
+    id: number;
+    fullName: string;
+    userRole: 'student' | 'staff';
+    department?: string;
+    isVerified: boolean;
+    profileImageUrl?: string;
+    createdAt: string;
+    whatsappNumber?: string;
+  };
+  stats: { activeListingsCount: number };
+  items: Array<{
+    id: number;
+    title: string;
+    price: string | number;
+    category: string;
+    condition: string;
+    createdAt: string;
+    photos: string[];
+  }>;
+  pagination: { page: number; limit: number; total: number; totalPages: number; hasMore: boolean };
+}
+
 export const usersApi = {
+  getCommunityProfile: (id: string, page = 1): Promise<ApiResponse<CommunityProfile>> =>
+    apiClient.get(`/users/${id}/community`, { page }),
   // Profile Management
   getProfile: (): Promise<ApiResponse<User>> => apiClient.get("/users/profile"),
 

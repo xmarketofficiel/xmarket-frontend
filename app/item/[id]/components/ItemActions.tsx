@@ -52,13 +52,13 @@ export default function ItemActions({
     );
   }
 
-  // Contact seller version - action buttons
+  // Contact member version - action buttons
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 shadow-lg">
       <div className="flex flex-col max-w-lg mx-auto min-h-[4rem] justify-center">
         {/* Action Buttons */}
         <div className="flex space-x-3 mb-2">
-          {/* Contact Seller Button */}
+          {/* Contact member Button */}
           <button
             onClick={handleInterestClick}
             disabled={isLoading.interest}
@@ -92,7 +92,7 @@ export default function ItemActions({
         {/* Additional Info */}
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            Contact the seller directly via WhatsApp
+            Contact this member directly via WhatsApp
           </p>
         </div>
       </div>

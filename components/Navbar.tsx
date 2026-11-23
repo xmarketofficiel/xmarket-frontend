@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Heart, Plus, MessageCircle, User } from 'lucide-react';
+import { Home, Heart, Plus, User } from 'lucide-react';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/favorites', icon: Heart, label: 'Favorites' },
   { href: '/add-item', icon: Plus, label: 'Add' },
-  { href: '/messages', icon: MessageCircle, label: 'Messages' },
+  // In-app messaging is retired; listing contacts use WhatsApp.
   { href: '/profile', icon: User, label: 'Profile' },
 ];
 

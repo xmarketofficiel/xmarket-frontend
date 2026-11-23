@@ -35,8 +35,8 @@ export const BRAND_FEATURES = {
   FEATURES: [
     {
       icon: "🎓",
-      title: "Student Community",
-      description: "Verified college students only"
+      title: "Campus Community",
+      description: "For community students and staff"
     },
     {
       icon: "🛡️", 
@@ -46,7 +46,7 @@ export const BRAND_FEATURES = {
     {
       icon: "💡",
       title: "Smart Marketplace",
-      description: "AI-powered recommendations"
+      description: "Find items with search and filters"
     },
     {
       icon: "🚀",
@@ -68,7 +68,7 @@ export const ERROR_MESSAGES = {
   // Email validation
   INVALID_EMAIL: "Please enter a valid email address",
   EMAIL_REQUIRED: "Email address is required",
-  EMAIL_NOT_AUTHORIZED: "This email is not authorized. Please contact admin or request access.",
+  EMAIL_NOT_AUTHORIZED: "This email is not authorized. Use your @um6p.ma or @student.1337.ma community email.",
   EMAIL_ALREADY_EXISTS: "This email is already registered. Please login or use a different email address.",
   
   // OTP validation
@@ -117,7 +117,7 @@ export const STEP_CONFIG = {
 
   EMAIL: {
     title: "Welcome to XMarket",
-    subtitle: "Enter your student email to get started",
+    subtitle: "Verify your UM6P community email to get started",
     buttonText: "Send Verification Code",
     loadingText: "Sending code..."
   },

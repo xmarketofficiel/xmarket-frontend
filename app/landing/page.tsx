@@ -68,7 +68,7 @@ export default function LandingPage() {
 
             <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Connect, trade, and thrive within your university community. 
-              Buy, sell, and discover services from verified students.
+              Buy and sell items with students and staff in your community.
             </p>
           </div>
         </div>
@@ -140,7 +140,7 @@ function FeaturesSection() {
           Everything You Need
         </h2>
         <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-          From marketplace to services, we've built everything students need to thrive
+          Find what you need and sell what you no longer use within your campus community
         </p>
       </div>
 

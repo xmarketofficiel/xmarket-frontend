@@ -31,9 +31,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'XMarket - University Marketplace',
-  description: 'Buy and sell items within your university community',
-  keywords: 'university, marketplace, students, buy, sell, items',
+  title: 'XMarket - UM6P Community Marketplace',
+  description: 'Buy and sell items with students and staff in the UM6P community',
+  keywords: 'UM6P, community, marketplace, students, staff, buy, sell, items',
   authors: [{ name: 'XMarket Team' }],
   appleWebApp: {
     capable: true,

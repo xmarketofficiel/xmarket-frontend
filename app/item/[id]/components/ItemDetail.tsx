@@ -14,7 +14,7 @@ import { Item } from "../../../../types";
 import ItemHeader from "./ItemHeader";
 import ItemGallery from "./ItemGallery";
 import ItemInfo from "./ItemInfo";
-import SellerCard from "./SellerCard";
+import MemberCard from "./MemberCard";
 import ItemActions from "./ItemActions";
 import ShareModal from "./ShareModal";
 import LoadingSpinner from "./LoadingSpinner";
@@ -166,7 +166,7 @@ export default function ItemDetail({
 
   const openWhatsApp = () => {
     if (!item.seller?.whatsappNumber) {
-      addToast("Seller has no WhatsApp number available", "error");
+      addToast("This member has no WhatsApp contact available", "error");
       return;
     }
 
@@ -198,12 +198,7 @@ export default function ItemDetail({
     actions.openModal("imageViewer", index);
   };
 
-  const handleViewProfile = () => {
-    const sellerId = item.seller?.id || item.sellerId;
-    if (sellerId) {
-      router.push(`/user/${sellerId}`);
-    }
-  };
+
 
 
 
@@ -297,12 +292,11 @@ export default function ItemDetail({
                 {/* Seller Card - Hidden for own items */}
                 {!isOwnItem && (
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-                    <SellerCard
-                      seller={item.seller}
+                    <MemberCard
+                      member={item.seller}
                       isAnonymous={item.anonymous}
                       isOwnItem={!!isOwnItem}
                       onMessageClick={openWhatsApp}
-                      onViewProfile={handleViewProfile}
                     />
                   </div>
                 )}
@@ -311,7 +305,7 @@ export default function ItemDetail({
           </div>
         </div>
 
-        {/* Desktop Contact Seller / Own Item Bar - Sticky Bottom */}
+        {/* Desktop Contact member / Own Item Bar - Sticky Bottom */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 px-6 py-4 z-50 shadow-2xl">
           <div className="max-w-7xl mx-auto">
             {isOwnItem ? (
@@ -328,13 +322,13 @@ export default function ItemDetail({
             ) : (
               <div className="flex flex-col items-center justify-center space-y-2">
                 <div className="flex space-x-3">
-                  {/* Contact Seller Button */}
+                  {/* Contact member Button */}
                   <button
                     onClick={openWhatsApp}
                     className="bg-gradient-to-r from-[#009F9C] to-[#00B8B5] hover:from-[#008A87] hover:to-[#009F9C] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg hover:scale-[1.02]"
                   >
                     <span className="text-lg">📱</span>
-                    <span>Contact Seller</span>
+                    <span>Contact member</span>
                   </button>
 
                   {/* Share Button */}
@@ -347,7 +341,7 @@ export default function ItemDetail({
                   </button>
                 </div>
                 <p className="text-xs text-gray-500">
-                  Contact the seller directly via WhatsApp
+                  Contact this member directly via WhatsApp
                 </p>
               </div>
             )}
@@ -381,12 +375,11 @@ export default function ItemDetail({
                 {/* Shimmer effect on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <div className="relative z-10">
-                  <SellerCard
-                    seller={item.seller}
+                  <MemberCard
+                    member={item.seller}
                     isAnonymous={item.anonymous}
                     isOwnItem={!!isOwnItem}
                     onMessageClick={openWhatsApp}
-                    onViewProfile={handleViewProfile}
                   />
                 </div>
               </div>
@@ -431,7 +424,7 @@ export default function ItemDetail({
           title: item.title,
           price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
           seller: {
-            fullName: item.seller?.fullName || item.seller?.name || 'Unknown Seller',
+            fullName: item.seller?.fullName || item.seller?.name || 'Community member',
             whatsappNumber: item.seller?.whatsappNumber
           }
         }}

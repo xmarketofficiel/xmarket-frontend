@@ -59,7 +59,7 @@ export const CONDITION_CONFIG = {
 // Action button configurations
 export const ACTION_BUTTONS = {
   interested: {
-    label: 'Contact Seller',
+    label: 'Contact member',
     loadingLabel: 'Opening WhatsApp...',
     successLabel: 'Opening WhatsApp!',
     icon: '📱',
@@ -217,7 +217,7 @@ export const A11Y_CONFIG = {
     favorite: 'Add to favorites',
     unfavorite: 'Remove from favorites',
     interest: 'Show interest in this item',
-    message: 'Send message to seller',
+    message: 'Contact this member',
     share: 'Share this item',
     report: 'Report this item'
   }

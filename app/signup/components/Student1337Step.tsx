@@ -136,6 +136,7 @@ export function Student1337Step({ onBack, onNext }: Student1337StepProps) {
         // Update form data with Discord info and move to details step
         const updatedFormData = {
           ...formData,
+          registrationToken: response.data.registrationToken,
           email: discordEmail,
           department: '1337 School', // Auto-fill department
           step: 'details' as const,
@@ -301,6 +302,7 @@ export function Student1337Step({ onBack, onNext }: Student1337StepProps) {
 
     try {
       const response = await api.auth.completeRegistration({
+        registrationToken: formData.registrationToken,
         email: formData.email,
         firstName: formData.firstName || '',
         lastName: formData.lastName || '',

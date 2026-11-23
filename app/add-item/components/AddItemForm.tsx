@@ -99,7 +99,6 @@ export default function AddItemForm({
     { id: '12', name: 'Pet Supplies', icon: '🐕', description: 'Pet food, accessories, toys' },
     { id: '13', name: 'Office Supplies', icon: '📎', description: 'Stationery, office equipment, supplies' },
     { id: '14', name: 'Food & Beverages', icon: '🍕', description: 'Snacks, drinks, food items' },
-    { id: '15', name: 'Services', icon: '🔧', description: 'Tutoring, repairs, services' },
     { id: '16', name: 'Other', icon: '📦', description: 'Items that don\'t fit other categories' }
   ];
 

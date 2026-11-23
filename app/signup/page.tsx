@@ -1,130 +1,43 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { ApiErrorBoundary } from '../../components/ApiErrorBoundary';
+import Link from 'next/link';
+import { ArrowLeft, BadgeCheck, ShoppingBag, Users } from 'lucide-react';
+import { CommunitySignupForm } from './components/UM6PStudentStep';
 
-// Components
-import { AnimatedBackground } from './components/AnimatedBackground';
-import { BrandingPanel } from './components/BrandingPanel';
-import { StepHeader } from './components/StepHeader';
-import { UserTypeStep } from './components/UserTypeStep';
-
-// Constants and Types
-import { SIGNUP_CONFIG } from './constants';
-import type { 
-  SignupState, 
-  FloatingElement, 
-  SignupFormData 
-} from './types';
-
-/**
- * Main Signup Page - User Type Selection Only
- * Routes users to appropriate signup flows based on their selection
- */
 export default function SignupPage() {
-  const router = useRouter();
-
-  // Initialize floating elements for background animation
-  const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
-
-  // Minimal state for user type selection
-  const [state, setState] = useState<SignupState>({
-    signupMode: SIGNUP_CONFIG.DEFAULT_SIGNUP_MODE,
-    formData: {
-      step: 'user-type',
-      userType: undefined,
-      email: '',
-      otp: '',
-      firstName: '',
-      lastName: '',
-      department: '',
-      role: 'student',
-      address: 'UM6P Ben Guerir',
-      fullName: '',
-      whatsappNumber: '',
-      password: '',
-      confirmPassword: '',
-      loginName: ''
-    },
-    requestAccessData: {
-      firstName: '',
-      lastName: '',
-      department: '',
-      role: 'seller',
-      address: 'UM6P Ben Guerir',
-      fullName: '',
-      email: '',
-      whatsappNumber: '',
-      reason: ''
-    },
-    isLoading: false,
-    message: '',
-    messageType: 'error',
-    resendTimer: 0,
-    canResend: false,
-    otpSent: false,
-    focusedField: '',
-    showPassword: false,
-    showConfirmPassword: false,
-    requestSubmitted: false
-  });
-
-  /**
-   * Initialize floating elements animation
-   */
-  useEffect(() => {
-    const elements = Array.from({ length: SIGNUP_CONFIG.FLOATING_ELEMENTS_COUNT }, (_, i) => ({
-      id: i,
-      x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-      y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-      delay: Math.random() * 5,
-      size: Math.random() * 20 + 15
-    }));
-    setFloatingElements(elements);
-  }, []);
-
   return (
-    <ApiErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-cyan-50">
-        <AnimatedBackground floatingElements={floatingElements} />
-        
-        <div className="relative z-10 min-h-screen flex">
-          {/* Hide branding panel on mobile, show only on desktop */}
-          <BrandingPanel 
-            currentStep={state.formData.step} 
-            signupMode={state.signupMode}
-          />
-          
-          {/* Main Content Panel - Full width on mobile, responsive padding */}
-          <div className="w-full lg:w-1/2 lg:ml-auto flex justify-center p-4 sm:p-6 lg:p-8">
-            <div className="w-full max-w-md">
-              <div className="relative">
-                {/* Back to Home Button - Mobile optimized with better touch target */}
-                <button
-                  onClick={() => router.push('/')}
-                  className="flex items-center text-gray-600 hover:text-[#009F9C] active:text-[#007B78] transition-colors duration-200 mb-6 sm:mb-8 group self-start touch-manipulation min-h-[44px]"
-                >
-                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-                  <span className="font-medium text-sm sm:text-base">Back to Home</span>
-                </button>
-
-                <StepHeader 
-                  step={state.formData.step} 
-                  signupMode={state.signupMode}
-                />
-                
-                {/* User Type Selection Step */}
-                <UserTypeStep
-                  key="user-type"
-                  isLoading={state.isLoading}
-                />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-cyan-50 lg:grid lg:grid-cols-2">
+      <aside className="hidden lg:flex flex-col justify-center bg-[#009F9C] p-12 xl:p-20 text-white">
+        <Link href="/" className="mb-14 text-3xl font-bold tracking-tight">XMarket</Link>
+        <span className="mb-5 text-sm font-semibold uppercase tracking-widest text-white/75">UM6P community</span>
+        <h1 className="max-w-lg text-5xl font-bold leading-tight">Your campus marketplace.</h1>
+        <p className="mt-6 max-w-lg text-lg leading-8 text-white/90">
+          A place for students and staff to find what they need and pass on what they no longer use.
+        </p>
+        <div className="mt-12 space-y-6">
+          {[
+            { icon: Users, text: 'A community of students and staff' },
+            { icon: BadgeCheck, text: 'Membership verified with your community email' },
+            { icon: ShoppingBag, text: 'Every member can buy and sell items' },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-4">
+              <Icon size={22} className="flex-shrink-0 text-white/90" />
+              <p>{text}</p>
             </div>
-          </div>
+          ))}
         </div>
-      </div>
-    </ApiErrorBoundary>
+      </aside>
+      <main className="flex justify-center px-5 py-8 sm:px-10 lg:py-12">
+        <div className="w-full max-w-md">
+          <Link href="/" className="mb-8 inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#009F9C]">
+            <ArrowLeft size={18} /> Back to home
+          </Link>
+          <CommunitySignupForm onBack={() => undefined} />
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Already a member? <Link href="/login" className="font-semibold text-[#007B78] hover:underline">Log in</Link>
+          </p>
+        </div>
+      </main>
+    </div>
   );
 }
