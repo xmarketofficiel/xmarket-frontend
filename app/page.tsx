@@ -1,83 +1,48 @@
 "use client";
 
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useUser } from "../contexts/UserContext";
+import { MarketplacePageSkeleton } from "../components/skeletons/MarketplacePageSkeleton";
 
-// Import the actual marketplace page component
-import MarketplacePage from "./marketplace/page";
-// Import the landing page component from the @landing directory
-import LandingPage from "./landing/page";
+// Dynamic imports for code splitting - each page loads only when needed
+const MarketplacePage = dynamic(() => import("./marketplace/page"), {
+  loading: () => null, // Marketplace page handles its own loading states
+  ssr: false, // Disable SSR since this depends on client-side auth state
+});
 
-const BRAND_COLOR = '#009F9C';
+const LandingPage = dynamic(() => import("./landing/page"), {
+  loading: () => null, // Landing page loads fast, no skeleton needed
+});
 
 /**
  * HomePage - Smart content display based on authentication
- * Shows landing page for guests, actual marketplace for authenticated users
- * NO REDIRECTS - everything happens on the same "/" path
+ * 
+ * Architecture:
+ * - Uses dynamic imports for proper code splitting
+ * - MarketplacePage and LandingPage are loaded lazily
+ * - AppShell handles the layout (navbar visibility)
+ * - Skeleton is shown while marketplace is loading
  */
 export default function HomePage() {
   const { user, loading } = useUser();
 
-  // Clear add-item draft when successfully reaching home page
+  // Clear add-item draft when authenticated user reaches home page
   useEffect(() => {
     if (user && typeof window !== 'undefined') {
       const draftExists = localStorage.getItem('add_item_draft');
       if (draftExists) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🧹 Cleaning up add-item draft from localStorage on home page...');
-        }
         localStorage.removeItem('add_item_draft');
-        if (process.env.NODE_ENV === 'development') {
-          console.log('✅ Add-item draft cleared from localStorage');
-        }
       }
     }
   }, [user]);
 
-  // Show loading state while determining auth status
+  // Show skeleton while determining auth status (for logged in users)
   if (loading) {
-    return <LoadingScreen />;
+    return <MarketplacePageSkeleton />;
   }
 
-  // Show actual marketplace content for authenticated users (NO REDIRECT)
-  if (user) {
-    return <MarketplacePage />;
-  }
-
-  // Show landing page content for non-authenticated users (NO REDIRECT)
-  // Use the organized landing page from @landing directory
-  return <LandingPage />;
-}
-
-/**
- * Loading screen component
- */
-function LoadingScreen() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Loading Content */}
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <LoadingSpinner />
-          <p className="text-gray-600 font-medium mt-6">
-            Setting up your XMarket experience...
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Clean loading spinner without framer-motion
- */
-function LoadingSpinner() {
-  return (
-    <div className="relative">
-      <div 
-        className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: `${BRAND_COLOR} transparent transparent transparent` }}
-      />
-    </div>
-  );
+  // Render appropriate page based on auth state
+  // Both are dynamically imported for code splitting
+  return user ? <MarketplacePage /> : <LandingPage />;
 }

@@ -9,7 +9,7 @@ export const ADD_ITEM_CONFIG = {
   // Image upload settings
   MAX_IMAGES: 6,
   MAX_FILE_SIZE_MB: 7,
-  SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heif'],
   
   // Validation limits
   TITLE_MIN_LENGTH: 5,

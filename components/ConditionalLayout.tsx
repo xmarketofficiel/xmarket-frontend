@@ -1,5 +1,17 @@
 'use client';
 
+/**
+ * @deprecated This component has been replaced by AppShell.tsx
+ * 
+ * Migration notes:
+ * - Layout logic moved to: components/AppShell.tsx
+ * - Provider nesting moved to: providers/AppProviders.tsx
+ * - Auth redirects: Still client-side (localStorage tokens)
+ * 
+ * This file is kept for reference during migration.
+ * Safe to delete after confirming AppShell works correctly.
+ */
+
 import { useUser } from '../contexts/UserContext';
 import { usePathname } from 'next/navigation';
 import LoginPage from '../app/login/page';
@@ -10,6 +22,7 @@ interface ConditionalLayoutProps {
   children: React.ReactNode;
 }
 
+/** @deprecated Use AppShell instead */
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const { user, loading } = useUser();
   const pathname = usePathname();
@@ -43,7 +56,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
     // For home page, let the page itself handle authentication and layout
     // Only show Navbar if user is authenticated
     return user ? (
-      <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+      <div className="h-screen flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
           {children}
         </main>
@@ -68,7 +81,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   
   // User is authenticated - show navbar and content with proper fixed layout
   return (
-    <div className="min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto bg-gray-50 pb-[var(--navbar-height,4rem)]">
         {children}
       </main>

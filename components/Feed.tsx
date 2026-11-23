@@ -5,16 +5,24 @@ import { Item } from '../types';
 import ItemCard from './ItemCard';
 import SkeletonCard from './SkeletonCard';
 import { SkeletonGrid } from './skeletons/SkeletonComponents';
+import { MarketplaceItemSkeleton } from './skeletons/MarketplacePageSkeleton';
 
 interface FeedProps {
   items: Item[];
   loading: boolean;
   onLoadMore: () => void;
   hasMore: boolean;
+  /** If true, prefetch is in progress (don't show loading UI) */
+  isPrefetching?: boolean;
+  /** Called before navigating to item detail (for scroll restoration). Receives current scrollY. */
+  onItemClick?: (scrollY: number) => void;
+  /** If true, a background fetch is in progress */
+  isFetching?: boolean;
 }
 
-export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps) {
+export default function Feed({ items, loading, onLoadMore, hasMore, isPrefetching = false, onItemClick, isFetching = false }: FeedProps) {
   const observerRef = React.useRef<HTMLDivElement>(null);
+  const hasTriggeredRef = React.useRef(false);
 
   // Debug: Check for duplicate IDs
   React.useEffect(() => {
@@ -31,23 +39,37 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
     }
   }, [items]);
 
-  // Infinite scroll observer
+  // Reset trigger flag when items change (new page loaded)
+  // Don't reset reachedEnd - let the observer handle it naturally to prevent flashing
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
+    hasTriggeredRef.current = false;
+  }, [items.length]);
+
+  // Prefetch observer - triggers early (1000px before bottom) for background loading
+  React.useEffect(() => {
+    const prefetchObserver = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !hasTriggeredRef.current) {
+          hasTriggeredRef.current = true;
           onLoadMore();
         }
       },
-      { threshold: 0.1 }
+      { 
+        threshold: 0,
+        rootMargin: '0px 0px 1000px 0px' // Trigger 1000px early for prefetch
+      }
     );
 
     if (observerRef.current) {
-      observer.observe(observerRef.current);
+      prefetchObserver.observe(observerRef.current);
     }
 
-    return () => observer.disconnect();
-  }, [hasMore, loading, onLoadMore]);
+    return () => prefetchObserver.disconnect();
+  }, [hasMore, onLoadMore]);
+
+  // Simple skeleton logic: always show when fetching more items
+  // This ensures smooth UX - skeleton is always visible during load
+  const showLoadingSkeleton = isFetching && hasMore && items.length > 0;
 
   if (items.length === 0 && !loading) {
     return (
@@ -74,56 +96,64 @@ export default function Feed({ items, loading, onLoadMore, hasMore }: FeedProps)
   return (
     <div className="">
       {/* Mobile layout - 2 column grid */}
-      <div className="grid grid-cols-2 gap-3 md:hidden">
+      <div className="grid grid-cols-2 gap-2 md:hidden">
         {items.map((item, index) => (
           <ItemCard 
             key={item.id} 
             item={item} 
             priority={index < 4}
             layout="mobile"
+            onItemClick={onItemClick}
           />
         ))}
         
-        {/* Loading skeletons for mobile */}
+        {/* Loading skeletons for mobile - initial load only */}
         {loading && items.length === 0 && (
           Array.from({ length: 6 }).map((_, index) => (
             <SkeletonCard key={`skeleton-mobile-${index}`} layout="mobile" />
           ))
         )}
+        
+        {/* Loading skeleton - always shows when fetching more items */}
+        {showLoadingSkeleton && (
+          Array.from({ length: 4 }).map((_, index) => (
+            <MarketplaceItemSkeleton key={`loading-mobile-${index}`} />
+          ))
+        )}
       </div>
 
       {/* Desktop layout - 3-4 column grid */}
-      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((item, index) => (
           <ItemCard 
             key={item.id} 
             item={item} 
             priority={index < 4}
             layout="desktop"
+            onItemClick={onItemClick}
           />
         ))}
         
-        {/* Loading skeletons for desktop */}
+        {/* Loading skeletons for desktop - initial load only */}
         {loading && items.length === 0 && (
           Array.from({ length: 8 }).map((_, index) => (
             <SkeletonCard key={`skeleton-desktop-${index}`} layout="desktop" />
           ))
         )}
+        
+        {/* Loading skeleton - always shows when fetching more items */}
+        {showLoadingSkeleton && (
+          Array.from({ length: 4 }).map((_, index) => (
+            <MarketplaceItemSkeleton key={`loading-desktop-${index}`} />
+          ))
+        )}
       </div>
 
-      {/* Load More Button/Infinite Scroll Trigger - simplified */}
-      {hasMore && !loading && items.length > 0 && (
-        <div ref={observerRef} className="py-6">
-          <SkeletonGrid count={4} />
-        </div>
+      {/* Infinite Scroll Sentinel - invisible trigger point for prefetching */}
+      {hasMore && items.length > 0 && (
+        <div ref={observerRef} className="h-1" aria-hidden="true" />
       )}
 
-      {/* Loading more indicator - skeleton */}
-      {loading && items.length > 0 && (
-        <div className="py-4">
-          <SkeletonGrid count={2} />
-        </div>
-      )}
 
       {/* End of results message */}
       {!hasMore && items.length > 0 && (

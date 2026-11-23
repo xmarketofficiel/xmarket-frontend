@@ -173,8 +173,10 @@ export default function ItemDetail({
     const message = encodeURIComponent(
       `Hi! I'm interested in your item: ${item.title} (${item.price} DH)`
     );
-    const whatsappNumber = item.seller.whatsappNumber.replace(/[^0-9]/g, "");
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+    
+    // Format WhatsApp number (remove any spaces or special chars)
+    const cleanNumber = item.seller.whatsappNumber.replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`;
     window.open(whatsappUrl, "_blank");
 
     // Analytics
